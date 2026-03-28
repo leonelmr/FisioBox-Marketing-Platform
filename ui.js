@@ -329,6 +329,30 @@ const UI = {
 
   bindDashboard() {},
 
+  // ── UTILITY HELPERS ────────────────────────────────────────
+  statusLabel(status) {
+    const labels = { draft: 'Borrador', review: 'En revisión', approved: 'Aprobado', published: 'Publicado' };
+    return labels[status] || 'Borrador';
+  },
+
+  timeAgo(isoString) {
+    if (!isoString) return '';
+    const diff = Date.now() - new Date(isoString).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 2) return 'ahora mismo';
+    if (mins < 60) return `hace ${mins}m`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `hace ${hrs}h`;
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return `hace ${days}d`;
+    const months = Math.floor(days / 30);
+    return `hace ${months} mes${months > 1 ? 'es' : ''}`;
+  },
+
+  escAttr(str) {
+    return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  },
+
 
   // ══════════════════════════════════════════════════════════
   // GENERATOR VIEW (multi-step)
@@ -412,7 +436,6 @@ const UI = {
     return `
 <div class="card p-6">
   <div class="flex items-center gap-3 mb-2">
-    <button id="step2-back" class="btn-ghost px-3 py-2 text-sm">← Atrás</button>
     <h2 class="text-xl font-bold">Elige el formato</h2>
   </div>
   <p class="text-sm mb-6" style="color:#94a3b8;">Selecciona el tipo de contenido para ${platform}</p>
@@ -704,8 +727,28 @@ const UI = {
   },
 
   updateStepProgress(step) {
-    const steps = document.querySelectorAll('[class*="rounded-full"]');
-    // re-render the top progress bar if needed
+    // Update the progress bar fill
+    const pct = ((step - 1) / 3) * 100;
+    const fill = document.querySelector('.max-w-4xl .progress-fill');
+    if (fill) fill.style.width = pct + '%';
+    // Update step circles (w-8 h-8 rounded-full inside the step indicator card)
+    const circles = document.querySelectorAll('.max-w-4xl .card:first-child [class*="w-8"]');
+    circles.forEach((circle, i) => {
+      const stepNum = i + 1;
+      if (stepNum < step) {
+        circle.style.background = 'linear-gradient(135deg,#0ea5e9,#f97316)';
+        circle.style.color = 'white';
+        circle.textContent = '✓';
+      } else if (stepNum === step) {
+        circle.style.background = 'linear-gradient(135deg,#0ea5e9,#f97316)';
+        circle.style.color = 'white';
+        circle.textContent = String(stepNum);
+      } else {
+        circle.style.background = '#1e3a52';
+        circle.style.color = '#475569';
+        circle.textContent = String(stepNum);
+      }
+    });
   },
 
   async runGeneration() {
@@ -987,6 +1030,20 @@ const UI = {
     `).join('')}
   </div>
 
+  <!-- AI Plan output (shown after generation) -->
+  <div id="cal-plan-output-section" class="hidden">
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold flex items-center gap-2"><span>🤖</span> Plan generado por IA</h3>
+        <div class="flex gap-2">
+          <button id="cal-copy-plan" class="btn-ghost px-3 py-1 text-xs">📋 Copiar</button>
+          <button id="cal-close-plan" class="btn-ghost px-3 py-1 text-xs">✕</button>
+        </div>
+      </div>
+      <div id="cal-plan-output" class="content-output" style="max-height:400px;"></div>
+    </div>
+  </div>
+
   <!-- Items list below calendar -->
   <div id="cal-day-items"></div>
 </div>
@@ -1022,13 +1079,23 @@ const UI = {
       const btn = document.getElementById('cal-generate-plan');
       btn.textContent = '⏳ Generando...';
       btn.disabled = true;
+      const section = document.getElementById('cal-plan-output-section');
+      const outputEl = document.getElementById('cal-plan-output');
+      section.classList.remove('hidden');
+      outputEl.innerHTML = '<span class="loading-dots">Generando plan de contenido</span>';
+      let planText = '';
       try {
         await Agents.generateCalendarPlan({ weeks: 4, primaryPlatform: 'Instagram' }, (chunk, full) => {
-          showToast('Generando plan de contenido...', 'info');
+          planText = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
         });
-        showToast('Plan generado. Revisa el output para detalles.', 'success');
+        showToast('Plan generado. ¡Revisa el panel de abajo!', 'success');
         btn.textContent = '✅ Plan generado';
+        document.getElementById('cal-copy-plan')?.addEventListener('click', () => copyToClipboard(planText, 'Plan de contenido'));
+        document.getElementById('cal-close-plan')?.addEventListener('click', () => section.classList.add('hidden'));
       } catch (err) {
+        outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
         showToast('Error: ' + err.message, 'error');
         btn.textContent = '🤖 Generar plan IA';
         btn.disabled = false;
