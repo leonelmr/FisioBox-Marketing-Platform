@@ -6,61 +6,61 @@ const UI = {
 
   // ── NAVIGATION CONFIG ──────────────────────────────────────
   navItems: [
-    { id: 'dashboard',    label: 'Dashboard',               icon: '🏠' },
-    { id: 'generator',   label: 'Generador de Contenido',  icon: '✨' },
-    { id: 'calendar',    label: 'Calendario',              icon: '📅' },
-    { id: 'library',     label: 'Biblioteca',              icon: '📚' },
-    { id: 'analytics',   label: 'Analítica',               icon: '📊' },
-    { id: 'intelligence',label: 'Inteligencia',            icon: '🧠' },
-    { id: 'whatsapp',    label: 'WhatsApp',                icon: '💬' },
-    { id: 'campaigns',   label: 'Campañas',                icon: '🚀' },
-    { id: 'settings',    label: 'Configuración',           icon: '⚙️' },
+    { id: 'dashboard',    label: 'Dashboard'              },
+    { id: 'generator',   label: 'Generador de Contenido' },
+    { id: 'calendar',    label: 'Calendario'             },
+    { id: 'library',     label: 'Biblioteca'             },
+    { id: 'analytics',   label: 'Analítica'              },
+    { id: 'intelligence',label: 'Inteligencia'           },
+    { id: 'whatsapp',    label: 'WhatsApp'               },
+    { id: 'campaigns',   label: 'Campañas'               },
+    { id: 'settings',    label: 'Configuración'          },
   ],
 
   // ── PLATFORM CONFIG ────────────────────────────────────────
   platforms: [
-    { id: 'Instagram', label: 'Instagram', icon: '📸', color: 'platform-ig',   desc: 'Posts, Reels, Stories' },
-    { id: 'TikTok',    label: 'TikTok',    icon: '🎵', color: 'platform-tt',   desc: 'Videos cortos virales' },
-    { id: 'Facebook',  label: 'Facebook',  icon: '👥', color: 'platform-fb',   desc: 'Posts, Videos, Eventos' },
-    { id: 'Blog',      label: 'Blog/Web',  icon: '📝', color: 'platform-blog', desc: 'Artículos SEO, Google Business' },
-    { id: 'WhatsApp',  label: 'WhatsApp',  icon: '💬', color: 'platform-wa',   desc: 'Mensajes y secuencias' },
-    { id: 'Ads',       label: 'Ads',       icon: '🎯', color: 'platform-ads',  desc: 'Meta Ads, Google Ads' },
+    { id: 'Instagram', label: 'Instagram', faIcon: 'fa-brands fa-instagram', color: 'platform-ig',   desc: 'Posts, Reels, Stories' },
+    { id: 'TikTok',    label: 'TikTok',    faIcon: 'fa-brands fa-tiktok',    color: 'platform-tt',   desc: 'Videos cortos virales' },
+    { id: 'Facebook',  label: 'Facebook',  faIcon: 'fa-brands fa-facebook',  color: 'platform-fb',   desc: 'Posts, Videos, Eventos' },
+    { id: 'Blog',      label: 'Blog/Web',  faIcon: 'fa-solid fa-globe',      color: 'platform-blog', desc: 'Artículos SEO, Google Business' },
+    { id: 'WhatsApp',  label: 'WhatsApp',  faIcon: 'fa-brands fa-whatsapp',  color: 'platform-wa',   desc: 'Mensajes y secuencias' },
+    { id: 'Ads',       label: 'Ads',       faIcon: 'fa-solid fa-bullhorn',   color: 'platform-ads',  desc: 'Meta Ads, Google Ads' },
   ],
 
   formats: {
     Instagram: [
-      { id: 'carrusel',     label: 'Carrusel Educativo',  icon: '📋', desc: '8-10 slides con valor' },
-      { id: 'reel_guion',   label: 'Guión de Reel',       icon: '🎬', desc: 'Video corto 15-60s' },
-      { id: 'post_caption', label: 'Caption de Post',     icon: '💬', desc: 'Texto + hashtags' },
-      { id: 'story_serie',  label: 'Serie de Stories',    icon: '📱', desc: '5-7 stories secuenciales' },
+      { id: 'carrusel',     label: 'Carrusel Educativo',   desc: '8-10 slides con valor' },
+      { id: 'reel_guion',   label: 'Guión de Reel',        desc: 'Video corto 15-60s' },
+      { id: 'post_caption', label: 'Caption de Post',      desc: 'Texto + hashtags' },
+      { id: 'story_serie',  label: 'Serie de Stories',     desc: '5-7 stories secuenciales' },
     ],
     TikTok: [
-      { id: 'guion_tiktok', label: 'Guión TikTok',        icon: '🎬', desc: 'Hook + desarrollo + CTA' },
-      { id: 'tendencia',    label: 'Adaptación tendencia', icon: '🔥', desc: 'Trend aplicado a fisio' },
-      { id: 'educativo_tt', label: 'Video educativo',      icon: '🎓', desc: '60s de valor científico' },
+      { id: 'guion_tiktok', label: 'Guión TikTok',         desc: 'Hook + desarrollo + CTA' },
+      { id: 'tendencia',    label: 'Adaptación tendencia',  desc: 'Trend aplicado a fisio' },
+      { id: 'educativo_tt', label: 'Video educativo',       desc: '60s de valor científico' },
     ],
     Facebook: [
-      { id: 'post_fb',      label: 'Post Facebook',       icon: '📄', desc: 'Post con engagement' },
-      { id: 'evento_fb',    label: 'Evento',              icon: '📅', desc: 'Evento clínica o taller' },
-      { id: 'articulo_fb',  label: 'Artículo nativo',     icon: '📰', desc: 'Artículo largo en FB' },
-      { id: 'video_fb',     label: 'Guión video FB',      icon: '🎥', desc: 'Video informativo' },
+      { id: 'post_fb',      label: 'Post Facebook',        desc: 'Post con engagement' },
+      { id: 'evento_fb',    label: 'Evento',               desc: 'Evento clínica o taller' },
+      { id: 'articulo_fb',  label: 'Artículo nativo',      desc: 'Artículo largo en FB' },
+      { id: 'video_fb',     label: 'Guión video FB',       desc: 'Video informativo' },
     ],
     Blog: [
-      { id: 'articulo_blog', label: 'Artículo de Blog',   icon: '📝', desc: 'SEO optimizado 1500+ palabras' },
-      { id: 'google_biz',    label: 'Post Google Business',icon: '🗺️', desc: 'Visibilidad local Escazú' },
-      { id: 'qa_google',     label: 'Q&A Google',         icon: '❓', desc: 'Pregunta y respuesta SEO' },
+      { id: 'articulo_blog', label: 'Artículo de Blog',    desc: 'SEO optimizado 1500+ palabras' },
+      { id: 'google_biz',    label: 'Post Google Business', desc: 'Visibilidad local Escazú' },
+      { id: 'qa_google',     label: 'Q&A Google',          desc: 'Pregunta y respuesta SEO' },
     ],
     WhatsApp: [
-      { id: 'secuencia_post_cita',   label: 'Secuencia post-cita',  icon: '🏥', desc: '5 mensajes seguimiento' },
-      { id: 'secuencia_rtp',         label: 'Secuencia RTP',        icon: '🏃', desc: 'Retorno al deporte' },
-      { id: 'secuencia_prevencion',  label: 'Prevención de lesiones',icon: '🛡️', desc: 'Educación preventiva' },
-      { id: 'secuencia_reactivacion',label: 'Reactivación paciente', icon: '💫', desc: 'Recuperar pacientes inactivos' },
+      { id: 'secuencia_post_cita',   label: 'Secuencia post-cita',   desc: '5 mensajes seguimiento' },
+      { id: 'secuencia_rtp',         label: 'Secuencia RTP',         desc: 'Retorno al deporte' },
+      { id: 'secuencia_prevencion',  label: 'Prevención de lesiones', desc: 'Educación preventiva' },
+      { id: 'secuencia_reactivacion',label: 'Reactivación paciente',  desc: 'Recuperar pacientes inactivos' },
     ],
     Ads: [
-      { id: 'meta_ads_trafico',  label: 'Meta Ads - Tráfico',   icon: '🎯', desc: 'Llevar a web/perfil' },
-      { id: 'meta_ads_leads',    label: 'Meta Ads - Leads',     icon: '📋', desc: 'Captación de citas' },
-      { id: 'google_ads_search', label: 'Google Ads Search',    icon: '🔍', desc: 'Búsqueda local Escazú' },
-      { id: 'meta_retargeting',  label: 'Meta Retargeting',     icon: '🔄', desc: 'Reconversión visitas web' },
+      { id: 'meta_ads_trafico',  label: 'Meta Ads - Tráfico',    desc: 'Llevar a web/perfil' },
+      { id: 'meta_ads_leads',    label: 'Meta Ads - Leads',      desc: 'Captación de citas' },
+      { id: 'google_ads_search', label: 'Google Ads Search',     desc: 'Búsqueda local Escazú' },
+      { id: 'meta_retargeting',  label: 'Meta Retargeting',      desc: 'Reconversión visitas web' },
     ],
   },
 
@@ -70,7 +70,7 @@ const UI = {
     const viewContent = this.renderView(v);
     const sidebarOpen = App.sidebarOpen ? 'open' : '';
 
-    const themeIcon = (document.documentElement?.getAttribute('data-theme') !== 'light') ? '🌙' : '☀️';
+    const isDark = document.documentElement?.getAttribute('data-theme') !== 'light';
     return `
 <div class="flex min-h-screen">
   <!-- Sidebar -->
@@ -78,26 +78,27 @@ const UI = {
     style="min-height:100vh;position:fixed;top:0;left:0;height:100%;z-index:50;">
     <div class="px-5 py-4" style="border-bottom:1px solid var(--glass-border);">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
-          style="background:linear-gradient(135deg,var(--accent),var(--accent-orange));box-shadow:0 4px 14px var(--accent-glow);">🦴</div>
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          style="background:linear-gradient(135deg,var(--accent),var(--accent-orange));">
+          <i class="fa-solid fa-bone" style="color:#fff;font-size:13px;"></i>
+        </div>
         <div>
-          <div class="sidebar-logo font-bold text-base">FisioBox</div>
-          <div style="color:var(--text-tertiary);font-size:11px;letter-spacing:0.02em;">AI Marketing Suite</div>
+          <div class="sidebar-logo font-bold" style="font-size:15px;">FisioBox</div>
+          <div style="color:var(--text-tertiary);font-size:10px;letter-spacing:0.04em;text-transform:uppercase;">AI Marketing Suite</div>
         </div>
       </div>
     </div>
-    <nav class="flex-1 py-3 overflow-y-auto">
+    <nav class="flex-1 py-2 overflow-y-auto">
       ${this.navItems.map(item => `
         <button onclick="navigate('${item.id}')"
-          class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left ${v === item.id ? 'active' : ''}"
-          style="color:${v === item.id ? 'var(--text-primary)' : 'var(--text-secondary)'};font-weight:${v === item.id ? '500' : '400'};">
-          <span style="font-size:15px;width:20px;text-align:center;flex-shrink:0;">${item.icon}</span>
-          <span style="letter-spacing:-0.01em;">${item.label}</span>
+          class="nav-item w-full px-4 py-2.5 text-left ${v === item.id ? 'active' : ''}"
+          style="font-size:13px;color:${v === item.id ? 'var(--text-primary)' : 'var(--text-secondary)'};font-weight:${v === item.id ? '500' : '400'};letter-spacing:-0.01em;">
+          ${item.label}
         </button>
       `).join('')}
     </nav>
     <div class="px-4 py-3" style="border-top:1px solid var(--glass-border);">
-      <div class="text-xs text-center" style="color:var(--text-tertiary);letter-spacing:0.03em;">FisioBox © 2025 · Escazú, CR</div>
+      <div style="font-size:10px;text-align:center;color:var(--text-tertiary);letter-spacing:0.04em;text-transform:uppercase;">FisioBox © 2025 · Escazú, CR</div>
     </div>
   </aside>
 
@@ -106,15 +107,21 @@ const UI = {
     <!-- Top bar -->
     <header class="header-glass flex items-center justify-between px-6 py-3 sticky top-0 z-30">
       <div class="flex items-center gap-4">
-        <button id="sidebar-toggle" class="btn-ghost p-2 text-base md:hidden">☰</button>
-        <h1 style="font-size:17px;font-weight:600;color:var(--text-primary);letter-spacing:-0.02em;">
+        <button id="sidebar-toggle" class="btn-ghost p-2 md:hidden">
+          <i class="fa-solid fa-bars" style="font-size:13px;"></i>
+        </button>
+        <h1 style="font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.02em;">
           ${this.navItems.find(n => n.id === v)?.label || ''}
         </h1>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="toggleTheme()" id="theme-toggle" class="btn-ghost px-3 py-2" style="font-size:15px;"
-          title="Cambiar tema">${themeIcon}</button>
-        <button onclick="navigate('generator')" class="btn-orange px-4 py-2 text-sm font-semibold">✨ Generar</button>
+        <button onclick="toggleTheme()" id="theme-toggle" class="btn-ghost px-3 py-2"
+          title="Cambiar tema" style="font-size:12px;">
+          <i class="fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}"></i>
+        </button>
+        <button onclick="navigate('generator')" class="btn-orange px-4 py-2 font-semibold">
+          Generar
+        </button>
       </div>
     </header>
 
@@ -191,12 +198,12 @@ const UI = {
     const approved = drafts.filter(d => d.status === 'approved').length;
 
     const statCards = [
-      { label: 'Esta semana',     value: stats.generated_this_week || 0, icon: '✨', color: '#0ea5e9', sub: 'piezas generadas' },
-      { label: 'Total generado',  value: stats.total_generated || 0,     icon: '📦', color: '#f97316', sub: 'desde el inicio' },
-      { label: 'Borradores',      value: drafts.length,                  icon: '📝', color: '#eab308', sub: 'en biblioteca' },
-      { label: 'En revisión',     value: pendingReview,                  icon: '🔍', color: '#a855f7', sub: 'pendiente de revisión' },
-      { label: 'Aprobados',       value: approved,                       icon: '✅', color: '#22c55e', sub: 'listos para publicar' },
-      { label: 'En calendario',   value: calItems.length,                icon: '📅', color: '#06b6d4', sub: 'piezas programadas' },
+      { label: 'Esta semana',     value: stats.generated_this_week || 0, sub: 'piezas generadas' },
+      { label: 'Total generado',  value: stats.total_generated || 0,     sub: 'desde el inicio' },
+      { label: 'Borradores',      value: drafts.length,                  sub: 'en biblioteca' },
+      { label: 'En revisión',     value: pendingReview,                  sub: 'pendiente de revisión' },
+      { label: 'Aprobados',       value: approved,                       sub: 'listos para publicar' },
+      { label: 'En calendario',   value: calItems.length,                sub: 'piezas programadas' },
     ];
 
     return `
@@ -205,11 +212,11 @@ const UI = {
   <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
-        <h2 class="text-2xl font-bold mb-1">Bienvenido a FisioBox AI 🦴</h2>
+        <h2 class="text-2xl font-bold mb-1">Bienvenido a FisioBox AI</h2>
         <p style="color:var(--text-secondary);">Suite de marketing inteligente para fisioterapia deportiva · Escazú, Costa Rica</p>
         <p class="text-sm mt-1" style="color:var(--text-tertiary);">${today.toLocaleDateString('es-CR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
       </div>
-      <button onclick="navigate('generator')" class="btn-orange px-6 py-3 font-semibold text-base">✨ Crear contenido</button>
+      <button onclick="navigate('generator')" class="btn-orange px-6 py-3 font-semibold text-base">Crear contenido</button>
     </div>
   </div>
 
@@ -217,8 +224,7 @@ const UI = {
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
     ${statCards.map(s => `
       <div class="card p-4 text-center">
-        <div class="text-2xl mb-1">${s.icon}</div>
-        <div class="text-3xl font-bold mb-1" style="color:${s.color};">${s.value}</div>
+        <div class="text-3xl font-bold mb-1" style="color:var(--accent);">${s.value}</div>
         <div class="text-xs font-semibold mb-1" style="color:var(--text-primary);">${s.label}</div>
         <div class="text-xs" style="color:var(--text-tertiary);">${s.sub}</div>
       </div>
@@ -227,12 +233,12 @@ const UI = {
 
   <!-- Quick actions -->
   <div class="card p-5">
-    <h3 class="font-semibold mb-4 flex items-center gap-2"><span>⚡</span> Acciones rápidas</h3>
+    <h3 class="font-semibold mb-4">Acciones rápidas</h3>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <button onclick="App.generatorData={};App.generatorStep=1;navigate('generator')" class="btn-primary px-4 py-3 text-sm font-medium">✨ Generar post</button>
-      <button onclick="navigate('intelligence')" class="btn-ghost px-4 py-3 text-sm font-medium">🧠 Análisis de tendencias</button>
-      <button onclick="navigate('whatsapp')" class="btn-ghost px-4 py-3 text-sm font-medium">💬 Nueva secuencia WA</button>
-      <button onclick="navigate('campaigns')" class="btn-ghost px-4 py-3 text-sm font-medium">🚀 Crear campaña</button>
+      <button onclick="App.generatorData={};App.generatorStep=1;navigate('generator')" class="btn-primary px-4 py-3 text-sm font-medium">Generar post</button>
+      <button onclick="navigate('intelligence')" class="btn-ghost px-4 py-3 text-sm font-medium">Análisis de tendencias</button>
+      <button onclick="navigate('whatsapp')" class="btn-ghost px-4 py-3 text-sm font-medium">Nueva secuencia WA</button>
+      <button onclick="navigate('campaigns')" class="btn-ghost px-4 py-3 text-sm font-medium">Crear campaña</button>
     </div>
   </div>
 
@@ -240,12 +246,12 @@ const UI = {
     <!-- Recent drafts -->
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold flex items-center gap-2"><span>📝</span> Borradores recientes</h3>
+        <h3 class="font-semibold">Borradores recientes</h3>
         <button onclick="navigate('library')" class="text-xs btn-ghost px-3 py-1">Ver todos</button>
       </div>
       ${recentDrafts.length === 0 ? `
         <div class="text-center py-8" style="color:var(--text-tertiary);">
-          <div class="text-4xl mb-2">📄</div>
+          <i class="fa-regular fa-file-lines fa-2x mb-3" style="display:block;"></i>
           <p class="text-sm">No hay borradores aún.</p>
           <button onclick="navigate('generator')" class="btn-primary px-4 py-2 text-sm mt-3">Crear primero</button>
         </div>
@@ -267,12 +273,12 @@ const UI = {
     <!-- Upcoming calendar -->
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold flex items-center gap-2"><span>📅</span> Próximos 7 días</h3>
+        <h3 class="font-semibold">Próximos 7 días</h3>
         <button onclick="navigate('calendar')" class="text-xs btn-ghost px-3 py-1">Ver calendario</button>
       </div>
       ${upcoming.length === 0 ? `
         <div class="text-center py-8" style="color:var(--text-tertiary);">
-          <div class="text-4xl mb-2">📅</div>
+          <i class="fa-regular fa-calendar fa-2x mb-3" style="display:block;"></i>
           <p class="text-sm">No hay publicaciones programadas esta semana.</p>
           <button onclick="navigate('calendar')" class="btn-primary px-4 py-2 text-sm mt-3">Planificar</button>
         </div>
@@ -296,7 +302,7 @@ const UI = {
 
   <!-- Pillar distribution -->
   <div class="card p-5">
-    <h3 class="font-semibold mb-4 flex items-center gap-2"><span>📊</span> Distribución de pilares de contenido</h3>
+    <h3 class="font-semibold mb-4">Distribución de pilares de contenido</h3>
     ${this.renderPillarBars()}
   </div>
 </div>
@@ -307,11 +313,11 @@ const UI = {
     const bs = Storage.getBrandSettings();
     const pillars = bs.pillars;
     const items = [
-      { key: 'educativo',     label: 'Educativo',      color: '#0ea5e9', target: 40 },
-      { key: 'promocional',   label: 'Promocional',    color: '#f97316', target: 30 },
-      { key: 'prueba_social', label: 'Prueba Social',  color: '#22c55e', target: 20 },
-      { key: 'cultura',       label: 'Cultura',        color: '#a855f7', target: 5 },
-      { key: 'comunidad',     label: 'Comunidad',      color: '#06b6d4', target: 5 },
+      { key: 'educativo',     label: 'Educativo',      color: 'var(--accent)', target: 40 },
+      { key: 'promocional',   label: 'Promocional',    color: 'var(--accent)', target: 30 },
+      { key: 'prueba_social', label: 'Prueba Social',  color: 'var(--accent)', target: 20 },
+      { key: 'cultura',       label: 'Cultura',        color: 'var(--accent)', target: 5 },
+      { key: 'comunidad',     label: 'Comunidad',      color: 'var(--accent)', target: 5 },
     ];
     return `<div class="space-y-3">
       ${items.map(item => {
@@ -421,7 +427,7 @@ const UI = {
       <button data-platform="${p.id}"
         class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'card-selected' : ''}"
         style="${selected === p.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
-        <div class="text-3xl mb-3">${p.icon}</div>
+        <div class="mb-3"><i class="${p.faIcon}" style="font-size:1.5rem;color:var(--accent);"></i></div>
         <div class="font-semibold mb-1">${p.label}</div>
         <div class="text-xs" style="color:var(--text-secondary);">${p.desc}</div>
       </button>
@@ -451,7 +457,6 @@ const UI = {
       <button data-format="${f.id}"
         class="format-card card p-5 text-left transition-all hover:scale-105 ${selected === f.id ? 'card-selected' : ''}"
         style="${selected === f.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
-        <div class="text-2xl mb-2">${f.icon}</div>
         <div class="font-semibold mb-1">${f.label}</div>
         <div class="text-xs" style="color:var(--text-secondary);">${f.desc}</div>
       </button>
@@ -493,18 +498,18 @@ const UI = {
     <div>
       <label class="label">Categoría / Pilar</label>
       <select id="gen-category" class="select">
-        <option value="educativo" ${App.generatorData.category === 'educativo' ? 'selected' : ''}>🎓 Educativo</option>
-        <option value="promocional" ${App.generatorData.category === 'promocional' ? 'selected' : ''}>🎯 Promocional</option>
-        <option value="prueba_social" ${App.generatorData.category === 'prueba_social' ? 'selected' : ''}>⭐ Prueba Social</option>
-        <option value="cultura" ${App.generatorData.category === 'cultura' ? 'selected' : ''}>🏠 Cultura de Clínica</option>
-        <option value="comunidad" ${App.generatorData.category === 'comunidad' ? 'selected' : ''}>👥 Comunidad</option>
+        <option value="educativo" ${App.generatorData.category === 'educativo' ? 'selected' : ''}>Educativo</option>
+        <option value="promocional" ${App.generatorData.category === 'promocional' ? 'selected' : ''}>Promocional</option>
+        <option value="prueba_social" ${App.generatorData.category === 'prueba_social' ? 'selected' : ''}>Prueba Social</option>
+        <option value="cultura" ${App.generatorData.category === 'cultura' ? 'selected' : ''}>Cultura de Clínica</option>
+        <option value="comunidad" ${App.generatorData.category === 'comunidad' ? 'selected' : ''}>Comunidad</option>
       </select>
     </div>
   </div>
   <div class="flex justify-between mt-6">
     <button id="step3-back" class="btn-ghost px-6 py-3">← Atrás</button>
     <button id="step3-generate" class="btn-orange px-8 py-3 font-semibold text-base">
-      ✨ Generar contenido
+      Generar contenido
     </button>
   </div>
 </div>
@@ -603,17 +608,17 @@ const UI = {
 
   <!-- Review scores (hidden initially) -->
   <div id="review-scores" class="hidden mb-4">
-    <h3 class="font-semibold mb-3 flex items-center gap-2"><span>🔍</span> Revisión de calidad</h3>
+    <h3 class="font-semibold mb-3">Revisión de calidad</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="scores-grid"></div>
   </div>
 
   <!-- Action buttons (hidden initially) -->
   <div id="action-buttons" class="hidden flex flex-wrap gap-3">
-    <button id="btn-copy" class="btn-primary px-5 py-2 text-sm font-medium">📋 Copiar</button>
-    <button id="btn-download" class="btn-ghost px-5 py-2 text-sm font-medium">⬇️ Descargar</button>
-    <button id="btn-save-draft" class="btn-ghost px-5 py-2 text-sm font-medium">💾 Guardar borrador</button>
-    <button id="btn-run-review" class="btn-orange px-5 py-2 text-sm font-medium">🔍 Revisión de calidad</button>
-    <button id="btn-add-calendar" class="btn-ghost px-5 py-2 text-sm font-medium">📅 Agregar al calendario</button>
+    <button id="btn-copy" class="btn-primary px-5 py-2 text-sm font-medium"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    <button id="btn-download" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
+    <button id="btn-save-draft" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar borrador</button>
+    <button id="btn-run-review" class="btn-orange px-5 py-2 text-sm font-medium"><i class="fa-solid fa-magnifying-glass mr-1"></i>Revisión de calidad</button>
+    <button id="btn-add-calendar" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-calendar-plus mr-1"></i>Agregar al calendario</button>
   </div>
 </div>
     `;
@@ -823,7 +828,7 @@ const UI = {
         };
         Storage.saveDraft(draft);
         showToast('Borrador guardado en la biblioteca', 'success');
-        saveBtn.textContent = '✅ Guardado';
+        saveBtn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Guardado';
         saveBtn.disabled = true;
       });
     }
@@ -831,15 +836,15 @@ const UI = {
     const reviewBtn = document.getElementById('btn-run-review');
     if (reviewBtn) {
       reviewBtn.addEventListener('click', async () => {
-        reviewBtn.textContent = '⏳ Revisando...';
+        reviewBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Revisando...';
         reviewBtn.disabled = true;
         try {
           const results = await Agents.runReviewPipeline(content, platform);
           this.renderReviewScores(results);
-          reviewBtn.textContent = '✅ Revisión completa';
+          reviewBtn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Revisión completa';
         } catch (err) {
           showToast('Error en revisión: ' + err.message, 'error');
-          reviewBtn.textContent = '🔍 Revisión de calidad';
+          reviewBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass mr-1"></i>Revisión de calidad';
           reviewBtn.disabled = false;
         }
       });
@@ -881,7 +886,7 @@ const UI = {
           ${scoreBadge(medicalScore)}
         </div>
         <p class="text-xs" style="color:var(--text-secondary);">${medicalParsed?.summary || medicalParsed?.verdict || 'Revisión completada'}</p>
-        ${medicalParsed?.flags?.length ? `<ul class="mt-2 space-y-1">${medicalParsed.flags.slice(0,2).map(f => `<li class="text-xs" style="color:var(--error);">⚠️ ${f}</li>`).join('')}</ul>` : ''}
+        ${medicalParsed?.flags?.length ? `<ul class="mt-2 space-y-1">${medicalParsed.flags.slice(0,2).map(f => `<li class="text-xs" style="color:var(--error);">${f}</li>`).join('')}</ul>` : ''}
       </div>
       <div class="card p-4">
         <div class="flex items-center justify-between mb-2">
@@ -889,7 +894,7 @@ const UI = {
           ${scoreBadge(engScore)}
         </div>
         <p class="text-xs" style="color:var(--text-secondary);">${engagementParsed?.summary || engagementParsed?.rationale || 'Predicción completada'}</p>
-        ${engagementParsed?.suggestions?.length ? `<ul class="mt-2 space-y-1">${engagementParsed.suggestions.slice(0,2).map(s => `<li class="text-xs" style="color:var(--accent);">💡 ${s}</li>`).join('')}</ul>` : ''}
+        ${engagementParsed?.suggestions?.length ? `<ul class="mt-2 space-y-1">${engagementParsed.suggestions.slice(0,2).map(s => `<li class="text-xs" style="color:var(--accent);">${s}</li>`).join('')}</ul>` : ''}
       </div>
     `;
 
@@ -903,7 +908,7 @@ const UI = {
     modal.id = 'add-cal-modal';
     modal.innerHTML = `
       <div class="modal p-6 max-w-md w-full">
-        <h3 class="font-bold text-lg mb-4">📅 Agregar al calendario</h3>
+        <h3 class="font-bold text-lg mb-4">Agregar al calendario</h3>
         <div class="space-y-4">
           <div>
             <label class="label">Título</label>
@@ -994,7 +999,7 @@ const UI = {
       <button id="cal-next" class="btn-ghost px-4 py-2">Siguiente →</button>
     </div>
     <div class="flex gap-3">
-      <button id="cal-generate-plan" class="btn-ghost px-4 py-2 text-sm">🤖 Generar plan IA</button>
+      <button id="cal-generate-plan" class="btn-ghost px-4 py-2 text-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar plan IA</button>
       <button id="cal-add-item" class="btn-primary px-4 py-2 text-sm">+ Agregar</button>
     </div>
   </div>
@@ -1041,10 +1046,10 @@ const UI = {
   <div id="cal-plan-output-section" class="hidden">
     <div class="card p-5">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold flex items-center gap-2"><span>🤖</span> Plan generado por IA</h3>
+        <h3 class="font-semibold">Plan generado por IA</h3>
         <div class="flex gap-2">
-          <button id="cal-copy-plan" class="btn-ghost px-3 py-1 text-xs">📋 Copiar</button>
-          <button id="cal-close-plan" class="btn-ghost px-3 py-1 text-xs">✕</button>
+          <button id="cal-copy-plan" class="btn-ghost px-3 py-1 text-xs"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+          <button id="cal-close-plan" class="btn-ghost px-3 py-1 text-xs"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
       <div id="cal-plan-output" class="content-output" style="max-height:400px;"></div>
@@ -1084,7 +1089,7 @@ const UI = {
 
     document.getElementById('cal-generate-plan')?.addEventListener('click', async () => {
       const btn = document.getElementById('cal-generate-plan');
-      btn.textContent = '⏳ Generando...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando...';
       btn.disabled = true;
       const section = document.getElementById('cal-plan-output-section');
       const outputEl = document.getElementById('cal-plan-output');
@@ -1098,13 +1103,13 @@ const UI = {
           outputEl.scrollTop = outputEl.scrollHeight;
         });
         showToast('Plan generado. ¡Revisa el panel de abajo!', 'success');
-        btn.textContent = '✅ Plan generado';
+        btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Plan generado';
         document.getElementById('cal-copy-plan')?.addEventListener('click', () => copyToClipboard(planText, 'Plan de contenido'));
         document.getElementById('cal-close-plan')?.addEventListener('click', () => section.classList.add('hidden'));
       } catch (err) {
         outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast('Error: ' + err.message, 'error');
-        btn.textContent = '🤖 Generar plan IA';
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar plan IA';
         btn.disabled = false;
       }
     });
@@ -1119,7 +1124,7 @@ const UI = {
       <div class="modal p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-bold text-lg">${item.title || item.topic || 'Elemento de calendario'}</h3>
-          <button id="modal-close" class="btn-ghost px-3 py-1 text-sm">✕</button>
+          <button id="modal-close" class="btn-ghost px-3 py-1 text-sm"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex items-center gap-2 mb-4">
           ${platformBadge(item.platform || 'Instagram')}
@@ -1137,7 +1142,7 @@ const UI = {
             <option value="published" ${item.status === 'published' ? 'selected' : ''}>Publicado</option>
           </select>
           <button id="item-update-status" class="btn-primary px-4 py-2 text-sm">Actualizar estado</button>
-          <button id="item-delete" class="btn-ghost px-4 py-2 text-sm" style="color:var(--error);">🗑️ Eliminar</button>
+          <button id="item-delete" class="btn-ghost px-4 py-2 text-sm" style="color:var(--error);"><i class="fa-regular fa-trash-can mr-1"></i>Eliminar</button>
         </div>
       </div>
     `;
@@ -1202,10 +1207,10 @@ const UI = {
   <!-- Content grid -->
   ${filtered.length === 0 ? `
     <div class="card p-12 text-center">
-      <div class="text-5xl mb-3">📚</div>
+      <i class="fa-solid fa-book-open fa-3x mb-3" style="display:block;color:var(--text-tertiary);"></i>
       <h3 class="font-semibold mb-2">No hay contenido aquí</h3>
       <p class="text-sm mb-4" style="color:var(--text-secondary);">${search ? 'No se encontraron resultados para tu búsqueda.' : 'Genera tu primer contenido para empezar.'}</p>
-      ${!search ? `<button onclick="navigate('generator')" class="btn-primary px-6 py-2 text-sm">✨ Generar contenido</button>` : ''}
+      ${!search ? `<button onclick="navigate('generator')" class="btn-primary px-6 py-2 text-sm">Generar contenido</button>` : ''}
     </div>
   ` : `
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1224,8 +1229,8 @@ const UI = {
           <div class="flex items-center justify-between">
             <span class="text-xs" style="color:var(--text-tertiary);">${this.timeAgo(d.createdAt)}</span>
             <div class="flex gap-2">
-              <button class="btn-ghost px-2 py-1 text-xs copy-draft" data-content="${this.escAttr(d.content)}">📋</button>
-              <button class="btn-ghost px-2 py-1 text-xs delete-draft" data-id="${d.id}" style="color:var(--error);">🗑️</button>
+              <button class="btn-ghost px-2 py-1 text-xs copy-draft" data-content="${this.escAttr(d.content)}"><i class="fa-regular fa-copy"></i></button>
+              <button class="btn-ghost px-2 py-1 text-xs delete-draft" data-id="${d.id}" style="color:var(--error);"><i class="fa-regular fa-trash-can"></i></button>
             </div>
           </div>
         </div>
@@ -1296,7 +1301,7 @@ const UI = {
             </div>
             <h3 class="font-bold text-lg">${draft.title || draft.topic || 'Sin título'}</h3>
           </div>
-          <button class="modal-close btn-ghost px-3 py-1 text-sm">✕</button>
+          <button class="modal-close btn-ghost px-3 py-1 text-sm"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="content-output mb-4" style="max-height:400px;">${draft.content || 'Sin contenido'}</div>
         <div class="flex gap-3 flex-wrap">
@@ -1307,8 +1312,8 @@ const UI = {
             <option value="published" ${draft.status === 'published' ? 'selected' : ''}>Publicado</option>
           </select>
           <button id="update-draft-status" class="btn-primary px-4 py-2 text-sm">Actualizar</button>
-          <button onclick="copyToClipboard(${JSON.stringify(draft.content || '')}, 'Contenido')" class="btn-ghost px-4 py-2 text-sm">📋 Copiar</button>
-          <button onclick="downloadTxt(${JSON.stringify(draft.content || '')}, 'fisiobox-draft')" class="btn-ghost px-4 py-2 text-sm">⬇️ Descargar</button>
+          <button onclick="copyToClipboard(${JSON.stringify(draft.content || '')}, 'Contenido')" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+          <button onclick="downloadTxt(${JSON.stringify(draft.content || '')}, 'fisiobox-draft')" class="btn-ghost px-4 py-2 text-sm"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
         </div>
       </div>
     `;
@@ -1335,7 +1340,7 @@ const UI = {
 <div class="space-y-6">
   <!-- Input form -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>📊</span> Análisis de rendimiento con IA</h3>
+    <h3 class="font-bold text-lg mb-2">Análisis de rendimiento con IA</h3>
     <p class="text-sm mb-4" style="color:var(--text-secondary);">Pega tus métricas de Instagram, Facebook o cualquier plataforma y recibe recomendaciones accionables.</p>
     <div class="space-y-4">
       <div>
@@ -1354,18 +1359,18 @@ Fecha: 15 marzo 2025
 
 Puedes pegar datos de múltiples posts..."></textarea>
       </div>
-      <button id="run-analytics" class="btn-primary px-6 py-3 font-semibold">📊 Analizar con IA</button>
+      <button id="run-analytics" class="btn-primary px-6 py-3 font-semibold">Analizar con IA</button>
     </div>
   </div>
 
   <!-- Output -->
   <div id="analytics-output-section" class="hidden">
     <div class="card p-6">
-      <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><span>🎯</span> Análisis y recomendaciones</h3>
+      <h3 class="font-bold text-lg mb-4">Análisis y recomendaciones</h3>
       <div id="analytics-output" class="content-output" style="min-height:300px;"></div>
       <div class="flex gap-3 mt-4">
-        <button id="copy-analytics" class="btn-ghost px-5 py-2 text-sm">📋 Copiar análisis</button>
-        <button id="save-analytics" class="btn-ghost px-5 py-2 text-sm">💾 Guardar reporte</button>
+        <button id="copy-analytics" class="btn-ghost px-5 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar análisis</button>
+        <button id="save-analytics" class="btn-ghost px-5 py-2 text-sm"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar reporte</button>
       </div>
     </div>
   </div>
@@ -1373,7 +1378,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- Historical reports -->
   ${analyticsData.length > 0 ? `
     <div class="card p-6">
-      <h3 class="font-semibold mb-4 flex items-center gap-2"><span>📁</span> Reportes anteriores</h3>
+      <h3 class="font-semibold mb-4">Reportes anteriores</h3>
       <div class="space-y-3">
         ${analyticsData.slice(0, 5).map(entry => `
           <div class="flex items-center justify-between p-3 rounded-lg" style="background:var(--bg-base);border:1px solid var(--glass-border);">
@@ -1396,7 +1401,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
       const metricsText = document.getElementById('analytics-input')?.value?.trim();
       if (!metricsText) { showToast('Por favor ingresa las métricas', 'warning'); return; }
       const btn = document.getElementById('run-analytics');
-      btn.textContent = '⏳ Analizando...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Analizando...';
       btn.disabled = true;
 
       const section = document.getElementById('analytics-output-section');
@@ -1421,7 +1426,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast(err.message, 'error');
       } finally {
-        btn.textContent = '📊 Analizar con IA';
+        btn.textContent = 'Analizar con IA';
         btn.disabled = false;
       }
     });
@@ -1436,7 +1441,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 <div class="space-y-6">
   <!-- Header -->
   <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
-    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>🧠</span> Centro de Inteligencia</h2>
+    <h2 class="text-xl font-bold mb-2">Centro de Inteligencia</h2>
     <p style="color:var(--text-secondary);">Análisis competitivo, tendencias de contenido y oportunidades de mercado para FisioBox.</p>
   </div>
 
@@ -1445,7 +1450,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- Listener Agent -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(10,132,255,0.15);">🎙️</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(10,132,255,0.15);"><i class="fa-solid fa-microphone" style="color:var(--accent);"></i></div>
         <div>
           <h3 class="font-semibold">Agente Escucha</h3>
           <p class="text-xs" style="color:var(--text-secondary);">Oportunidades de contenido semanales</p>
@@ -1456,7 +1461,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         <input id="listener-context" class="input mb-3" type="text"
           placeholder="Ej: temporada lluviosa, inicio clases, torneo..." />
         <button id="run-listener" class="btn-primary w-full py-2 text-sm font-medium">
-          🎙️ Generar reporte semanal
+          Generar reporte semanal
         </button>
       </div>
       <div id="listener-output" class="mt-3 content-output hidden" style="max-height:300px;"></div>
@@ -1465,7 +1470,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- Competitor Intel -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,69,58,0.15);">🔭</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,69,58,0.15);"><i class="fa-solid fa-chart-line" style="color:var(--error);"></i></div>
         <div>
           <h3 class="font-semibold">Inteligencia Competitiva</h3>
           <p class="text-xs" style="color:var(--text-secondary);">Análisis del mercado de fisioterapia en CR</p>
@@ -1476,7 +1481,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         <input id="competitor-context" class="input mb-3" type="text"
           placeholder="Ej: nueva clínica abierta en Escazú, tendencia en redes..." />
         <button id="run-competitor" class="btn-primary w-full py-2 text-sm font-medium">
-          🔭 Analizar competencia
+          Analizar competencia
         </button>
       </div>
       <div id="competitor-output" class="mt-3 content-output hidden" style="max-height:300px;"></div>
@@ -1485,7 +1490,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- SEO Agent -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(48,209,88,0.15);">🔍</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(48,209,88,0.15);"><i class="fa-solid fa-magnifying-glass" style="color:var(--success);"></i></div>
         <div>
           <h3 class="font-semibold">Agente SEO</h3>
           <p class="text-xs" style="color:var(--text-secondary);">Brief SEO + Google Business para Escazú</p>
@@ -1505,7 +1510,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
           </select>
         </div>
         <button id="run-seo" class="btn-primary w-full py-2 text-sm font-medium">
-          🔍 Generar estrategia SEO
+          Generar estrategia SEO
         </button>
       </div>
       <div id="seo-output" class="mt-3 content-output hidden" style="max-height:300px;"></div>
@@ -1514,7 +1519,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- RTP Specialist -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,107,53,0.15);">🏃</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,107,53,0.15);"><i class="fa-solid fa-person-running" style="color:var(--accent-orange);"></i></div>
         <div>
           <h3 class="font-semibold">Especialista RTP</h3>
           <p class="text-xs" style="color:var(--text-secondary);">Retorno al Deporte — contenido especializado</p>
@@ -1551,7 +1556,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
           </select>
         </div>
         <button id="run-rtp" class="btn-orange w-full py-2 text-sm font-semibold">
-          🏃 Generar contenido RTP
+          Generar contenido RTP
         </button>
       </div>
       <div id="rtp-output" class="mt-3 content-output hidden" style="max-height:300px;"></div>
@@ -1567,8 +1572,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
       document.getElementById(btnId)?.addEventListener('click', async () => {
         const btn = document.getElementById(btnId);
         const outputEl = document.getElementById(outputId);
+        const originalHTML = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = btn.innerHTML.replace(/^[^ ]+ /, '⏳ ');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Procesando...';
         outputEl.classList.remove('hidden');
         outputEl.innerHTML = '<span class="loading-dots">Procesando</span>';
         try {
@@ -1581,7 +1587,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
           showToast(err.message, 'error');
         } finally {
           btn.disabled = false;
-          btn.innerHTML = btn.innerHTML.replace('⏳ ', '✅ ');
+          btn.innerHTML = originalHTML;
         }
       });
     };
@@ -1615,7 +1621,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 <div class="space-y-6">
   <!-- Header -->
   <div class="card p-6" style="background:linear-gradient(135deg,rgba(48,209,88,0.12),var(--glass-bg));">
-    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>💬</span> Secuencias de WhatsApp</h2>
+    <h2 class="text-xl font-bold mb-2">Secuencias de WhatsApp</h2>
     <p style="color:var(--text-secondary);">Genera mensajes de seguimiento para pacientes, listas para enviar por WhatsApp.</p>
   </div>
 
@@ -1651,26 +1657,26 @@ Puedes pegar datos de múltiples posts..."></textarea>
             placeholder="Ej: Atleta de 28 años, primera semana post-cirugía LCA, muy motivado para volver al deporte..."></textarea>
         </div>
         <button id="run-whatsapp" class="btn-primary w-full py-3 font-semibold">
-          💬 Generar secuencia
+          Generar secuencia
         </button>
       </div>
       <div id="wa-output" class="mt-4 content-output hidden" style="max-height:400px;"></div>
       <div id="wa-actions" class="hidden mt-3 flex gap-3 flex-wrap">
-        <button id="wa-copy" class="btn-primary px-4 py-2 text-sm">📋 Copiar</button>
-        <button id="wa-save" class="btn-ghost px-4 py-2 text-sm">💾 Guardar</button>
-        <button id="wa-download" class="btn-ghost px-4 py-2 text-sm">⬇️ Descargar</button>
+        <button id="wa-copy" class="btn-primary px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+        <button id="wa-save" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar</button>
+        <button id="wa-download" class="btn-ghost px-4 py-2 text-sm"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
       </div>
     </div>
 
     <!-- Saved sequences -->
     <div class="card p-6">
       <h3 class="font-semibold mb-4 flex items-center justify-between">
-        <span>📁 Secuencias guardadas</span>
+        <span>Secuencias guardadas</span>
         <span class="text-xs px-2 py-1 rounded" style="background:var(--glass-border);color:var(--text-secondary);">${sequences.length}</span>
       </h3>
       ${sequences.length === 0 ? `
         <div class="text-center py-8" style="color:var(--text-tertiary);">
-          <div class="text-4xl mb-2">💬</div>
+          <i class="fa-brands fa-whatsapp fa-2x mb-3" style="display:block;color:var(--text-tertiary);"></i>
           <p class="text-sm">No hay secuencias guardadas.</p>
         </div>
       ` : `
@@ -1690,7 +1696,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
               </p>
               <div class="flex gap-2">
                 <button class="btn-ghost px-3 py-1 text-xs wa-view" data-id="${seq.id}">Ver</button>
-                <button class="btn-ghost px-3 py-1 text-xs" onclick="copyToClipboard(${JSON.stringify(seq.content || '')}, 'Secuencia')">📋</button>
+                <button class="btn-ghost px-3 py-1 text-xs" onclick="copyToClipboard(${JSON.stringify(seq.content || '')}, 'Secuencia')"><i class="fa-regular fa-copy"></i></button>
               </div>
             </div>
           `).join('')}
@@ -1708,7 +1714,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
       const btn = document.getElementById('run-whatsapp');
       const outputEl = document.getElementById('wa-output');
       const actionsEl = document.getElementById('wa-actions');
-      btn.textContent = '⏳ Generando...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando...';
       btn.disabled = true;
       outputEl.classList.remove('hidden');
       outputEl.innerHTML = '<span class="loading-dots">Generando secuencia</span>';
@@ -1746,7 +1752,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast(err.message, 'error');
       } finally {
-        btn.textContent = '💬 Generar secuencia';
+        btn.textContent = 'Generar secuencia';
         btn.disabled = false;
       }
     });
@@ -1761,12 +1767,12 @@ Puedes pegar datos de múltiples posts..."></textarea>
           <div class="modal p-6">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-bold">${seq.sequenceType || 'Secuencia WhatsApp'}</h3>
-              <button class="modal-close btn-ghost px-3 py-1 text-sm">✕</button>
+              <button class="modal-close btn-ghost px-3 py-1 text-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="content-output mb-4" style="max-height:400px;">${seq.content || ''}</div>
             <div class="flex gap-3">
-              <button onclick="copyToClipboard(${JSON.stringify(seq.content || '')}, 'Secuencia')" class="btn-primary px-4 py-2 text-sm">📋 Copiar</button>
-              <button onclick="downloadTxt(${JSON.stringify(seq.content || '')}, 'wa-secuencia')" class="btn-ghost px-4 py-2 text-sm">⬇️ Descargar</button>
+              <button onclick="copyToClipboard(${JSON.stringify(seq.content || '')}, 'Secuencia')" class="btn-primary px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+              <button onclick="downloadTxt(${JSON.stringify(seq.content || '')}, 'wa-secuencia')" class="btn-ghost px-4 py-2 text-sm"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
             </div>
           </div>
         `;
@@ -1789,7 +1795,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <div class="card p-6" style="background:linear-gradient(135deg,rgba(255,107,53,0.12),var(--glass-bg));">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
-        <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>🚀</span> Constructor de Campañas</h2>
+        <h2 class="text-xl font-bold mb-2">Constructor de Campañas</h2>
         <p style="color:var(--text-secondary);">Crea campañas completas con concepto, plan semanal, piezas de contenido y anuncios.</p>
       </div>
       <button id="new-campaign-btn" class="btn-orange px-5 py-2 font-semibold">+ Nueva campaña</button>
@@ -1846,16 +1852,16 @@ Puedes pegar datos de múltiples posts..."></textarea>
     </div>
     <div class="flex gap-3 mt-5">
       <button id="cancel-campaign" class="btn-ghost px-5 py-3">Cancelar</button>
-      <button id="build-campaign" class="btn-orange px-8 py-3 font-semibold">🚀 Construir campaña completa</button>
+      <button id="build-campaign" class="btn-orange px-8 py-3 font-semibold">Construir campaña completa</button>
     </div>
   </div>
 
   <!-- Progress indicator -->
   <div id="campaign-progress" class="card p-6 hidden">
-    <h3 class="font-semibold mb-4 flex items-center gap-2"><span>⏳</span> Construyendo campaña...</h3>
+    <h3 class="font-semibold mb-4 flex items-center gap-2"><i class="fa-solid fa-spinner fa-spin"></i> Construyendo campaña...</h3>
     <div id="progress-label" class="text-sm mb-3" style="color:var(--text-secondary);"></div>
     <div class="progress-bar">
-      <div id="camp-progress-fill" class="progress-fill" style="width:0%;background:linear-gradient(90deg,#f97316,#0ea5e9);"></div>
+      <div id="camp-progress-fill" class="progress-fill" style="width:0%;background:linear-gradient(90deg,var(--accent-orange),var(--accent));"></div>
     </div>
   </div>
 
@@ -1865,7 +1871,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- Saved campaigns -->
   ${campaigns.length > 0 ? `
     <div class="card p-6">
-      <h3 class="font-semibold mb-4 flex items-center gap-2"><span>📁</span> Campañas guardadas</h3>
+      <h3 class="font-semibold mb-4">Campañas guardadas</h3>
       <div class="space-y-3">
         ${campaigns.map(camp => `
           <div class="p-4 rounded-lg flex items-center justify-between flex-wrap gap-3" style="background:var(--bg-base);border:1px solid var(--glass-border);">
@@ -1904,7 +1910,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
       const brief = document.getElementById('camp-brief')?.value || '';
 
       btn.disabled = true;
-      btn.textContent = '⏳ Construyendo...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Construyendo...';
 
       document.getElementById('campaign-builder').classList.add('hidden');
       const progress = document.getElementById('campaign-progress');
@@ -1926,14 +1932,11 @@ Puedes pegar datos de múltiples posts..."></textarea>
         const stepLabels = ['Concepto de campaña', 'Plan semana a semana', 'Piezas de contenido', 'Copy de anuncios'];
         resultDiv.innerHTML = results.map((r, i) => `
           <div class="card p-5">
-            <h3 class="font-semibold mb-3 flex items-center gap-2">
-              <span class="text-lg">${['🎯','📅','✍️','📣'][i] || '📄'}</span>
-              ${stepLabels[i] || `Parte ${i+1}`}
-            </h3>
+            <h3 class="font-semibold mb-3">${stepLabels[i] || `Parte ${i+1}`}</h3>
             <div class="content-output" style="max-height:400px;">${r}</div>
             <div class="flex gap-3 mt-3">
-              <button onclick="copyToClipboard(${JSON.stringify(r)}, '${stepLabels[i]}')" class="btn-ghost px-4 py-2 text-sm">📋 Copiar</button>
-              <button onclick="downloadTxt(${JSON.stringify(r)}, 'fisiobox-campana-parte${i+1}')" class="btn-ghost px-4 py-2 text-sm">⬇️ Descargar</button>
+              <button onclick="copyToClipboard(${JSON.stringify(r)}, '${stepLabels[i]}')" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+              <button onclick="downloadTxt(${JSON.stringify(r)}, 'fisiobox-campana-parte${i+1}')" class="btn-ghost px-4 py-2 text-sm"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
             </div>
           </div>
         `).join('');
@@ -1944,7 +1947,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         progress.classList.add('hidden');
         showToast('Error: ' + err.message, 'error');
       } finally {
-        btn.textContent = '🚀 Construir campaña completa';
+        btn.textContent = 'Construir campaña completa';
         btn.disabled = false;
       }
     });
@@ -1979,7 +1982,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- API Key -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>🔑</span> Clave de API de Anthropic</h3>
+    <h3 class="font-bold text-lg mb-2">Clave de API de Anthropic</h3>
     <p class="text-sm mb-4" style="color:var(--text-secondary);">Necesitas una clave de API de Anthropic para usar los agentes de IA. Tu clave se almacena localmente en tu navegador.</p>
     <div class="flex gap-3">
       <input id="api-key-input" class="input flex-1" type="password"
@@ -1987,12 +1990,12 @@ Puedes pegar datos de múltiples posts..."></textarea>
         value="${apiKey ? apiKey.substring(0, 8) + '••••••••••••••••••••' : ''}" />
       <button id="save-api-key" class="btn-primary px-6 py-2 font-semibold flex-shrink-0">Guardar</button>
     </div>
-    ${apiKey ? `<p class="text-xs mt-2" style="color:var(--success);">✅ Clave configurada</p>` : `<p class="text-xs mt-2" style="color:var(--warning);">⚠️ Sin clave configurada</p>`}
+    ${apiKey ? `<p class="text-xs mt-2" style="color:var(--success);"><i class="fa-solid fa-circle-check mr-1"></i>Clave configurada</p>` : `<p class="text-xs mt-2" style="color:var(--warning);"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Sin clave configurada</p>`}
   </div>
 
   <!-- Brand tone sliders -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>🎨</span> Tono de marca</h3>
+    <h3 class="font-bold text-lg mb-2">Tono de marca</h3>
     <p class="text-sm mb-5" style="color:var(--text-secondary);">Configura cómo debe sonar FisioBox en el contenido generado.</p>
     <div class="space-y-6">
 
@@ -2037,29 +2040,29 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- Content pillars -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>📊</span> Distribución de pilares de contenido</h3>
+    <h3 class="font-bold text-lg mb-2">Distribución de pilares de contenido</h3>
     <p class="text-sm mb-5" style="color:var(--text-secondary);">Define qué porcentaje de tu contenido dedicarás a cada pilar. El total debe sumar 100%.</p>
     <div class="space-y-4">
       ${[
-        { key: 'educativo',     label: 'Educativo',      color: '#0ea5e9', desc: 'Consejos, ejercicios, anatomía' },
-        { key: 'promocional',   label: 'Promocional',    color: '#f97316', desc: 'Servicios, precios, ofertas' },
-        { key: 'prueba_social', label: 'Prueba Social',  color: '#22c55e', desc: 'Testimonios, casos de éxito' },
-        { key: 'cultura',       label: 'Cultura clínica',color: '#a855f7', desc: 'Equipo, instalaciones, detrás de escenas' },
-        { key: 'comunidad',     label: 'Comunidad',      color: '#06b6d4', desc: 'Eventos, deporte local, comunidad CR' },
+        { key: 'educativo',     label: 'Educativo',      desc: 'Consejos, ejercicios, anatomía' },
+        { key: 'promocional',   label: 'Promocional',    desc: 'Servicios, precios, ofertas' },
+        { key: 'prueba_social', label: 'Prueba Social',  desc: 'Testimonios, casos de éxito' },
+        { key: 'cultura',       label: 'Cultura clínica',desc: 'Equipo, instalaciones, detrás de escenas' },
+        { key: 'comunidad',     label: 'Comunidad',      desc: 'Eventos, deporte local, comunidad CR' },
       ].map(p => `
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="label m-0" style="color:${p.color};">${p.label}</label>
+            <label class="label m-0">${p.label}</label>
             <div class="flex items-center gap-2">
               <input id="pillar-${p.key}" type="number" min="0" max="100"
                 value="${bs.pillars[p.key] || 0}"
-                class="input text-center" style="width:70px;padding:6px;font-size:1rem;font-weight:bold;color:${p.color};" />
+                class="input text-center" style="width:70px;padding:6px;font-size:1rem;font-weight:bold;color:var(--accent);" />
               <span class="text-sm" style="color:var(--text-tertiary);">%</span>
             </div>
           </div>
           <p class="text-xs mb-2" style="color:var(--text-tertiary);">${p.desc}</p>
           <div class="progress-bar">
-            <div class="progress-fill" style="width:${bs.pillars[p.key] || 0}%;background:${p.color};"></div>
+            <div class="progress-fill" style="width:${bs.pillars[p.key] || 0}%;background:var(--accent);"></div>
           </div>
         </div>
       `).join('')}
@@ -2069,7 +2072,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- Vocabulary -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>📖</span> Vocabulario de marca</h3>
+    <h3 class="font-bold text-lg mb-2">Vocabulario de marca</h3>
     <div class="space-y-4">
       <div>
         <label class="label">Frases preferidas (una por línea)</label>
@@ -2085,7 +2088,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- Medical disclaimers -->
   <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>⚕️</span> Avisos médicos</h3>
+    <h3 class="font-bold text-lg mb-2">Avisos médicos</h3>
     <div class="space-y-4">
       <div>
         <label class="label">Disclaimer médico principal</label>
@@ -2101,10 +2104,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- Danger zone -->
   <div class="card p-6" style="border-color:var(--error);">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2" style="color:var(--error);"><span>⚠️</span> Zona de peligro</h3>
+    <h3 class="font-bold text-lg mb-2" style="color:var(--error);">Zona de peligro</h3>
     <p class="text-sm mb-4" style="color:var(--text-secondary);">Estas acciones son irreversibles. Se eliminarán todos los datos almacenados localmente.</p>
     <button id="clear-all-data" class="btn-ghost px-6 py-2 font-semibold" style="border-color:var(--error);color:var(--error);">
-      🗑️ Eliminar todos los datos
+      <i class="fa-regular fa-trash-can mr-1"></i>Eliminar todos los datos
     </button>
   </div>
 

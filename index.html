@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FisioBox AI Marketing Suite</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -31,16 +32,14 @@
       --glass-shadow-hover:  0 16px 48px rgba(0,0,0,0.44), 0 4px 12px rgba(0,0,0,0.20);
       --glass-highlight:     inset 0 1px 0 rgba(255,255,255,0.09);
       --accent:              #0a84ff;
-      --accent-hover:        #3d9dff;
-      --accent-glow:         rgba(10,132,255,0.28);
-      --accent-orange:       #ff6b35;
-      --accent-orange-hover: #ff8655;
-      --accent-orange-glow:  rgba(255,107,53,0.28);
+      --accent-hover:        #338fff;
+      --accent-glow:         rgba(10,132,255,0.22);
+      --accent-orange:       #e0601c;
+      --accent-orange-hover: #f07030;
+      --accent-orange-glow:  rgba(224,96,28,0.20);
       --success:             #30d158;
       --warning:             #ffd60a;
       --error:               #ff453a;
-      --purple:              #bf5af2;
-      --cyan:                #5ac8fa;
       --text-primary:        rgba(255,255,255,0.92);
       --text-secondary:      rgba(255,255,255,0.50);
       --text-tertiary:       rgba(255,255,255,0.28);
@@ -157,14 +156,15 @@
       border: none;
       cursor: pointer;
       border-radius: var(--radius-pill);
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: -0.01em;
       transition: all 220ms var(--ease);
     }
     .btn-primary:hover {
       background: var(--accent-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px var(--accent-glow);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--accent-glow);
     }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -176,13 +176,14 @@
       cursor: pointer;
       border-radius: var(--radius-pill);
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
+      letter-spacing: -0.01em;
       transition: all 220ms var(--ease);
     }
     .btn-orange:hover {
       background: var(--accent-orange-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px var(--accent-orange-glow);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--accent-orange-glow);
     }
     .btn-orange:active { transform: translateY(0); }
     .btn-orange:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
