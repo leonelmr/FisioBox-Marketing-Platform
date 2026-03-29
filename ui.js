@@ -70,49 +70,56 @@ const UI = {
     const viewContent = this.renderView(v);
     const sidebarOpen = App.sidebarOpen ? 'open' : '';
 
+    const themeIcon = (document.documentElement?.getAttribute('data-theme') !== 'light') ? '🌙' : '☀️';
     return `
 <div class="flex min-h-screen">
   <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 flex-shrink-0 flex flex-col ${sidebarOpen}" style="background:#0f2133;border-right:1px solid #1e3a52;min-height:100vh;position:fixed;top:0;left:0;height:100%;z-index:50;">
-    <div class="p-5 border-b" style="border-color:#1e3a52;">
+  <aside id="sidebar" class="sidebar-glass w-64 flex-shrink-0 flex flex-col ${sidebarOpen}"
+    style="min-height:100vh;position:fixed;top:0;left:0;height:100%;z-index:50;">
+    <div class="px-5 py-4" style="border-bottom:1px solid var(--glass-border);">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg" style="background:linear-gradient(135deg,#0ea5e9,#f97316);">🦴</div>
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+          style="background:linear-gradient(135deg,var(--accent),var(--accent-orange));box-shadow:0 4px 14px var(--accent-glow);">🦴</div>
         <div>
           <div class="sidebar-logo font-bold text-base">FisioBox</div>
-          <div class="text-xs" style="color:#475569;">AI Marketing Suite</div>
+          <div style="color:var(--text-tertiary);font-size:11px;letter-spacing:0.02em;">AI Marketing Suite</div>
         </div>
       </div>
     </div>
-    <nav class="flex-1 py-4 overflow-y-auto">
+    <nav class="flex-1 py-3 overflow-y-auto">
       ${this.navItems.map(item => `
         <button onclick="navigate('${item.id}')"
-          class="nav-item w-full flex items-center gap-3 px-5 py-3 text-sm text-left ${v === item.id ? 'active' : ''}"
-          style="color:${v === item.id ? '#e2e8f0' : '#94a3b8'};">
-          <span class="text-base">${item.icon}</span>
-          <span>${item.label}</span>
+          class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left ${v === item.id ? 'active' : ''}"
+          style="color:${v === item.id ? 'var(--text-primary)' : 'var(--text-secondary)'};font-weight:${v === item.id ? '500' : '400'};">
+          <span style="font-size:15px;width:20px;text-align:center;flex-shrink:0;">${item.icon}</span>
+          <span style="letter-spacing:-0.01em;">${item.label}</span>
         </button>
       `).join('')}
     </nav>
-    <div class="p-4 border-t" style="border-color:#1e3a52;">
-      <div class="text-xs text-center" style="color:#334155;">FisioBox © 2025 · Escazú, CR</div>
+    <div class="px-4 py-3" style="border-top:1px solid var(--glass-border);">
+      <div class="text-xs text-center" style="color:var(--text-tertiary);letter-spacing:0.03em;">FisioBox © 2025 · Escazú, CR</div>
     </div>
   </aside>
 
   <!-- Main content -->
   <div id="main-content" class="flex-1 flex flex-col min-h-screen" style="margin-left:256px;">
     <!-- Top bar -->
-    <header class="flex items-center justify-between px-6 py-4 border-b sticky top-0 z-30" style="background:#0d1b2a;border-color:#1e3a52;">
+    <header class="header-glass flex items-center justify-between px-6 py-3 sticky top-0 z-30">
       <div class="flex items-center gap-4">
-        <button id="sidebar-toggle" class="btn-ghost p-2 text-lg md:hidden">☰</button>
-        <h1 class="text-lg font-semibold" style="color:#e2e8f0;">${this.navItems.find(n => n.id === v)?.label || ''}</h1>
+        <button id="sidebar-toggle" class="btn-ghost p-2 text-base md:hidden">☰</button>
+        <h1 style="font-size:17px;font-weight:600;color:var(--text-primary);letter-spacing:-0.02em;">
+          ${this.navItems.find(n => n.id === v)?.label || ''}
+        </h1>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" id="theme-toggle" class="btn-ghost px-3 py-2" style="font-size:15px;"
+          title="Cambiar tema">${themeIcon}</button>
         <button onclick="navigate('generator')" class="btn-orange px-4 py-2 text-sm font-semibold">✨ Generar</button>
       </div>
     </header>
 
     <!-- Page content -->
-    <main class="flex-1 p-6 fade-in">
+    <main class="flex-1 p-6 fade-in" style="position:relative;z-index:1;">
       ${viewContent}
     </main>
   </div>
@@ -195,12 +202,12 @@ const UI = {
     return `
 <div class="space-y-6">
   <!-- Welcome banner -->
-  <div class="card p-6" style="background:linear-gradient(135deg,#152639,#0f2133);border-color:#1e3a52;">
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
         <h2 class="text-2xl font-bold mb-1">Bienvenido a FisioBox AI 🦴</h2>
-        <p style="color:#94a3b8;">Suite de marketing inteligente para fisioterapia deportiva · Escazú, Costa Rica</p>
-        <p class="text-sm mt-1" style="color:#475569;">${today.toLocaleDateString('es-CR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
+        <p style="color:var(--text-secondary);">Suite de marketing inteligente para fisioterapia deportiva · Escazú, Costa Rica</p>
+        <p class="text-sm mt-1" style="color:var(--text-tertiary);">${today.toLocaleDateString('es-CR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
       </div>
       <button onclick="navigate('generator')" class="btn-orange px-6 py-3 font-semibold text-base">✨ Crear contenido</button>
     </div>
@@ -212,8 +219,8 @@ const UI = {
       <div class="card p-4 text-center">
         <div class="text-2xl mb-1">${s.icon}</div>
         <div class="text-3xl font-bold mb-1" style="color:${s.color};">${s.value}</div>
-        <div class="text-xs font-semibold mb-1" style="color:#e2e8f0;">${s.label}</div>
-        <div class="text-xs" style="color:#475569;">${s.sub}</div>
+        <div class="text-xs font-semibold mb-1" style="color:var(--text-primary);">${s.label}</div>
+        <div class="text-xs" style="color:var(--text-tertiary);">${s.sub}</div>
       </div>
     `).join('')}
   </div>
@@ -237,20 +244,20 @@ const UI = {
         <button onclick="navigate('library')" class="text-xs btn-ghost px-3 py-1">Ver todos</button>
       </div>
       ${recentDrafts.length === 0 ? `
-        <div class="text-center py-8" style="color:#475569;">
+        <div class="text-center py-8" style="color:var(--text-tertiary);">
           <div class="text-4xl mb-2">📄</div>
           <p class="text-sm">No hay borradores aún.</p>
           <button onclick="navigate('generator')" class="btn-primary px-4 py-2 text-sm mt-3">Crear primero</button>
         </div>
       ` : recentDrafts.map(d => `
-        <div class="flex items-center gap-3 py-3 border-b" style="border-color:#1e3a52;">
+        <div class="flex items-center gap-3 py-3 border-b" style="border-color:var(--glass-border);">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               ${platformBadge(d.platform || 'Blog')}
               <span class="pill status-${d.status || 'draft'} text-xs">${this.statusLabel(d.status)}</span>
             </div>
             <p class="text-sm font-medium truncate">${d.title || d.topic || 'Sin título'}</p>
-            <p class="text-xs" style="color:#475569;">${this.timeAgo(d.createdAt)}</p>
+            <p class="text-xs" style="color:var(--text-tertiary);">${this.timeAgo(d.createdAt)}</p>
           </div>
           <button onclick="UI.openDraftModal('${d.id}')" class="btn-ghost px-3 py-1 text-xs flex-shrink-0">Ver</button>
         </div>
@@ -264,22 +271,22 @@ const UI = {
         <button onclick="navigate('calendar')" class="text-xs btn-ghost px-3 py-1">Ver calendario</button>
       </div>
       ${upcoming.length === 0 ? `
-        <div class="text-center py-8" style="color:#475569;">
+        <div class="text-center py-8" style="color:var(--text-tertiary);">
           <div class="text-4xl mb-2">📅</div>
           <p class="text-sm">No hay publicaciones programadas esta semana.</p>
           <button onclick="navigate('calendar')" class="btn-primary px-4 py-2 text-sm mt-3">Planificar</button>
         </div>
       ` : upcoming.map(item => `
-        <div class="flex items-center gap-3 py-3 border-b" style="border-color:#1e3a52;">
+        <div class="flex items-center gap-3 py-3 border-b" style="border-color:var(--glass-border);">
           <div class="text-center flex-shrink-0 w-10">
-            <div class="text-xs font-bold" style="color:#0ea5e9;">${new Date(item.date + 'T12:00:00').toLocaleDateString('es-CR', {day:'numeric'})}</div>
-            <div class="text-xs" style="color:#475569;">${new Date(item.date + 'T12:00:00').toLocaleDateString('es-CR', {month:'short'})}</div>
+            <div class="text-xs font-bold" style="color:var(--accent);">${new Date(item.date + 'T12:00:00').toLocaleDateString('es-CR', {day:'numeric'})}</div>
+            <div class="text-xs" style="color:var(--text-tertiary);">${new Date(item.date + 'T12:00:00').toLocaleDateString('es-CR', {month:'short'})}</div>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium truncate">${item.title || item.topic || 'Sin título'}</p>
             <div class="flex items-center gap-2 mt-1">
               ${platformBadge(item.platform || 'Instagram')}
-              <span class="text-xs" style="color:#475569;">${item.format || ''}</span>
+              <span class="text-xs" style="color:var(--text-tertiary);">${item.format || ''}</span>
             </div>
           </div>
         </div>
@@ -314,7 +321,7 @@ const UI = {
             <div class="flex items-center justify-between mb-1">
               <span class="text-sm">${item.label}</span>
               <div class="flex items-center gap-3">
-                <span class="text-xs" style="color:#475569;">Meta: ${item.target}%</span>
+                <span class="text-xs" style="color:var(--text-tertiary);">Meta: ${item.target}%</span>
                 <span class="text-sm font-semibold" style="color:${item.color};">${val}%</span>
               </div>
             </div>
@@ -371,17 +378,17 @@ const UI = {
         <div class="flex items-center ${i < steps.length - 1 ? 'flex-1' : ''}">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-              style="background:${i + 1 <= step ? 'linear-gradient(135deg,#0ea5e9,#f97316)' : '#1e3a52'};color:${i + 1 <= step ? 'white' : '#475569'};">
+              style="background:${i + 1 <= step ? 'linear-gradient(135deg,var(--accent),var(--accent-orange))' : 'var(--glass-border)'};color:${i + 1 <= step ? 'white' : 'var(--text-tertiary)'};">
               ${i + 1 < step ? '✓' : i + 1}
             </div>
-            <span class="text-sm hidden md:block" style="color:${i + 1 === step ? '#e2e8f0' : i + 1 < step ? '#0ea5e9' : '#475569'};">${s}</span>
+            <span class="text-sm hidden md:block" style="color:${i + 1 === step ? 'var(--text-primary)' : i + 1 < step ? 'var(--accent)' : 'var(--text-tertiary)'};">${s}</span>
           </div>
           ${i < steps.length - 1 ? `<div class="flex-1 mx-3 h-px" style="background:${i + 1 < step ? '#0ea5e9' : '#1e3a52'};"></div>` : ''}
         </div>
       `).join('')}
     </div>
     <div class="progress-bar mt-2">
-      <div class="progress-fill" style="width:${progressPct}%;background:linear-gradient(90deg,#0ea5e9,#f97316);"></div>
+      <div class="progress-fill" style="width:${progressPct}%;background:linear-gradient(90deg,var(--accent),var(--accent-orange));"></div>
     </div>
   </div>
 
@@ -408,15 +415,15 @@ const UI = {
     return `
 <div class="card p-6">
   <h2 class="text-xl font-bold mb-2">Elige la plataforma</h2>
-  <p class="text-sm mb-6" style="color:#94a3b8;">Selecciona dónde se publicará este contenido</p>
+  <p class="text-sm mb-6" style="color:var(--text-secondary);">Selecciona dónde se publicará este contenido</p>
   <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="platform-grid">
     ${this.platforms.map(p => `
       <button data-platform="${p.id}"
-        class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'ring-2 ring-orange-400' : ''}"
-        style="${selected === p.id ? 'border-color:#f97316;' : ''}">
+        class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'card-selected' : ''}"
+        style="${selected === p.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
         <div class="text-3xl mb-3">${p.icon}</div>
         <div class="font-semibold mb-1">${p.label}</div>
-        <div class="text-xs" style="color:#94a3b8;">${p.desc}</div>
+        <div class="text-xs" style="color:var(--text-secondary);">${p.desc}</div>
       </button>
     `).join('')}
   </div>
@@ -438,15 +445,15 @@ const UI = {
   <div class="flex items-center gap-3 mb-2">
     <h2 class="text-xl font-bold">Elige el formato</h2>
   </div>
-  <p class="text-sm mb-6" style="color:#94a3b8;">Selecciona el tipo de contenido para ${platform}</p>
+  <p class="text-sm mb-6" style="color:var(--text-secondary);">Selecciona el tipo de contenido para ${platform}</p>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="format-grid">
     ${formats.map(f => `
       <button data-format="${f.id}"
-        class="format-card card p-5 text-left transition-all hover:scale-105 ${selected === f.id ? 'ring-2 ring-orange-400' : ''}"
-        style="${selected === f.id ? 'border-color:#f97316;' : ''}">
+        class="format-card card p-5 text-left transition-all hover:scale-105 ${selected === f.id ? 'card-selected' : ''}"
+        style="${selected === f.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
         <div class="text-2xl mb-2">${f.icon}</div>
         <div class="font-semibold mb-1">${f.label}</div>
-        <div class="text-xs" style="color:#94a3b8;">${f.desc}</div>
+        <div class="text-xs" style="color:var(--text-secondary);">${f.desc}</div>
       </button>
     `).join('')}
   </div>
@@ -469,7 +476,7 @@ const UI = {
     <button id="step3-back" class="btn-ghost px-3 py-2 text-sm">← Atrás</button>
     <h2 class="text-xl font-bold">Detalles del contenido</h2>
   </div>
-  <p class="text-sm mb-6" style="color:#94a3b8;">Proporciona la información para generar el contenido</p>
+  <p class="text-sm mb-6" style="color:var(--text-secondary);">Proporciona la información para generar el contenido</p>
   <div class="space-y-5">
     <div>
       <label class="label">Tema principal *</label>
@@ -581,7 +588,7 @@ const UI = {
       <div class="flex items-center gap-2 mt-1">
         ${platformBadge(platform)}
         <span class="pill status-draft text-xs">${formatLabel}</span>
-        <span class="text-xs" style="color:#94a3b8;">${topic || ''}</span>
+        <span class="text-xs" style="color:var(--text-secondary);">${topic || ''}</span>
       </div>
     </div>
     <button id="step4-back" class="btn-ghost px-4 py-2 text-sm">← Nueva generación</button>
@@ -589,7 +596,7 @@ const UI = {
 
   <!-- Output area -->
   <div id="content-output" class="content-output mb-4" style="min-height:200px;">
-    <div class="flex items-center gap-3" style="color:#475569;">
+    <div class="flex items-center gap-3" style="color:var(--text-tertiary);">
       <span class="loading-dots">Generando contenido</span>
     </div>
   </div>
@@ -628,10 +635,10 @@ const UI = {
         App.generatorData.format = null;
         document.querySelectorAll('.platform-card').forEach(b => {
           b.style.borderColor = '';
-          b.classList.remove('ring-2', 'ring-orange-400');
+          b.classList.remove('card-selected');
         });
         btn.style.borderColor = '#f97316';
-        btn.classList.add('ring-2', 'ring-orange-400');
+        btn.classList.add('card-selected');
         document.getElementById('step1-next').disabled = false;
       });
     });
@@ -654,10 +661,10 @@ const UI = {
         App.generatorData.format = btn.dataset.format;
         document.querySelectorAll('.format-card').forEach(b => {
           b.style.borderColor = '';
-          b.classList.remove('ring-2', 'ring-orange-400');
+          b.classList.remove('card-selected');
         });
         btn.style.borderColor = '#f97316';
-        btn.classList.add('ring-2', 'ring-orange-400');
+        btn.classList.add('card-selected');
         document.getElementById('step2-next').disabled = false;
       });
     });
@@ -736,11 +743,11 @@ const UI = {
     circles.forEach((circle, i) => {
       const stepNum = i + 1;
       if (stepNum < step) {
-        circle.style.background = 'linear-gradient(135deg,#0ea5e9,#f97316)';
+        circle.style.background = 'linear-gradient(135deg,var(--accent),var(--accent-orange))';
         circle.style.color = 'white';
         circle.textContent = '✓';
       } else if (stepNum === step) {
-        circle.style.background = 'linear-gradient(135deg,#0ea5e9,#f97316)';
+        circle.style.background = 'linear-gradient(135deg,var(--accent),var(--accent-orange))';
         circle.style.color = 'white';
         circle.textContent = String(stepNum);
       } else {
@@ -789,7 +796,7 @@ const UI = {
         this.bindGenActionButtons(generatedText, platform, topic);
       }
     } catch (err) {
-      outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+      outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
       showToast(err.message, 'error');
     }
   },
@@ -865,24 +872,24 @@ const UI = {
           <span class="font-semibold text-sm">Voz de Marca</span>
           ${scoreBadge(brandScore)}
         </div>
-        <p class="text-xs" style="color:#94a3b8;">${brandParsed?.summary || brandParsed?.justification || 'Análisis completado'}</p>
-        ${brandParsed?.improvements?.length ? `<ul class="mt-2 space-y-1">${brandParsed.improvements.slice(0,2).map(i => `<li class="text-xs" style="color:#eab308;">• ${i}</li>`).join('')}</ul>` : ''}
+        <p class="text-xs" style="color:var(--text-secondary);">${brandParsed?.summary || brandParsed?.justification || 'Análisis completado'}</p>
+        ${brandParsed?.improvements?.length ? `<ul class="mt-2 space-y-1">${brandParsed.improvements.slice(0,2).map(i => `<li class="text-xs" style="color:var(--warning);">• ${i}</li>`).join('')}</ul>` : ''}
       </div>
       <div class="card p-4">
         <div class="flex items-center justify-between mb-2">
           <span class="font-semibold text-sm">Seguridad Médica</span>
           ${scoreBadge(medicalScore)}
         </div>
-        <p class="text-xs" style="color:#94a3b8;">${medicalParsed?.summary || medicalParsed?.verdict || 'Revisión completada'}</p>
-        ${medicalParsed?.flags?.length ? `<ul class="mt-2 space-y-1">${medicalParsed.flags.slice(0,2).map(f => `<li class="text-xs" style="color:#ef4444;">⚠️ ${f}</li>`).join('')}</ul>` : ''}
+        <p class="text-xs" style="color:var(--text-secondary);">${medicalParsed?.summary || medicalParsed?.verdict || 'Revisión completada'}</p>
+        ${medicalParsed?.flags?.length ? `<ul class="mt-2 space-y-1">${medicalParsed.flags.slice(0,2).map(f => `<li class="text-xs" style="color:var(--error);">⚠️ ${f}</li>`).join('')}</ul>` : ''}
       </div>
       <div class="card p-4">
         <div class="flex items-center justify-between mb-2">
           <span class="font-semibold text-sm">Engagement Predicho</span>
           ${scoreBadge(engScore)}
         </div>
-        <p class="text-xs" style="color:#94a3b8;">${engagementParsed?.summary || engagementParsed?.rationale || 'Predicción completada'}</p>
-        ${engagementParsed?.suggestions?.length ? `<ul class="mt-2 space-y-1">${engagementParsed.suggestions.slice(0,2).map(s => `<li class="text-xs" style="color:#0ea5e9;">💡 ${s}</li>`).join('')}</ul>` : ''}
+        <p class="text-xs" style="color:var(--text-secondary);">${engagementParsed?.summary || engagementParsed?.rationale || 'Predicción completada'}</p>
+        ${engagementParsed?.suggestions?.length ? `<ul class="mt-2 space-y-1">${engagementParsed.suggestions.slice(0,2).map(s => `<li class="text-xs" style="color:var(--accent);">💡 ${s}</li>`).join('')}</ul>` : ''}
       </div>
     `;
 
@@ -994,9 +1001,9 @@ const UI = {
 
   <!-- Day headers -->
   <div class="card overflow-hidden">
-    <div class="grid grid-cols-7 border-b" style="border-color:#1e3a52;">
+    <div class="grid grid-cols-7 border-b" style="border-color:var(--glass-border);">
       ${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(d => `
-        <div class="p-2 text-center text-xs font-semibold" style="color:#94a3b8;">${d}</div>
+        <div class="p-2 text-center text-xs font-semibold" style="color:var(--text-secondary);">${d}</div>
       `).join('')}
     </div>
     <div class="grid grid-cols-7">
@@ -1006,8 +1013,8 @@ const UI = {
         const dayItems = getItemsForDay(d);
         const isToday = dateStr === todayStr;
         return `
-          <div class="cal-day p-1" data-date="${dateStr}" style="min-height:80px;${isToday ? 'background:rgba(14,165,233,0.08);' : ''}">
-            <div class="text-xs mb-1 font-${isToday ? 'bold' : 'normal'}" style="color:${isToday ? '#0ea5e9' : '#94a3b8'};">${d}</div>
+          <div class="cal-day p-1" data-date="${dateStr}" style="min-height:80px;${isToday ? 'background:rgba(10,132,255,0.10);' : ''}">
+            <div class="text-xs mb-1 font-${isToday ? 'bold' : 'normal'}" style="color:${isToday ? 'var(--accent)' : 'var(--text-secondary)'};">${d}</div>
             ${dayItems.map(item => `
               <div class="cal-item text-white truncate" data-item-id="${item.id}"
                 style="background:${platformColors[item.platform] || '#334155'};font-size:0.65rem;padding:2px 5px;">
@@ -1021,7 +1028,7 @@ const UI = {
   </div>
 
   <!-- Legend -->
-  <div class="flex flex-wrap gap-3 text-xs" style="color:#94a3b8;">
+  <div class="flex flex-wrap gap-3 text-xs" style="color:var(--text-secondary);">
     ${Object.entries(platformColors).map(([p, c]) => `
       <div class="flex items-center gap-1">
         <div class="w-3 h-3 rounded-sm" style="background:${c};"></div>
@@ -1095,7 +1102,7 @@ const UI = {
         document.getElementById('cal-copy-plan')?.addEventListener('click', () => copyToClipboard(planText, 'Plan de contenido'));
         document.getElementById('cal-close-plan')?.addEventListener('click', () => section.classList.add('hidden'));
       } catch (err) {
-        outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast('Error: ' + err.message, 'error');
         btn.textContent = '🤖 Generar plan IA';
         btn.disabled = false;
@@ -1117,11 +1124,11 @@ const UI = {
         <div class="flex items-center gap-2 mb-4">
           ${platformBadge(item.platform || 'Instagram')}
           <span class="pill status-${item.status || 'draft'}">${this.statusLabel(item.status)}</span>
-          <span class="text-sm" style="color:#94a3b8;">${item.date || ''}</span>
+          <span class="text-sm" style="color:var(--text-secondary);">${item.date || ''}</span>
         </div>
         ${item.content ? `
           <div class="content-output mb-4" style="max-height:300px;">${item.content}</div>
-        ` : `<p class="text-sm mb-4" style="color:#94a3b8;">Sin contenido adjunto.</p>`}
+        ` : `<p class="text-sm mb-4" style="color:var(--text-secondary);">Sin contenido adjunto.</p>`}
         <div class="flex gap-3 flex-wrap">
           <select id="item-status-select" class="select flex-1">
             <option value="draft" ${item.status === 'draft' ? 'selected' : ''}>Borrador</option>
@@ -1130,7 +1137,7 @@ const UI = {
             <option value="published" ${item.status === 'published' ? 'selected' : ''}>Publicado</option>
           </select>
           <button id="item-update-status" class="btn-primary px-4 py-2 text-sm">Actualizar estado</button>
-          <button id="item-delete" class="btn-ghost px-4 py-2 text-sm" style="color:#ef4444;">🗑️ Eliminar</button>
+          <button id="item-delete" class="btn-ghost px-4 py-2 text-sm" style="color:var(--error);">🗑️ Eliminar</button>
         </div>
       </div>
     `;
@@ -1197,13 +1204,13 @@ const UI = {
     <div class="card p-12 text-center">
       <div class="text-5xl mb-3">📚</div>
       <h3 class="font-semibold mb-2">No hay contenido aquí</h3>
-      <p class="text-sm mb-4" style="color:#94a3b8;">${search ? 'No se encontraron resultados para tu búsqueda.' : 'Genera tu primer contenido para empezar.'}</p>
+      <p class="text-sm mb-4" style="color:var(--text-secondary);">${search ? 'No se encontraron resultados para tu búsqueda.' : 'Genera tu primer contenido para empezar.'}</p>
       ${!search ? `<button onclick="navigate('generator')" class="btn-primary px-6 py-2 text-sm">✨ Generar contenido</button>` : ''}
     </div>
   ` : `
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       ${filtered.map(d => `
-        <div class="card p-5 hover:border-blue-500 transition-all cursor-pointer draft-card" data-draft-id="${d.id}" style="border-color:#1e3a52;">
+        <div class="card p-5 hover:border-blue-500 transition-all cursor-pointer draft-card" data-draft-id="${d.id}" style="border-color:var(--glass-border);">
           <div class="flex items-center gap-2 mb-3">
             ${platformBadge(d.platform || 'Blog')}
             <span class="pill status-${d.status || 'draft'} text-xs">${this.statusLabel(d.status)}</span>
@@ -1211,14 +1218,14 @@ const UI = {
           <h3 class="font-semibold text-sm mb-2 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
             ${d.title || d.topic || 'Sin título'}
           </h3>
-          <p class="text-xs mb-3" style="color:#94a3b8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+          <p class="text-xs mb-3" style="color:var(--text-secondary);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
             ${(d.content || '').substring(0, 120)}...
           </p>
           <div class="flex items-center justify-between">
-            <span class="text-xs" style="color:#475569;">${this.timeAgo(d.createdAt)}</span>
+            <span class="text-xs" style="color:var(--text-tertiary);">${this.timeAgo(d.createdAt)}</span>
             <div class="flex gap-2">
               <button class="btn-ghost px-2 py-1 text-xs copy-draft" data-content="${this.escAttr(d.content)}">📋</button>
-              <button class="btn-ghost px-2 py-1 text-xs delete-draft" data-id="${d.id}" style="color:#ef4444;">🗑️</button>
+              <button class="btn-ghost px-2 py-1 text-xs delete-draft" data-id="${d.id}" style="color:var(--error);">🗑️</button>
             </div>
           </div>
         </div>
@@ -1329,7 +1336,7 @@ const UI = {
   <!-- Input form -->
   <div class="card p-6">
     <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>📊</span> Análisis de rendimiento con IA</h3>
-    <p class="text-sm mb-4" style="color:#94a3b8;">Pega tus métricas de Instagram, Facebook o cualquier plataforma y recibe recomendaciones accionables.</p>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Pega tus métricas de Instagram, Facebook o cualquier plataforma y recibe recomendaciones accionables.</p>
     <div class="space-y-4">
       <div>
         <label class="label">Métricas de rendimiento</label>
@@ -1369,10 +1376,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
       <h3 class="font-semibold mb-4 flex items-center gap-2"><span>📁</span> Reportes anteriores</h3>
       <div class="space-y-3">
         ${analyticsData.slice(0, 5).map(entry => `
-          <div class="flex items-center justify-between p-3 rounded-lg" style="background:#0d1b2a;border:1px solid #1e3a52;">
+          <div class="flex items-center justify-between p-3 rounded-lg" style="background:var(--bg-base);border:1px solid var(--glass-border);">
             <div>
               <p class="text-sm font-medium">${entry.summary || 'Reporte de análisis'}</p>
-              <p class="text-xs" style="color:#475569;">${this.timeAgo(entry.savedAt)}</p>
+              <p class="text-xs" style="color:var(--text-tertiary);">${this.timeAgo(entry.savedAt)}</p>
             </div>
             <button class="btn-ghost px-3 py-1 text-xs view-analytics-entry" data-id="${entry.id}">Ver</button>
           </div>
@@ -1411,7 +1418,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
           showToast('Reporte guardado', 'success');
         });
       } catch (err) {
-        outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast(err.message, 'error');
       } finally {
         btn.textContent = '📊 Analizar con IA';
@@ -1428,9 +1435,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
     return `
 <div class="space-y-6">
   <!-- Header -->
-  <div class="card p-6" style="background:linear-gradient(135deg,#152639,#0f2133);">
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
     <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>🧠</span> Centro de Inteligencia</h2>
-    <p style="color:#94a3b8;">Análisis competitivo, tendencias de contenido y oportunidades de mercado para FisioBox.</p>
+    <p style="color:var(--text-secondary);">Análisis competitivo, tendencias de contenido y oportunidades de mercado para FisioBox.</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1438,10 +1445,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- Listener Agent -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(14,165,233,0.15);">🎙️</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(10,132,255,0.15);">🎙️</div>
         <div>
           <h3 class="font-semibold">Agente Escucha</h3>
-          <p class="text-xs" style="color:#94a3b8;">Oportunidades de contenido semanales</p>
+          <p class="text-xs" style="color:var(--text-secondary);">Oportunidades de contenido semanales</p>
         </div>
       </div>
       <div>
@@ -1458,10 +1465,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- Competitor Intel -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(239,68,68,0.15);">🔭</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,69,58,0.15);">🔭</div>
         <div>
           <h3 class="font-semibold">Inteligencia Competitiva</h3>
-          <p class="text-xs" style="color:#94a3b8;">Análisis del mercado de fisioterapia en CR</p>
+          <p class="text-xs" style="color:var(--text-secondary);">Análisis del mercado de fisioterapia en CR</p>
         </div>
       </div>
       <div>
@@ -1478,10 +1485,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- SEO Agent -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(34,197,94,0.15);">🔍</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(48,209,88,0.15);">🔍</div>
         <div>
           <h3 class="font-semibold">Agente SEO</h3>
-          <p class="text-xs" style="color:#94a3b8;">Brief SEO + Google Business para Escazú</p>
+          <p class="text-xs" style="color:var(--text-secondary);">Brief SEO + Google Business para Escazú</p>
         </div>
       </div>
       <div class="space-y-3">
@@ -1507,10 +1514,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <!-- RTP Specialist -->
     <div class="card p-5">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(249,115,22,0.15);">🏃</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,107,53,0.15);">🏃</div>
         <div>
           <h3 class="font-semibold">Especialista RTP</h3>
-          <p class="text-xs" style="color:#94a3b8;">Retorno al Deporte — contenido especializado</p>
+          <p class="text-xs" style="color:var(--text-secondary);">Retorno al Deporte — contenido especializado</p>
         </div>
       </div>
       <div class="space-y-3">
@@ -1570,7 +1577,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
             outputEl.scrollTop = outputEl.scrollHeight;
           });
         } catch (err) {
-          outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+          outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
           showToast(err.message, 'error');
         } finally {
           btn.disabled = false;
@@ -1607,9 +1614,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
     return `
 <div class="space-y-6">
   <!-- Header -->
-  <div class="card p-6" style="background:linear-gradient(135deg,rgba(37,211,102,0.1),#152639);">
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(48,209,88,0.12),var(--glass-bg));">
     <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>💬</span> Secuencias de WhatsApp</h2>
-    <p style="color:#94a3b8;">Genera mensajes de seguimiento para pacientes, listas para enviar por WhatsApp.</p>
+    <p style="color:var(--text-secondary);">Genera mensajes de seguimiento para pacientes, listas para enviar por WhatsApp.</p>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1659,26 +1666,26 @@ Puedes pegar datos de múltiples posts..."></textarea>
     <div class="card p-6">
       <h3 class="font-semibold mb-4 flex items-center justify-between">
         <span>📁 Secuencias guardadas</span>
-        <span class="text-xs px-2 py-1 rounded" style="background:#1e3a52;color:#94a3b8;">${sequences.length}</span>
+        <span class="text-xs px-2 py-1 rounded" style="background:var(--glass-border);color:var(--text-secondary);">${sequences.length}</span>
       </h3>
       ${sequences.length === 0 ? `
-        <div class="text-center py-8" style="color:#475569;">
+        <div class="text-center py-8" style="color:var(--text-tertiary);">
           <div class="text-4xl mb-2">💬</div>
           <p class="text-sm">No hay secuencias guardadas.</p>
         </div>
       ` : `
         <div class="space-y-3 overflow-y-auto" style="max-height:450px;">
           ${sequences.map(seq => `
-            <div class="p-4 rounded-lg" style="background:#0d1b2a;border:1px solid #1e3a52;">
+            <div class="p-4 rounded-lg" style="background:var(--bg-base);border:1px solid var(--glass-border);">
               <div class="flex items-start justify-between mb-2">
                 <div>
                   <p class="text-sm font-medium">${seq.sequenceType || 'Secuencia'}</p>
                   ${seq.injury ? `<span class="text-xs pill status-draft mt-1">${seq.injury}</span>` : ''}
                   ${seq.sport ? `<span class="text-xs pill status-draft mt-1 ml-1">${seq.sport}</span>` : ''}
                 </div>
-                <span class="text-xs" style="color:#475569;">${this.timeAgo(seq.createdAt)}</span>
+                <span class="text-xs" style="color:var(--text-tertiary);">${this.timeAgo(seq.createdAt)}</span>
               </div>
-              <p class="text-xs mb-3" style="color:#94a3b8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+              <p class="text-xs mb-3" style="color:var(--text-secondary);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
                 ${(seq.content || '').substring(0, 100)}...
               </p>
               <div class="flex gap-2">
@@ -1736,7 +1743,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
           if (main) { main.innerHTML = this.renderWhatsApp(); this.bindWhatsApp(); }
         };
       } catch (err) {
-        outputEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast(err.message, 'error');
       } finally {
         btn.textContent = '💬 Generar secuencia';
@@ -1779,11 +1786,11 @@ Puedes pegar datos de múltiples posts..."></textarea>
     return `
 <div class="space-y-6">
   <!-- Header -->
-  <div class="card p-6" style="background:linear-gradient(135deg,rgba(249,115,22,0.1),#152639);">
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(255,107,53,0.12),var(--glass-bg));">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
         <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><span>🚀</span> Constructor de Campañas</h2>
-        <p style="color:#94a3b8;">Crea campañas completas con concepto, plan semanal, piezas de contenido y anuncios.</p>
+        <p style="color:var(--text-secondary);">Crea campañas completas con concepto, plan semanal, piezas de contenido y anuncios.</p>
       </div>
       <button id="new-campaign-btn" class="btn-orange px-5 py-2 font-semibold">+ Nueva campaña</button>
     </div>
@@ -1846,7 +1853,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- Progress indicator -->
   <div id="campaign-progress" class="card p-6 hidden">
     <h3 class="font-semibold mb-4 flex items-center gap-2"><span>⏳</span> Construyendo campaña...</h3>
-    <div id="progress-label" class="text-sm mb-3" style="color:#94a3b8;"></div>
+    <div id="progress-label" class="text-sm mb-3" style="color:var(--text-secondary);"></div>
     <div class="progress-bar">
       <div id="camp-progress-fill" class="progress-fill" style="width:0%;background:linear-gradient(90deg,#f97316,#0ea5e9);"></div>
     </div>
@@ -1861,13 +1868,13 @@ Puedes pegar datos de múltiples posts..."></textarea>
       <h3 class="font-semibold mb-4 flex items-center gap-2"><span>📁</span> Campañas guardadas</h3>
       <div class="space-y-3">
         ${campaigns.map(camp => `
-          <div class="p-4 rounded-lg flex items-center justify-between flex-wrap gap-3" style="background:#0d1b2a;border:1px solid #1e3a52;">
+          <div class="p-4 rounded-lg flex items-center justify-between flex-wrap gap-3" style="background:var(--bg-base);border:1px solid var(--glass-border);">
             <div>
               <p class="font-medium text-sm">${camp.goal || 'Campaña'}</p>
               <div class="flex items-center gap-2 mt-1">
                 ${platformBadge(camp.platform || 'Instagram')}
-                <span class="text-xs" style="color:#475569;">${camp.duration || '4'} semanas · ${camp.budgetType || 'Orgánico'}</span>
-                <span class="text-xs" style="color:#475569;">· ${this.timeAgo(camp.createdAt)}</span>
+                <span class="text-xs" style="color:var(--text-tertiary);">${camp.duration || '4'} semanas · ${camp.budgetType || 'Orgánico'}</span>
+                <span class="text-xs" style="color:var(--text-tertiary);">· ${this.timeAgo(camp.createdAt)}</span>
               </div>
             </div>
             <button class="btn-ghost px-4 py-2 text-sm view-campaign" data-id="${camp.id}">Ver campaña</button>
@@ -1973,28 +1980,28 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- API Key -->
   <div class="card p-6">
     <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>🔑</span> Clave de API de Anthropic</h3>
-    <p class="text-sm mb-4" style="color:#94a3b8;">Necesitas una clave de API de Anthropic para usar los agentes de IA. Tu clave se almacena localmente en tu navegador.</p>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Necesitas una clave de API de Anthropic para usar los agentes de IA. Tu clave se almacena localmente en tu navegador.</p>
     <div class="flex gap-3">
       <input id="api-key-input" class="input flex-1" type="password"
         placeholder="sk-ant-api03-..."
         value="${apiKey ? apiKey.substring(0, 8) + '••••••••••••••••••••' : ''}" />
       <button id="save-api-key" class="btn-primary px-6 py-2 font-semibold flex-shrink-0">Guardar</button>
     </div>
-    ${apiKey ? `<p class="text-xs mt-2" style="color:#22c55e;">✅ Clave configurada</p>` : `<p class="text-xs mt-2" style="color:#eab308;">⚠️ Sin clave configurada</p>`}
+    ${apiKey ? `<p class="text-xs mt-2" style="color:var(--success);">✅ Clave configurada</p>` : `<p class="text-xs mt-2" style="color:var(--warning);">⚠️ Sin clave configurada</p>`}
   </div>
 
   <!-- Brand tone sliders -->
   <div class="card p-6">
     <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>🎨</span> Tono de marca</h3>
-    <p class="text-sm mb-5" style="color:#94a3b8;">Configura cómo debe sonar FisioBox en el contenido generado.</p>
+    <p class="text-sm mb-5" style="color:var(--text-secondary);">Configura cómo debe sonar FisioBox en el contenido generado.</p>
     <div class="space-y-6">
 
       <div>
         <div class="flex items-center justify-between mb-2">
           <label class="label m-0">Formalidad</label>
-          <div class="flex items-center gap-3 text-xs" style="color:#94a3b8;">
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
             <span>Casual</span>
-            <span id="tone-formal-val" class="font-bold" style="color:#0ea5e9;">${bs.tone_formal}</span>
+            <span id="tone-formal-val" class="font-bold" style="color:var(--accent);">${bs.tone_formal}</span>
             <span>Formal</span>
           </div>
         </div>
@@ -2004,9 +2011,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
       <div>
         <div class="flex items-center justify-between mb-2">
           <label class="label m-0">Tecnicismo</label>
-          <div class="flex items-center gap-3 text-xs" style="color:#94a3b8;">
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
             <span>Accesible</span>
-            <span id="tone-clinical-val" class="font-bold" style="color:#0ea5e9;">${bs.tone_clinical}</span>
+            <span id="tone-clinical-val" class="font-bold" style="color:var(--accent);">${bs.tone_clinical}</span>
             <span>Clínico</span>
           </div>
         </div>
@@ -2016,9 +2023,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
       <div>
         <div class="flex items-center justify-between mb-2">
           <label class="label m-0">Enfoque</label>
-          <div class="flex items-center gap-3 text-xs" style="color:#94a3b8;">
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
             <span>Promocional</span>
-            <span id="tone-educational-val" class="font-bold" style="color:#0ea5e9;">${bs.tone_educational}</span>
+            <span id="tone-educational-val" class="font-bold" style="color:var(--accent);">${bs.tone_educational}</span>
             <span>Educativo</span>
           </div>
         </div>
@@ -2031,7 +2038,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- Content pillars -->
   <div class="card p-6">
     <h3 class="font-bold text-lg mb-2 flex items-center gap-2"><span>📊</span> Distribución de pilares de contenido</h3>
-    <p class="text-sm mb-5" style="color:#94a3b8;">Define qué porcentaje de tu contenido dedicarás a cada pilar. El total debe sumar 100%.</p>
+    <p class="text-sm mb-5" style="color:var(--text-secondary);">Define qué porcentaje de tu contenido dedicarás a cada pilar. El total debe sumar 100%.</p>
     <div class="space-y-4">
       ${[
         { key: 'educativo',     label: 'Educativo',      color: '#0ea5e9', desc: 'Consejos, ejercicios, anatomía' },
@@ -2047,10 +2054,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
               <input id="pillar-${p.key}" type="number" min="0" max="100"
                 value="${bs.pillars[p.key] || 0}"
                 class="input text-center" style="width:70px;padding:6px;font-size:1rem;font-weight:bold;color:${p.color};" />
-              <span class="text-sm" style="color:#475569;">%</span>
+              <span class="text-sm" style="color:var(--text-tertiary);">%</span>
             </div>
           </div>
-          <p class="text-xs mb-2" style="color:#475569;">${p.desc}</p>
+          <p class="text-xs mb-2" style="color:var(--text-tertiary);">${p.desc}</p>
           <div class="progress-bar">
             <div class="progress-fill" style="width:${bs.pillars[p.key] || 0}%;background:${p.color};"></div>
           </div>
@@ -2093,10 +2100,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
   </div>
 
   <!-- Danger zone -->
-  <div class="card p-6" style="border-color:#ef4444;">
-    <h3 class="font-bold text-lg mb-2 flex items-center gap-2" style="color:#ef4444;"><span>⚠️</span> Zona de peligro</h3>
-    <p class="text-sm mb-4" style="color:#94a3b8;">Estas acciones son irreversibles. Se eliminarán todos los datos almacenados localmente.</p>
-    <button id="clear-all-data" class="btn-ghost px-6 py-2 font-semibold" style="border-color:#ef4444;color:#ef4444;">
+  <div class="card p-6" style="border-color:var(--error);">
+    <h3 class="font-bold text-lg mb-2 flex items-center gap-2" style="color:var(--error);"><span>⚠️</span> Zona de peligro</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Estas acciones son irreversibles. Se eliminarán todos los datos almacenados localmente.</p>
+    <button id="clear-all-data" class="btn-ghost px-6 py-2 font-semibold" style="border-color:var(--error);color:var(--error);">
       🗑️ Eliminar todos los datos
     </button>
   </div>
