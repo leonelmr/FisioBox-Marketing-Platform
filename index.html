@@ -523,6 +523,12 @@ function copyToClipboard(text, label = 'Contenido') {
     .catch(() => showToast('No se pudo copiar', 'error'));
 }
 
+function copyOutputContent(id) {
+  const el = document.getElementById(id);
+  const text = el ? (el.innerText || el.textContent) : '';
+  copyToClipboard(text, 'Resultado');
+}
+
 // ── DOWNLOAD TXT ──────────────────────────────────────────────
 function downloadTxt(text, filename = 'fisiobox-contenido') {
   const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
