@@ -867,43 +867,312 @@ const UI = {
   renderGenStep4() {
     const { platform, format, topic } = App.generatorData;
     const formatLabel = this.formats[platform]?.find(f => f.id === format)?.label || format;
+    const guide = this.getVisualGuide(platform, format);
     return `
-<div class="card p-6">
-  <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
-    <div>
-      <h2 class="text-xl font-bold">Contenido generado</h2>
-      <div class="flex items-center gap-2 mt-1">
-        ${platformBadge(platform)}
-        <span class="pill status-draft text-xs">${formatLabel}</span>
-        <span class="text-xs" style="color:var(--text-secondary);">${topic || ''}</span>
+<div class="space-y-5">
+  <!-- Content card -->
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="text-xl font-bold">Contenido generado</h2>
+        <div class="flex items-center gap-2 mt-1">
+          ${platformBadge(platform)}
+          <span class="pill status-draft text-xs">${formatLabel}</span>
+          <span class="text-xs" style="color:var(--text-secondary);">${topic || ''}</span>
+        </div>
+      </div>
+      <button id="step4-back" class="btn-ghost px-4 py-2 text-sm">← Nueva generación</button>
+    </div>
+
+    <!-- Output area -->
+    <div id="content-output" class="content-output mb-4" style="min-height:200px;">
+      <div class="flex items-center gap-3" style="color:var(--text-tertiary);">
+        <span class="loading-dots">Generando contenido</span>
       </div>
     </div>
-    <button id="step4-back" class="btn-ghost px-4 py-2 text-sm">← Nueva generación</button>
-  </div>
 
-  <!-- Output area -->
-  <div id="content-output" class="content-output mb-4" style="min-height:200px;">
-    <div class="flex items-center gap-3" style="color:var(--text-tertiary);">
-      <span class="loading-dots">Generando contenido</span>
+    <!-- Review scores (hidden initially) -->
+    <div id="review-scores" class="hidden mb-4">
+      <h3 class="font-semibold mb-3">Revisión de calidad</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="scores-grid"></div>
+    </div>
+
+    <!-- Action buttons (hidden initially) -->
+    <div id="action-buttons" class="hidden flex flex-wrap gap-3">
+      <button id="btn-copy" class="btn-primary px-5 py-2 text-sm font-medium"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+      <button id="btn-download" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
+      <button id="btn-save-draft" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar borrador</button>
+      <button id="btn-run-review" class="btn-orange px-5 py-2 text-sm font-medium"><i class="fa-solid fa-magnifying-glass mr-1"></i>Revisión de calidad</button>
+      <button id="btn-add-calendar" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-calendar-plus mr-1"></i>Agregar al calendario</button>
     </div>
   </div>
 
-  <!-- Review scores (hidden initially) -->
-  <div id="review-scores" class="hidden mb-4">
-    <h3 class="font-semibold mb-3">Revisión de calidad</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="scores-grid"></div>
-  </div>
+  <!-- Visual Guide (hidden until content is ready) -->
+  <div id="visual-guide" class="hidden space-y-4">
 
-  <!-- Action buttons (hidden initially) -->
-  <div id="action-buttons" class="hidden flex flex-wrap gap-3">
-    <button id="btn-copy" class="btn-primary px-5 py-2 text-sm font-medium"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
-    <button id="btn-download" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-solid fa-download mr-1"></i>Descargar</button>
-    <button id="btn-save-draft" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar borrador</button>
-    <button id="btn-run-review" class="btn-orange px-5 py-2 text-sm font-medium"><i class="fa-solid fa-magnifying-glass mr-1"></i>Revisión de calidad</button>
-    <button id="btn-add-calendar" class="btn-ghost px-5 py-2 text-sm font-medium"><i class="fa-regular fa-calendar-plus mr-1"></i>Agregar al calendario</button>
+    <!-- Static guide -->
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i class="fa-solid fa-clapperboard" style="color:var(--accent);"></i>
+        <h3 class="font-bold text-lg">Guía de producción visual</h3>
+        <span class="pill text-xs" style="background:rgba(14,165,233,0.15);color:var(--accent);">${guide.type}</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <div class="rounded-xl p-4" style="background:var(--glass-border);">
+          <div class="text-xs font-semibold mb-1" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Formato</div>
+          <div class="font-semibold">${guide.type}</div>
+          <div class="text-xs mt-1" style="color:var(--text-tertiary);">${guide.ratio}</div>
+        </div>
+        <div class="rounded-xl p-4" style="background:var(--glass-border);">
+          <div class="text-xs font-semibold mb-1" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Duración</div>
+          <div class="font-semibold">${guide.duration}</div>
+          <div class="text-xs mt-1" style="color:var(--text-tertiary);">${guide.pacing}</div>
+        </div>
+        <div class="rounded-xl p-4" style="background:var(--glass-border);">
+          <div class="text-xs font-semibold mb-1" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Hook recomendado</div>
+          <div class="text-sm">${guide.hook}</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="text-sm font-semibold mb-2" style="color:var(--text-primary);">
+            <i class="fa-solid fa-camera mr-1" style="color:var(--accent);"></i>Qué mostrar
+          </div>
+          <ul class="space-y-1">
+            ${guide.shots.map(s => `<li class="flex items-start gap-2 text-sm" style="color:var(--text-secondary);"><i class="fa-solid fa-check text-xs mt-1 flex-shrink-0" style="color:var(--accent);"></i>${s}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div class="text-sm font-semibold mb-2" style="color:var(--text-primary);">
+            <i class="fa-solid fa-lightbulb mr-1" style="color:var(--accent-orange);"></i>Tips de producción
+          </div>
+          <ul class="space-y-1">
+            ${guide.tips.map(t => `<li class="flex items-start gap-2 text-sm" style="color:var(--text-secondary);"><i class="fa-solid fa-circle text-xs mt-1.5 flex-shrink-0" style="color:var(--accent-orange);font-size:5px;"></i>${t}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI visual concepts -->
+    <div class="card p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent-orange);"></i>
+          <h3 class="font-bold text-lg">4 Conceptos Visuales con IA</h3>
+        </div>
+        <button id="btn-gen-visuals" class="btn-orange px-5 py-2 text-sm font-medium">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar conceptos
+        </button>
+      </div>
+      <p class="text-sm mb-4" style="color:var(--text-secondary);">La IA analiza tu contenido y propone 4 conceptos visuales listos para producción: escena, toma, texto en pantalla y mood.</p>
+      <div id="visual-concepts-output" class="hidden content-output" style="max-height:600px;"></div>
+    </div>
+
   </div>
 </div>
     `;
+  },
+
+  getVisualGuide(platform, format) {
+    const guides = {
+      Instagram: {
+        carrusel: {
+          type: 'Carrusel de imágenes',
+          ratio: '1:1 (1080×1080) o 4:5 (1080×1350)',
+          duration: '8–10 slides',
+          pacing: 'Un concepto por slide',
+          hook: 'Pregunta o dato impactante en portada',
+          shots: [
+            'Portada: fondo limpio + texto grande + imagen de acción o anatomía',
+            'Slides 2–7: foto de ejercicio o ilustración + texto descriptivo corto',
+            'Slide final: CTA claro + logo FisioBox + handle @fisioboxcr',
+            'Fotos reales del equipo o pacientes activos (con permiso)',
+          ],
+          tips: [
+            'Usa plantilla de marca consistente en todos los slides',
+            'Texto legible en móvil: mínimo 24pt, contraste alto',
+            'Colores primario y secundario de tu paleta en cada slide',
+            'Deja márgenes seguros: no texto en los bordes',
+            'Portada decide si el usuario desliza — hazla irresistible',
+          ],
+        },
+        reel_guion: {
+          type: 'Reel vertical',
+          ratio: '9:16 (1080×1920)',
+          duration: '15–30 s (máx 90 s)',
+          pacing: 'Cortes cada 2–3 s',
+          hook: 'Movimiento llamativo o texto impactante en los primeros 2 s',
+          shots: [
+            'Plano detalle de una técnica o zona corporal específica',
+            'Plano medio del fisioterapeuta demostrando el ejercicio',
+            'Reacción o progreso del paciente (antes/después en movimiento)',
+            'Texto animado con el dato o tip clave en pantalla',
+          ],
+          tips: [
+            'Filma en buena luz natural o con aro de luz — nada de sombras duras',
+            'Usa tripode o estabilizador para tomas limpias',
+            'Agrega subtítulos: 80 % del contenido se ve sin sonido',
+            'Música trending en volumen bajo para no tapar voz',
+            'Hashtags en el caption, no en pantalla',
+          ],
+        },
+        post_caption: {
+          type: 'Post estático',
+          ratio: '1:1 (1080×1080) o 4:5 (1080×1350)',
+          duration: 'Imagen única',
+          pacing: 'Lectura en < 3 s',
+          hook: 'Imagen que detiene el scroll: color, contraste o emoción',
+          shots: [
+            'Foto de calidad del equipo o instalación con buena iluminación',
+            'Imagen de ejercicio real en contexto clínico o deportivo',
+            'Diseño gráfico limpio con dato o cita destacada',
+            'Antes/después de movilidad o postura (con consentimiento)',
+          ],
+          tips: [
+            'El 40 % de la imagen puede ser espacio negativo (limpio)',
+            'Un solo mensaje visual — no satures la imagen de texto',
+            'Cara o mirada directa genera 30 % más engagement',
+            'Paleta de máximo 3 colores por imagen',
+            'Calidad mínima 72 dpi, idealmente exportar a 300 dpi',
+          ],
+        },
+        story_serie: {
+          type: 'Stories secuenciales',
+          ratio: '9:16 (1080×1920)',
+          duration: '5–7 stories, 7–15 s c/u',
+          pacing: 'Narrativa progresiva, cliffhangers entre stories',
+          hook: '"Desliza →" al final de cada story para mantener atención',
+          shots: [
+            'Story 1: portada con pregunta o promesa ("¿Sabes por qué...?")',
+            'Stories 2–5: respuesta paso a paso, un elemento por story',
+            'Incluir stickers de encuesta o pregunta para interacción',
+            'Story final: CTA con enlace o "Escríbenos"',
+          ],
+          tips: [
+            'Zona táctil segura: no pongas contenido clave en bordes ni debajo del 85 %',
+            'Usa la función de texto nativo de Instagram para mayor alcance',
+            'Alterna texto + imagen con video corto para dinamismo',
+            'Mención de la cuenta en al menos una story para guardado',
+            'Publica entre 7–9 AM o 6–8 PM según audiencia de CR',
+          ],
+        },
+      },
+      TikTok: {
+        default: {
+          type: 'Video vertical TikTok',
+          ratio: '9:16 (1080×1920)',
+          duration: '30–60 s (máx 3 min)',
+          pacing: 'Cortes rápidos cada 1–2 s en hook, más lento en desarrollo',
+          hook: 'Primera imagen o movimiento que sorprenda — sin intro de marca',
+          shots: [
+            'Hook visual: acción inmediata — sin "hola soy..." al inicio',
+            'Demostración clara del ejercicio o técnica en movimiento',
+            'Reacción auténtica o resultado visible',
+            'Llamada a acción verbal y texto al final',
+          ],
+          tips: [
+            'Filma nativo en TikTok o con app que preserve metadatos',
+            'Usa sonidos trending antes de que saturen (primeras 48 h)',
+            'Subtítulos automáticos de TikTok + corrección manual',
+            'Comenta en tu propio video con info adicional para engagement',
+            'Publica 2–3 veces/semana para mantener alcance orgánico',
+          ],
+        },
+      },
+      Facebook: {
+        default: {
+          type: 'Post o Video en Facebook',
+          ratio: '1:1 o 16:9 para video',
+          duration: 'Video: 1–3 min para mejor alcance orgánico',
+          pacing: 'Narrativo, más pausado que Instagram/TikTok',
+          hook: 'Historia personal o caso de éxito en las primeras líneas del caption',
+          shots: [
+            'Foto grupal del equipo o clínica para generar cercanía',
+            'Video testimonial de paciente recuperado (con permiso)',
+            'Infografía educativa de alta calidad',
+            'Demostración de técnica con narración explicativa',
+          ],
+          tips: [
+            'Caption más largo funciona bien en Facebook — cuenta la historia',
+            'Etiqueta ubicación "FisioBox Escazú" en cada post',
+            'Comparte en grupos locales de deporte en Escazú/CR',
+            'Usa Facebook Events para talleres y actividades',
+            'Responde comentarios en las primeras 2 h para boost de alcance',
+          ],
+        },
+      },
+      Blog: {
+        default: {
+          type: 'Imágenes para blog / SEO',
+          ratio: '16:9 (1200×630) para portada',
+          duration: '3–5 imágenes por artículo',
+          pacing: 'Una imagen cada 300–400 palabras',
+          hook: 'Imagen de portada con texto alt SEO y nombre de archivo descriptivo',
+          shots: [
+            'Imagen de portada: concepto visual del tema + texto SEO optimizado',
+            'Screenshots o diagramas de ejercicios numerados',
+            'Foto real del equipo FisioBox en acción',
+            'Infografía resumen al final del artículo',
+          ],
+          tips: [
+            'Nombra archivos con keywords: "fisioterapia-deportiva-escazu.jpg"',
+            'Alt text descriptivo en todas las imágenes (SEO + accesibilidad)',
+            'Comprime a < 200 KB sin perder calidad (usa WebP)',
+            'Usa schema markup para imágenes en Google',
+            'Incluye imagen de Google Business para reforzar SEO local',
+          ],
+        },
+      },
+      Ads: {
+        default: {
+          type: 'Creatividad para Anuncio',
+          ratio: '1:1 (feed) + 9:16 (stories/reels) — siempre dos versiones',
+          duration: 'Video: 6–15 s para máxima retención en anuncios',
+          pacing: 'Mensaje en los primeros 3 s — sin rodeos',
+          hook: 'Resultado o beneficio directo en el primer frame con texto grande',
+          shots: [
+            'Frame 1: problema o beneficio directo + texto de propuesta de valor',
+            'Demostración rápida del servicio en < 5 s',
+            'Prueba social: testimonio en texto o cara real',
+            'CTA final claro: "Agenda hoy", "Primera consulta gratis"',
+          ],
+          tips: [
+            'Texto en imagen < 20 % del área (regla Meta Ads)',
+            'Sin marca en los primeros 3 s — engancha antes de identificarte',
+            'Usa colores de alta saturación para destacar en feed',
+            'A/B test: versión emocional vs racional del mismo concepto',
+            'Logo pequeño esquina inferior — no lo hagas protagonista',
+          ],
+        },
+      },
+      WhatsApp: {
+        default: {
+          type: 'Imagen para WhatsApp',
+          ratio: '1:1 o 4:5 — no demasiado alto',
+          duration: 'Imagen única o secuencia de 3 max',
+          pacing: 'Mensaje visual muy directo, sin scroll',
+          hook: 'Nombre del paciente personalizado si es secuencia individual',
+          shots: [
+            'Imagen limpia con el ejercicio o instrucción de forma visible',
+            'Infografía simple: máximo 3 puntos, texto grande',
+            'Foto del terapeuta tratante para generar confianza',
+            'GIF o video corto de demostración de ejercicio domiciliario',
+          ],
+          tips: [
+            'Tamaño < 5 MB para envío fluido en WhatsApp Business',
+            'Fondo blanco o muy claro para mejor lectura en cualquier pantalla',
+            'Incluye marca de agua sutil del logo FisioBox',
+            'Para PDFs educativos: máximo 5 páginas, diseño limpio',
+            'Envía a las horas de mayor apertura: 7–9 AM o 7–9 PM',
+          ],
+        },
+      },
+    };
+
+    const platformGuides = guides[platform] || guides.Instagram;
+    return platformGuides[format] || platformGuides.default || Object.values(platformGuides)[0];
   },
 
 
@@ -1203,10 +1472,47 @@ const UI = {
         actionBtns.classList.add('flex');
         this.bindGenActionButtons(generatedText, platform, topic);
       }
+
+      // Reveal visual guide section
+      const visualGuide = document.getElementById('visual-guide');
+      if (visualGuide) visualGuide.classList.remove('hidden');
+      this.bindVisualConceptsBtn(platform, format, topic, App.generatorData.brief || '');
+
     } catch (err) {
       outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
       showToast(err.message, 'error');
     }
+  },
+
+  bindVisualConceptsBtn(platform, format, topic, brief) {
+    const btn = document.getElementById('btn-gen-visuals');
+    const outputEl = document.getElementById('visual-concepts-output');
+    if (!btn || !outputEl) return;
+    btn.addEventListener('click', async () => {
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando...';
+      outputEl.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.textContent = '';
+      let result = '';
+      try {
+        await Agents.visualConcepts({ platform, format, topic, brief }, (chunk, full) => {
+          result = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(result);
+      } catch (err) {
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
+    });
   },
 
   bindGenActionButtons(content, platform, topic) {

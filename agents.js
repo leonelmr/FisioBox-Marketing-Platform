@@ -281,6 +281,39 @@ Genera mensajes cálidos, personales y listos para enviar por WhatsApp.`;
     return callClaude(PROMPTS.patientNurture, msg, onChunk);
   },
 
+  // 13. Visual Concepts Agent
+  async visualConcepts({ platform, format, topic, brief = '' }, onChunk) {
+    const systemPrompt = `Eres un director creativo y productor de contenido visual para FisioBox, clínica de fisioterapia deportiva en Escazú, Costa Rica.
+Tu trabajo es generar conceptos visuales concretos, listos para producción, que complementen piezas de contenido de marketing.
+Cada concepto debe ser específico, accionable y realista para una clínica de fisioterapia con recursos moderados.
+Responde siempre en español con formato markdown claro.`;
+
+    const msg = `Genera EXACTAMENTE 4 conceptos visuales de producción para el siguiente contenido:
+
+PLATAFORMA: ${platform}
+FORMATO: ${format}
+TEMA: ${topic}
+${brief ? `CONTEXTO: ${brief}` : ''}
+
+Para cada concepto usa esta estructura:
+
+## Concepto [N]: "[Título evocador]"
+
+**Escena principal:** [Descripción específica de qué ocurre en el visual]
+**Locación:** [Dónde se filma/fotografía — sala de tratamiento, exterior, etc.]
+**Tipo de toma:** [Plano detalle / Plano medio / Gran angular / POV / Time-lapse / etc.]
+**Sujeto:** [Quién aparece — fisioterapeuta, paciente, equipamiento, ilustración]
+**Overlays de texto:** "[Texto 1]" → "[Texto 2]" → "[CTA]"
+**Mood/Estética:** [2-3 adjetivos que describen el tono visual]
+**Por qué funciona:** [Una línea que explica el valor de este concepto para el objetivo]
+
+---
+
+Varía los 4 conceptos entre sí: uno más educativo, uno emocional/testimonial, uno de autoridad/equipo, uno de acción/movimiento.`;
+
+    return callClaude(systemPrompt, msg, onChunk);
+  },
+
   // ── COMBINED REVIEW PIPELINE ────────────────────────────────
   async runReviewPipeline(content, platform) {
     const [brandResult, medicalResult, engagementResult] = await Promise.all([
