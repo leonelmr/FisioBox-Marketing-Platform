@@ -13,7 +13,7 @@ async function callClaude(systemPrompt, userMessage, onChunk = null) {
   const body = {
     model: MODEL,
     max_tokens: 4096,
-    system: systemPrompt,
+    system: systemPrompt + getDynamicContext(),
     messages: [{ role: 'user', content: userMessage }],
     stream: !!onChunk
   };
@@ -69,7 +69,7 @@ async function callClaudeChat(systemPrompt, messages, onChunk = null) {
   const body = {
     model: MODEL,
     max_tokens: 1024,
-    system: systemPrompt,
+    system: systemPrompt + getDynamicContext(),
     messages,
     stream: !!onChunk
   };
@@ -122,6 +122,34 @@ function parseJSON(text) {
     if (match) return JSON.parse(match[0]);
   } catch {}
   return null;
+}
+
+// Builds dynamic context from social profiles and learnings to append to every agent call
+function getDynamicContext() {
+  const profiles = Storage.getSocialProfiles();
+  const learnings = Storage.getLearnings();
+  let ctx = '';
+
+  const hasProfiles = Object.values(profiles).some(Boolean);
+  if (hasProfiles) {
+    ctx += '\n\n## CANALES ACTIVOS DE LA MARCA:\n';
+    if (profiles.instagram)       ctx += `- Instagram: ${profiles.instagram}\n`;
+    if (profiles.facebook)        ctx += `- Facebook: ${profiles.facebook}\n`;
+    if (profiles.tiktok)          ctx += `- TikTok: ${profiles.tiktok}\n`;
+    if (profiles.website)         ctx += `- Sitio web: ${profiles.website}\n`;
+    if (profiles.google_business) ctx += `- Google Business: ${profiles.google_business}\n`;
+  }
+
+  const recent = learnings.slice(-10);
+  if (recent.length > 0) {
+    ctx += '\n\n## APRENDIZAJES RECIENTES (aplícalos al generar contenido):\n';
+    recent.forEach(l => {
+      const date = l.timestamp ? l.timestamp.slice(0, 10) : '';
+      ctx += `- [${date}] ${l.content}\n`;
+    });
+  }
+
+  return ctx;
 }
 
 // ── AGENT FUNCTIONS ────────────────────────────────────────

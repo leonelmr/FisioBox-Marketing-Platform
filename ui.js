@@ -7,6 +7,7 @@ const UI = {
   // ── NAVIGATION CONFIG ──────────────────────────────────────
   navItems: [
     { id: 'dashboard',    label: 'Dashboard'              },
+    { id: 'marca',        label: 'Marca'                  },
     { id: 'generator',   label: 'Generador de Contenido' },
     { id: 'calendar',    label: 'Calendario'             },
     { id: 'library',     label: 'Biblioteca'             },
@@ -151,6 +152,7 @@ const UI = {
   renderView(view) {
     switch (view) {
       case 'dashboard':    return this.renderDashboard();
+      case 'marca':        return this.renderMarca();
       case 'generator':    return this.renderGenerator();
       case 'calendar':     return this.renderCalendar();
       case 'library':      return this.renderLibrary();
@@ -167,6 +169,7 @@ const UI = {
   bindView(view) {
     switch (view) {
       case 'dashboard':    this.bindDashboard();    break;
+      case 'marca':        this.bindMarca();        break;
       case 'generator':    this.bindGenerator();    break;
       case 'calendar':     this.bindCalendar();     break;
       case 'library':      this.bindLibrary();      break;
@@ -368,6 +371,241 @@ const UI = {
 
 
   // ══════════════════════════════════════════════════════════
+  // MARCA (BRAND HUB) VIEW
+  // ══════════════════════════════════════════════════════════
+  renderMarca() {
+    const tab = App._marcaTab || 'identidad';
+    const bs = Storage.getBrandSettings();
+    const profiles = Storage.getSocialProfiles();
+    const assets = Storage.getAssets();
+    const learnings = Storage.getLearnings();
+
+    const tabs = [
+      { id: 'identidad', label: 'Identidad Visual',  icon: 'fa-palette' },
+      { id: 'activos',   label: 'Activos',            icon: 'fa-images' },
+      { id: 'canales',   label: 'Canales Sociales',   icon: 'fa-share-nodes' },
+      { id: 'memoria',   label: 'Aprendizajes',       icon: 'fa-brain' },
+    ];
+
+    const tabContent = () => {
+      if (tab === 'identidad') {
+        const colors = [
+          { key: 'brand_primary',   label: 'Color primario',   default: '#0ea5e9' },
+          { key: 'brand_secondary', label: 'Color secundario', default: '#f97316' },
+          { key: 'brand_accent',    label: 'Acento',           default: '#10b981' },
+          { key: 'brand_neutral',   label: 'Neutro',           default: '#64748b' },
+          { key: 'brand_bg',        label: 'Fondo',            default: '#0f1c2e' },
+        ];
+        const logo = assets.find(a => a.type === 'logo');
+        return `
+<div class="space-y-6">
+  <!-- Logo -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Logo de la marca</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Sube el logo principal de FisioBox. Se usará como referencia visual.</p>
+    <div class="flex items-center gap-5">
+      <div id="logo-preview" class="flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
+        style="width:100px;height:100px;background:var(--glass-border);">
+        ${logo
+          ? `<img src="${logo.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />`
+          : `<i class="fa-regular fa-image text-2xl" style="color:var(--text-tertiary);"></i>`}
+      </div>
+      <div class="space-y-2">
+        <label id="logo-upload-btn" class="btn-primary px-5 py-2 text-sm font-medium cursor-pointer">
+          <i class="fa-solid fa-arrow-up-from-bracket mr-2"></i>${logo ? 'Reemplazar logo' : 'Subir logo'}
+          <input id="logo-file-input" type="file" accept="image/*" class="hidden" />
+        </label>
+        ${logo ? `<button id="logo-delete-btn" class="btn-ghost px-4 py-2 text-sm" style="color:var(--error);display:block;"><i class="fa-regular fa-trash-can mr-1"></i>Eliminar</button>` : ''}
+        <p class="text-xs" style="color:var(--text-tertiary);">PNG, JPG o WebP · máx. 1 MB</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color palette -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Paleta de colores</h3>
+    <p class="text-sm mb-5" style="color:var(--text-secondary);">Define los colores de tu identidad visual. Se adjuntan como contexto al generar contenido.</p>
+    <div class="space-y-4">
+      ${colors.map(c => `
+      <div class="flex items-center gap-4">
+        <input type="color" id="color-${c.key}" value="${bs[c.key] || c.default}"
+          class="flex-shrink-0 rounded cursor-pointer" style="width:44px;height:44px;border:none;padding:2px;background:var(--glass-border);" />
+        <div class="flex-1">
+          <div class="font-medium text-sm mb-1">${c.label}</div>
+          <input type="text" id="colorhex-${c.key}" value="${bs[c.key] || c.default}"
+            class="input text-xs" style="width:100px;padding:5px 8px;font-family:monospace;" maxlength="7" />
+        </div>
+      </div>`).join('')}
+    </div>
+    <button id="save-brand-colors" class="btn-primary px-6 py-2 mt-5 font-semibold">Guardar paleta</button>
+  </div>
+
+  <!-- Visual style -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Descripción del estilo visual</h3>
+    <p class="text-sm mb-3" style="color:var(--text-secondary);">Describe en pocas palabras la estética de tu marca. Ejemplo: "Limpio, deportivo, científico pero accesible, fotos de movimiento".</p>
+    <textarea id="visual-style-input" class="textarea" rows="3">${bs.visual_style || ''}</textarea>
+    <button id="save-visual-style" class="btn-primary px-6 py-2 mt-3 font-semibold">Guardar descripción</button>
+  </div>
+</div>`;
+      }
+
+      if (tab === 'activos') {
+        const nonLogoAssets = assets.filter(a => a.type !== 'logo');
+        const typeLabels = { photo: 'Foto de equipo', reference: 'Referencia visual', other: 'Otro' };
+        return `
+<div class="space-y-6">
+  <!-- Upload -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Subir activo</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Guarda fotos del equipo, referencias visuales o cualquier imagen de tu marca. Máx. 10 activos · 1 MB por archivo.</p>
+    <div class="flex items-center gap-3 flex-wrap">
+      <select id="asset-type-select" class="input" style="width:auto;">
+        <option value="photo">Foto de equipo</option>
+        <option value="reference">Referencia visual</option>
+        <option value="other">Otro</option>
+      </select>
+      <label id="asset-upload-btn" class="btn-primary px-5 py-2 text-sm font-medium cursor-pointer">
+        <i class="fa-solid fa-arrow-up-from-bracket mr-2"></i>Elegir imagen
+        <input id="asset-file-input" type="file" accept="image/*" class="hidden" />
+      </label>
+    </div>
+    ${nonLogoAssets.length >= 10 ? `<p class="text-xs mt-2" style="color:var(--warning);"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Has alcanzado el límite de 10 activos. Elimina uno para subir otro.</p>` : ''}
+  </div>
+
+  <!-- Asset grid -->
+  ${nonLogoAssets.length === 0 ? `
+  <div class="card p-10 text-center" style="color:var(--text-tertiary);">
+    <i class="fa-regular fa-images text-4xl mb-3 block"></i>
+    <p class="text-sm">Aún no tienes activos subidos.</p>
+  </div>` : `
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    ${nonLogoAssets.map(a => `
+    <div class="card p-0 overflow-hidden group">
+      <div class="relative" style="aspect-ratio:4/3;background:var(--glass-border);">
+        <img src="${a.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />
+        <button onclick="UI.deleteAssetAndRefresh('${a.id}')"
+          class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full w-7 h-7 flex items-center justify-center"
+          style="background:rgba(239,68,68,0.9);" title="Eliminar">
+          <i class="fa-solid fa-xmark text-white text-xs"></i>
+        </button>
+      </div>
+      <div class="p-3">
+        <div class="text-sm font-medium truncate">${a.name}</div>
+        <div class="pill mt-1 text-xs" style="background:var(--glass-border);color:var(--text-secondary);">${typeLabels[a.type] || a.type}</div>
+      </div>
+    </div>`).join('')}
+  </div>`}
+</div>`;
+      }
+
+      if (tab === 'canales') {
+        const channelFields = [
+          { key: 'instagram',       label: 'Instagram',        icon: 'fa-brands fa-instagram', placeholder: '@fisioboxcr',              help: 'Handle sin el @, ej. fisioboxcr' },
+          { key: 'facebook',        label: 'Facebook',         icon: 'fa-brands fa-facebook',  placeholder: 'https://facebook.com/...',  help: 'URL completa de la página' },
+          { key: 'tiktok',          label: 'TikTok',           icon: 'fa-brands fa-tiktok',    placeholder: '@fisioboxescazu',           help: 'Handle de TikTok' },
+          { key: 'website',         label: 'Sitio web',        icon: 'fa-solid fa-globe',      placeholder: 'https://fisiobox.cr',       help: 'URL del sitio web principal' },
+          { key: 'google_business', label: 'Google Business',  icon: 'fa-brands fa-google',    placeholder: 'FisioBox Escazú',           help: 'Nombre exacto en Google Maps' },
+        ];
+        return `
+<div class="card p-6">
+  <h3 class="font-bold text-lg mb-1">Canales activos</h3>
+  <p class="text-sm mb-6" style="color:var(--text-secondary);">Los agentes de IA usan esta información para contextualizar el contenido, mencionar tu handle correcto y entender en qué canales estás presente.</p>
+  <div class="space-y-5">
+    ${channelFields.map(f => `
+    <div>
+      <label class="label flex items-center gap-2">
+        <i class="${f.icon}" style="color:var(--accent);width:16px;text-align:center;"></i>${f.label}
+      </label>
+      <input id="channel-${f.key}" class="input" value="${profiles[f.key] || ''}" placeholder="${f.placeholder}" />
+      <p class="text-xs mt-1" style="color:var(--text-tertiary);">${f.help}</p>
+    </div>`).join('')}
+  </div>
+  <button id="save-channels" class="btn-primary px-6 py-2 mt-6 font-semibold">Guardar canales</button>
+</div>`;
+      }
+
+      if (tab === 'memoria') {
+        const typeLabel = { approval: 'Aprobado', rejection: 'Rechazado', note: 'Nota manual' };
+        const typeColor = { approval: 'var(--success)', rejection: 'var(--error)', note: 'var(--accent)' };
+        return `
+<div class="space-y-6">
+  <!-- Add manual note -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Añadir aprendizaje manual</h3>
+    <p class="text-sm mb-3" style="color:var(--text-secondary);">Escribe notas sobre preferencias, correcciones o decisiones de marca que quieras que los agentes recuerden.</p>
+    <textarea id="new-learning-input" class="textarea" rows="3" placeholder="Ej: El cliente prefiere no mencionar precios directamente. Los posts de lunes generan más engagement. Usar siempre el nombre completo 'FisioBox Escazú'."></textarea>
+    <button id="add-learning-btn" class="btn-primary px-5 py-2 mt-3 text-sm font-semibold">
+      <i class="fa-solid fa-plus mr-1"></i>Agregar aprendizaje
+    </button>
+  </div>
+
+  <!-- Learning list -->
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="font-bold text-lg">Historial de aprendizajes</h3>
+        <p class="text-xs mt-0.5" style="color:var(--text-tertiary);">${learnings.length} total · los últimos 10 se incluyen en todos los agentes</p>
+      </div>
+      ${learnings.length > 0 ? `<button id="clear-learnings-btn" class="btn-ghost px-4 py-2 text-sm" style="color:var(--error);"><i class="fa-regular fa-trash-can mr-1"></i>Limpiar</button>` : ''}
+    </div>
+    ${learnings.length === 0 ? `
+    <div class="text-center py-8" style="color:var(--text-tertiary);">
+      <i class="fa-solid fa-brain text-3xl mb-3 block"></i>
+      <p class="text-sm">Aún no hay aprendizajes. Se generan automáticamente cuando apruebas contenido, o puedes añadir notas manuales.</p>
+    </div>` : `
+    <div class="space-y-3">
+      ${[...learnings].reverse().map(l => `
+      <div class="flex items-start gap-3 p-3 rounded-xl" style="background:var(--glass-border);">
+        <span class="pill text-xs flex-shrink-0 mt-0.5" style="background:rgba(0,0,0,0.3);color:${typeColor[l.type] || 'var(--accent)'};">${typeLabel[l.type] || l.type}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm">${l.content}</p>
+          ${l.platform ? `<span class="text-xs" style="color:var(--text-tertiary);">${l.platform} · </span>` : ''}
+          <span class="text-xs" style="color:var(--text-tertiary);">${l.timestamp ? l.timestamp.slice(0, 10) : ''}</span>
+        </div>
+        <button onclick="Storage.deleteLearning('${l.id}');App._marcaTab='memoria';render();"
+          class="flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity" style="color:var(--text-tertiary);" title="Eliminar">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>`).join('')}
+    </div>`}
+  </div>
+</div>`;
+      }
+      return '';
+    };
+
+    return `
+<div class="max-w-3xl mx-auto space-y-6">
+  <!-- Header -->
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(14,165,233,0.1),var(--glass-bg));">
+    <h2 class="text-2xl font-bold mb-1">Identidad de Marca</h2>
+    <p style="color:var(--text-secondary);">Configura la identidad visual, activos, canales y memoria de los agentes de IA.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 flex-wrap">
+    ${tabs.map(t => `
+    <button id="marca-tab-${t.id}" onclick="App._marcaTab='${t.id}';render();"
+      class="px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
+      style="${tab === t.id
+        ? 'background:var(--accent);color:white;'
+        : 'background:var(--glass-bg);color:var(--text-secondary);border:1px solid var(--glass-border);'}">
+      <i class="fa-solid ${t.icon} text-xs"></i>${t.label}
+    </button>`).join('')}
+  </div>
+
+  <!-- Tab content -->
+  ${tabContent()}
+</div>`;
+  },
+
+  deleteAssetAndRefresh(id) {
+    Storage.deleteAsset(id);
+    render();
+  },
+
+  // ══════════════════════════════════════════════════════════
   // GENERATOR VIEW (multi-step)
   // ══════════════════════════════════════════════════════════
   renderGenerator() {
@@ -505,6 +743,7 @@ const UI = {
         <option value="comunidad" ${App.generatorData.category === 'comunidad' ? 'selected' : ''}>Comunidad</option>
       </select>
     </div>
+    ${this.renderBrandContextPanel()}
   </div>
   <div class="flex justify-between mt-6">
     <button id="step3-back" class="btn-ghost px-6 py-3">← Atrás</button>
@@ -514,6 +753,49 @@ const UI = {
   </div>
 </div>
     `;
+  },
+
+  renderBrandContextPanel() {
+    const bs = Storage.getBrandSettings();
+    const assets = Storage.getAssets().filter(a => a.type !== 'logo').slice(0, 4);
+    const logo = Storage.getAssets().find(a => a.type === 'logo');
+    const colors = ['brand_primary', 'brand_secondary', 'brand_accent'].map(k => bs[k]).filter(Boolean);
+    const hasIdentity = colors.length > 0 || logo || bs.visual_style;
+    const checked = App.generatorData.includeBrandContext;
+
+    return `
+<div class="rounded-xl overflow-hidden" style="border:1px solid var(--glass-border);">
+  <button type="button" id="brand-ctx-toggle"
+    class="w-full flex items-center justify-between px-4 py-3 text-left"
+    style="background:var(--glass-bg);">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-palette text-xs" style="color:var(--accent);"></i>
+      <span class="font-semibold text-sm">Contexto de marca</span>
+      ${hasIdentity ? `<span class="pill text-xs" style="background:rgba(14,165,233,0.15);color:var(--accent);">Identidad configurada</span>` : `<span class="text-xs" style="color:var(--text-tertiary);">Sin configurar — <a onclick="navigate('marca')" class="underline cursor-pointer">ir a Marca</a></span>`}
+    </div>
+    <i class="fa-solid fa-chevron-down text-xs transition-transform" id="brand-ctx-chevron"
+      style="${checked ? 'transform:rotate(180deg)' : ''}"></i>
+  </button>
+  <div id="brand-ctx-body" class="${checked ? '' : 'hidden'}" style="padding:12px 16px 16px;border-top:1px solid var(--glass-border);">
+    ${colors.length > 0 ? `
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-xs" style="color:var(--text-secondary);">Paleta:</span>
+      ${colors.map(c => `<span title="${c}" class="rounded-md inline-block" style="width:20px;height:20px;background:${c};border:1px solid rgba(255,255,255,0.1);"></span>`).join('')}
+    </div>` : ''}
+    ${logo ? `<div class="flex items-center gap-2 mb-3"><img src="${logo.dataUrl}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;" /><span class="text-xs" style="color:var(--text-secondary);">Logo cargado</span></div>` : ''}
+    ${assets.length > 0 ? `
+    <div class="flex gap-2 mb-3">
+      ${assets.map(a => `<img src="${a.dataUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" title="${a.name}" />`).join('')}
+      <span class="text-xs self-center" style="color:var(--text-secondary);">Activos de referencia</span>
+    </div>` : ''}
+    ${bs.visual_style ? `<p class="text-xs mb-3" style="color:var(--text-secondary);font-style:italic;">"${bs.visual_style}"</p>` : ''}
+    <label class="flex items-center gap-2 cursor-pointer select-none">
+      <input type="checkbox" id="include-brand-ctx" ${checked ? 'checked' : ''} />
+      <span class="text-sm">Incluir identidad visual en la generación</span>
+    </label>
+    ${!hasIdentity ? `<p class="text-xs mt-2" style="color:var(--text-tertiary);">Configura colores, logo o estilo visual en <a onclick="navigate('marca')" class="underline cursor-pointer">Marca → Identidad Visual</a> para usar esta función.</p>` : ''}
+  </div>
+</div>`;
   },
 
   getExtraFields(platform, format) {
@@ -625,6 +907,101 @@ const UI = {
   },
 
 
+  bindMarca() {
+    const tab = App._marcaTab || 'identidad';
+
+    // ── Logo upload ────────────────────────────────────────────
+    document.getElementById('logo-file-input')?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 1048576) { showToast('El archivo supera 1 MB', 'warning'); return; }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const existing = Storage.getAssets().find(a => a.type === 'logo');
+        Storage.saveAsset({ id: existing?.id || Date.now().toString(), name: file.name, type: 'logo', dataUrl: ev.target.result });
+        showToast('Logo guardado', 'success');
+        render();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('logo-delete-btn')?.addEventListener('click', () => {
+      const logo = Storage.getAssets().find(a => a.type === 'logo');
+      if (logo) { Storage.deleteAsset(logo.id); render(); }
+    });
+
+    // ── Brand colors ──────────────────────────────────────────
+    ['brand_primary', 'brand_secondary', 'brand_accent', 'brand_neutral', 'brand_bg'].forEach(key => {
+      const picker = document.getElementById(`color-${key}`);
+      const hexInput = document.getElementById(`colorhex-${key}`);
+      picker?.addEventListener('input', () => { if (hexInput) hexInput.value = picker.value; });
+      hexInput?.addEventListener('input', () => {
+        if (/^#[0-9a-fA-F]{6}$/.test(hexInput.value) && picker) picker.value = hexInput.value;
+      });
+    });
+
+    document.getElementById('save-brand-colors')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      ['brand_primary', 'brand_secondary', 'brand_accent', 'brand_neutral', 'brand_bg'].forEach(key => {
+        const val = document.getElementById(`colorhex-${key}`)?.value;
+        if (val) bs[key] = val;
+      });
+      Storage.setBrandSettings(bs);
+      showToast('Paleta guardada', 'success');
+    });
+
+    document.getElementById('save-visual-style')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      bs.visual_style = document.getElementById('visual-style-input')?.value || '';
+      Storage.setBrandSettings(bs);
+      showToast('Descripción guardada', 'success');
+    });
+
+    // ── Asset upload ───────────────────────────────────────────
+    document.getElementById('asset-file-input')?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 1048576) { showToast('El archivo supera 1 MB', 'warning'); return; }
+      const nonLogo = Storage.getAssets().filter(a => a.type !== 'logo');
+      if (nonLogo.length >= 10) { showToast('Límite de 10 activos alcanzado', 'warning'); return; }
+      const type = document.getElementById('asset-type-select')?.value || 'other';
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        Storage.saveAsset({ name: file.name, type, dataUrl: ev.target.result });
+        showToast('Activo guardado', 'success');
+        render();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ── Social channels ────────────────────────────────────────
+    document.getElementById('save-channels')?.addEventListener('click', () => {
+      const profiles = {};
+      ['instagram', 'facebook', 'tiktok', 'website', 'google_business'].forEach(k => {
+        profiles[k] = document.getElementById(`channel-${k}`)?.value.trim() || '';
+      });
+      Storage.setSocialProfiles(profiles);
+      showToast('Canales guardados', 'success');
+    });
+
+    // ── Learnings ──────────────────────────────────────────────
+    document.getElementById('add-learning-btn')?.addEventListener('click', () => {
+      const text = document.getElementById('new-learning-input')?.value.trim();
+      if (!text) { showToast('Escribe un aprendizaje primero', 'warning'); return; }
+      Storage.addLearning({ type: 'note', content: text });
+      showToast('Aprendizaje guardado', 'success');
+      render();
+    });
+
+    document.getElementById('clear-learnings-btn')?.addEventListener('click', () => {
+      if (confirm('¿Eliminar todos los aprendizajes? Los agentes dejarán de aplicar esta memoria.')) {
+        Storage.clearLearnings();
+        showToast('Historial eliminado', 'info');
+        render();
+      }
+    });
+  },
+
   bindGenerator() {
     const step = App.generatorStep || 1;
     if (step === 1) this.bindGenStep1();
@@ -695,6 +1072,19 @@ const UI = {
   },
 
   bindGenStep3() {
+    // Brand context panel toggle
+    document.getElementById('brand-ctx-toggle')?.addEventListener('click', () => {
+      const body = document.getElementById('brand-ctx-body');
+      const chevron = document.getElementById('brand-ctx-chevron');
+      if (body) {
+        const isHidden = body.classList.toggle('hidden');
+        if (chevron) chevron.style.transform = isHidden ? '' : 'rotate(180deg)';
+      }
+    });
+    document.getElementById('include-brand-ctx')?.addEventListener('change', (e) => {
+      App.generatorData.includeBrandContext = e.target.checked;
+    });
+
     document.querySelectorAll('#step3-back').forEach(btn => {
       btn.addEventListener('click', () => {
         App.generatorStep = 2;
@@ -716,6 +1106,7 @@ const UI = {
         App.generatorData.injury = document.getElementById('gen-injury')?.value?.trim() || '';
         App.generatorData.sport = document.getElementById('gen-sport')?.value?.trim() || '';
         App.generatorData.goal = document.getElementById('gen-goal')?.value || '';
+        App.generatorData.includeBrandContext = document.getElementById('include-brand-ctx')?.checked || false;
         App.generatorStep = 4;
         document.getElementById('generator-step-content').innerHTML = this.renderGenStep4();
         this.updateStepProgress(4);
@@ -764,7 +1155,17 @@ const UI = {
   },
 
   async runGeneration() {
-    const { platform, format, topic, brief, category, keywords, audience, injury, sport, goal } = App.generatorData;
+    const { platform, format, topic, category, keywords, audience, injury, sport, goal, includeBrandContext } = App.generatorData;
+    let brief = App.generatorData.brief || '';
+    if (includeBrandContext) {
+      const bs = Storage.getBrandSettings();
+      const parts = [];
+      if (bs.brand_primary)   parts.push(`Color primario: ${bs.brand_primary}`);
+      if (bs.brand_secondary) parts.push(`Color secundario: ${bs.brand_secondary}`);
+      if (bs.brand_accent)    parts.push(`Acento: ${bs.brand_accent}`);
+      if (bs.visual_style)    parts.push(`Estilo visual: ${bs.visual_style}`);
+      if (parts.length > 0) brief += `\n\nCONTEXTO VISUAL DE MARCA: ${parts.join(' · ')}`;
+    }
     const outputEl = document.getElementById('content-output');
     if (!outputEl) return;
 
@@ -1326,7 +1727,15 @@ const UI = {
     modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
     document.getElementById('update-draft-status').addEventListener('click', () => {
       const status = document.getElementById('draft-status-select').value;
+      const prevStatus = draft.status;
       Storage.saveDraft({ ...draft, status });
+      if ((status === 'approved' || status === 'published') && prevStatus !== status) {
+        Storage.addLearning({
+          type: 'approval',
+          platform: draft.platform,
+          content: `Contenido ${status === 'published' ? 'publicado' : 'aprobado'} en ${draft.platform}: "${draft.title || draft.topic}"${draft.category ? ` (categoría: ${draft.category})` : ''}`
+        });
+      }
       modal.remove();
       showToast('Estado actualizado', 'success');
       const main = document.querySelector('main');

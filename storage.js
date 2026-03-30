@@ -151,6 +151,37 @@ const Storage = {
     localStorage.removeItem('fisiobox_chat');
   },
 
+  // ── BRAND ASSETS ───────────────────────────────────────────
+  getAssets: () => JSON.parse(localStorage.getItem('fisiobox_brand_assets') || '[]'),
+  saveAsset: (asset) => {
+    const assets = Storage.getAssets();
+    const idx = assets.findIndex(a => a.id === asset.id);
+    if (idx > -1) assets[idx] = asset;
+    else assets.push({ ...asset, id: asset.id || Date.now().toString(), createdAt: new Date().toISOString() });
+    localStorage.setItem('fisiobox_brand_assets', JSON.stringify(assets));
+  },
+  deleteAsset: (id) => {
+    const assets = Storage.getAssets().filter(a => a.id !== id);
+    localStorage.setItem('fisiobox_brand_assets', JSON.stringify(assets));
+  },
+
+  // ── SOCIAL PROFILES ────────────────────────────────────────
+  getSocialProfiles: () => JSON.parse(localStorage.getItem('fisiobox_social_profiles') || '{}'),
+  setSocialProfiles: (profiles) => localStorage.setItem('fisiobox_social_profiles', JSON.stringify(profiles)),
+
+  // ── LEARNINGS / MEMORY ─────────────────────────────────────
+  getLearnings: () => JSON.parse(localStorage.getItem('fisiobox_learnings') || '[]'),
+  addLearning: (learning) => {
+    const all = Storage.getLearnings();
+    all.push({ ...learning, id: Date.now().toString(), timestamp: new Date().toISOString() });
+    localStorage.setItem('fisiobox_learnings', JSON.stringify(all.slice(-50)));
+  },
+  deleteLearning: (id) => {
+    const all = Storage.getLearnings().filter(l => l.id !== id);
+    localStorage.setItem('fisiobox_learnings', JSON.stringify(all));
+  },
+  clearLearnings: () => localStorage.removeItem('fisiobox_learnings'),
+
   // ── CLEAR ALL ──────────────────────────────────────────────
   clearAll: () => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith('fisiobox_'));
