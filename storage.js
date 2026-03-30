@@ -140,6 +140,17 @@ const Storage = {
     localStorage.setItem('fisiobox_whatsapp', JSON.stringify(seqs.slice(0, 50)));
   },
 
+  // ── CHAT HISTORY ───────────────────────────────────────────
+  getChatHistory: () => {
+    return JSON.parse(localStorage.getItem('fisiobox_chat') || '[]');
+  },
+  saveChatHistory: (messages) => {
+    localStorage.setItem('fisiobox_chat', JSON.stringify(messages.slice(-20)));
+  },
+  clearChatHistory: () => {
+    localStorage.removeItem('fisiobox_chat');
+  },
+
   // ── CLEAR ALL ──────────────────────────────────────────────
   clearAll: () => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith('fisiobox_'));

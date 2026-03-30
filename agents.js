@@ -61,7 +61,61 @@ async function callClaude(systemPrompt, userMessage, onChunk = null) {
   }
 }
 
-// Parse JSON from Claude response safely
+// Multi-turn chat function for AI assistant conversations
+async function callClaudeChat(systemPrompt, messages, onChunk = null) {
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) throw new Error('API key no configurada. Ve a Configuración para añadir tu clave de API.');
+
+  const body = {
+    model: MODEL,
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages,
+    stream: !!onChunk
+  };
+
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Error API: ${resp.status}`);
+  }
+
+  if (onChunk) {
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+      for (const line of lines) {
+        try {
+          const data = JSON.parse(line.slice(6));
+          if (data.type === 'content_block_delta' && data.delta?.text) {
+            fullText += data.delta.text;
+            onChunk(data.delta.text, fullText);
+          }
+        } catch {}
+      }
+    }
+    return fullText;
+  } else {
+    const data = await resp.json();
+    return data.content[0].text;
+  }
+}
+
 function parseJSON(text) {
   try {
     const match = text.match(/\{[\s\S]*\}/);

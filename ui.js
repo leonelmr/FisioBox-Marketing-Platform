@@ -770,6 +770,7 @@ const UI = {
 
     try {
       let generatedText = '';
+      outputEl.classList.add('streaming');
       const onChunk = (chunk, full) => {
         generatedText = full;
         outputEl.textContent = full;
@@ -789,7 +790,8 @@ const UI = {
       }
 
       generatedText = typeof result === 'string' ? result : result?.raw || '';
-      outputEl.textContent = generatedText;
+      outputEl.classList.remove('streaming');
+      outputEl.innerHTML = renderMarkdown(generatedText);
       App.generatorData.generatedContent = generatedText;
 
       Storage.incrementGenerated();
@@ -1095,6 +1097,7 @@ const UI = {
       const outputEl = document.getElementById('cal-plan-output');
       section.classList.remove('hidden');
       outputEl.innerHTML = '<span class="loading-dots">Generando plan de contenido</span>';
+      outputEl.classList.add('streaming');
       let planText = '';
       try {
         await Agents.generateCalendarPlan({ weeks: 4, primaryPlatform: 'Instagram' }, (chunk, full) => {
@@ -1102,6 +1105,8 @@ const UI = {
           outputEl.textContent = full;
           outputEl.scrollTop = outputEl.scrollHeight;
         });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(planText);
         showToast('Plan generado. ¡Revisa el panel de abajo!', 'success');
         btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Plan generado';
         document.getElementById('cal-copy-plan')?.addEventListener('click', () => copyToClipboard(planText, 'Plan de contenido'));
@@ -1410,12 +1415,15 @@ Puedes pegar datos de múltiples posts..."></textarea>
       outputEl.innerHTML = '<span class="loading-dots">Analizando métricas</span>';
 
       let fullText = '';
+      outputEl.classList.add('streaming');
       try {
         await Agents.analytics(metricsText, (chunk, full) => {
           fullText = full;
           outputEl.textContent = full;
           outputEl.scrollTop = outputEl.scrollHeight;
         });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(fullText);
 
         document.getElementById('copy-analytics')?.addEventListener('click', () => copyToClipboard(fullText, 'Análisis'));
         document.getElementById('save-analytics')?.addEventListener('click', () => {
@@ -1577,12 +1585,18 @@ Puedes pegar datos de múltiples posts..."></textarea>
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Procesando...';
         outputEl.classList.remove('hidden');
         outputEl.innerHTML = '<span class="loading-dots">Procesando</span>';
+        outputEl.classList.add('streaming');
+        let resultText = '';
         try {
           await agentFn((chunk, full) => {
+            resultText = full;
             outputEl.textContent = full;
             outputEl.scrollTop = outputEl.scrollHeight;
           });
+          outputEl.classList.remove('streaming');
+          outputEl.innerHTML = renderMarkdown(resultText);
         } catch (err) {
+          outputEl.classList.remove('streaming');
           outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
           showToast(err.message, 'error');
         } finally {
@@ -1718,6 +1732,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
       btn.disabled = true;
       outputEl.classList.remove('hidden');
       outputEl.innerHTML = '<span class="loading-dots">Generando secuencia</span>';
+      outputEl.classList.add('streaming');
       actionsEl.classList.add('hidden');
 
       try {
@@ -1731,6 +1746,8 @@ Puedes pegar datos de múltiples posts..."></textarea>
           outputEl.textContent = full;
           outputEl.scrollTop = outputEl.scrollHeight;
         });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(generatedWA);
 
         actionsEl.classList.remove('hidden');
         actionsEl.classList.add('flex');
