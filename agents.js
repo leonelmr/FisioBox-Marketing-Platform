@@ -367,6 +367,47 @@ Varía los 4 conceptos entre sí: uno más educativo, uno emocional/testimonial,
     return callClaude(systemPrompt, msg, onChunk);
   },
 
+  // 15. Extract image prompts from visual concepts text
+  async extractImagePrompts(conceptsText, topic) {
+    const system = `Eres un experto en prompts para generación de imágenes con IA (Flux, Stable Diffusion).
+Tu única tarea es extraer exactamente 4 prompts de imagen en inglés a partir de conceptos de producción visual.
+Responde SOLO con un JSON array de 4 strings. Sin explicaciones, sin markdown, sin bloque de código.`;
+
+    const msg = `Genera 4 prompts de imagen en inglés optimizados para Flux a partir de estos conceptos visuales.
+Tema general: "${topic}". Contexto: clínica de fisioterapia deportiva moderna.
+
+Reglas para los prompts:
+- En inglés
+- Fotorrealistas, cinemáticos, estilo editorial de salud/deporte
+- Incluir: sujeto principal, locación, iluminación, composición, mood
+- 60–120 caracteres por prompt
+- Sin texto negativo ("no X", "without X"), solo descripción positiva
+
+Conceptos:
+${conceptsText.slice(0, 3000)}
+
+Responde ÚNICAMENTE con el JSON array: ["prompt1", "prompt2", "prompt3", "prompt4"]`;
+
+    const raw = await callClaude(system, msg);
+    const match = raw.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error('No se pudieron extraer los prompts de imagen');
+    const prompts = JSON.parse(match[0]);
+    if (!Array.isArray(prompts) || prompts.length < 4) throw new Error('Respuesta de prompts inválida');
+    return prompts.slice(0, 4);
+  },
+
+  // 16. Load an image from Pollinations.ai (Flux, free, CORS-enabled)
+  loadPollinationsImage(prompt, index) {
+    const seed = 1000 + index * 137; // stable deterministic seeds per concept
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(url);
+      img.onerror = () => reject(new Error(`Error cargando imagen ${index + 1}`));
+      img.src = url;
+    });
+  },
+
   // ── COMBINED REVIEW PIPELINE ────────────────────────────────
   async runReviewPipeline(content, platform) {
     const [brandResult, medicalResult, engagementResult] = await Promise.all([

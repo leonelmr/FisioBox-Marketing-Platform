@@ -1113,6 +1113,22 @@ const UI = {
       </div>
       <p class="text-sm mb-4" style="color:var(--text-secondary);">La IA analiza tu contenido y propone 4 conceptos visuales listos para producción: escena, toma, texto en pantalla y mood.</p>
       <div id="visual-concepts-output" class="hidden content-output" style="max-height:600px;"></div>
+
+      <!-- Image generation — revealed after concepts finish -->
+      <div id="image-gen-section" class="hidden" style="border-top:1px solid var(--glass-border);margin-top:16px;padding-top:16px;">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-3">
+          <div>
+            <div class="font-semibold text-sm flex items-center gap-2">
+              <i class="fa-solid fa-image" style="color:var(--accent);"></i>Imágenes de referencia visual
+            </div>
+            <p class="text-xs mt-0.5" style="color:var(--text-tertiary);">Genera 4 imágenes con IA basadas en los conceptos. Powered by Flux — sin costo adicional.</p>
+          </div>
+          <button id="btn-gen-images" class="btn-primary px-5 py-2 text-sm font-medium">
+            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar 4 imágenes
+          </button>
+        </div>
+        <div id="image-grid" class="hidden grid grid-cols-2 gap-3"></div>
+      </div>
     </div>
 
   </div>
@@ -1736,11 +1752,78 @@ const UI = {
         });
         outputEl.classList.remove('streaming');
         outputEl.innerHTML = renderMarkdown(result);
+        // Reveal image generation section and wire button
+        document.getElementById('image-gen-section')?.classList.remove('hidden');
+        this.bindImageGenerationBtn(result, topic);
       } catch (err) {
         outputEl.classList.remove('streaming');
         outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
         showToast(err.message, 'error');
       } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
+    });
+  },
+
+  bindImageGenerationBtn(conceptsText, topic) {
+    const btn = document.getElementById('btn-gen-images');
+    const grid = document.getElementById('image-grid');
+    if (!btn || !grid) return;
+
+    btn.addEventListener('click', async () => {
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Extrayendo prompts...';
+
+      try {
+        // Step 1: Extract 4 image prompts from concepts text
+        const prompts = await Agents.extractImagePrompts(conceptsText, topic);
+
+        // Step 2: Show skeleton grid
+        grid.classList.remove('hidden');
+        grid.innerHTML = prompts.map((p, i) => `
+          <div id="img-card-${i}" class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:var(--glass-border);">
+            <div id="img-skeleton-${i}" class="absolute inset-0 flex flex-col items-center justify-center gap-2" style="color:var(--text-tertiary);">
+              <i class="fa-solid fa-spinner fa-spin text-xl"></i>
+              <span class="text-xs">Generando imagen ${i + 1}...</span>
+            </div>
+          </div>`).join('');
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando imágenes...';
+
+        // Step 3: Load images in parallel
+        await Promise.allSettled(prompts.map((prompt, i) =>
+          Agents.loadPollinationsImage(prompt, i).then(url => {
+            const card = document.getElementById(`img-card-${i}`);
+            const skeleton = document.getElementById(`img-skeleton-${i}`);
+            if (!card) return;
+            if (skeleton) skeleton.remove();
+            const img = document.createElement('img');
+            img.src = url;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            img.alt = `Concepto visual ${i + 1}`;
+            card.appendChild(img);
+            // Download overlay on hover
+            const overlay = document.createElement('div');
+            overlay.className = 'absolute inset-0 flex items-end p-2 opacity-0 hover:opacity-100 transition-opacity';
+            overlay.style.background = 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)';
+            overlay.innerHTML = `
+              <a href="${url}" download="fisiobox-concepto-${i + 1}.jpg" target="_blank"
+                class="btn-ghost px-3 py-1 text-xs" style="color:white;border-color:rgba(255,255,255,0.4);">
+                <i class="fa-solid fa-download mr-1"></i>Descargar
+              </a>`;
+            card.appendChild(overlay);
+          }).catch(() => {
+            const skeleton = document.getElementById(`img-skeleton-${i}`);
+            if (skeleton) skeleton.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span class="text-xs mt-1">Error</span>';
+          })
+        ));
+
+        btn.innerHTML = '<i class="fa-solid fa-rotate-right mr-1"></i>Regenerar';
+        btn.disabled = false;
+      } catch (err) {
+        showToast(err.message, 'error');
         btn.disabled = false;
         btn.innerHTML = origHTML;
       }
