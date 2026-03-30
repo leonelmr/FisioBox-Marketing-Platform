@@ -124,15 +124,38 @@ function parseJSON(text) {
   return null;
 }
 
-// Builds dynamic context from social profiles and learnings to append to every agent call
+// Builds dynamic context from brand settings, social profiles and learnings
 function getDynamicContext() {
+  const bs = Storage.getBrandSettings();
   const profiles = Storage.getSocialProfiles();
   const learnings = Storage.getLearnings();
   let ctx = '';
 
+  // Brand voice description
+  if (bs.brand_voice_description) {
+    ctx += `\n\n## VOZ DE MARCA:\n${bs.brand_voice_description}\n`;
+  }
+
+  // Tone calibration
+  const toneDesc = [
+    `Formalidad: ${bs.tone_formal}/100 (${bs.tone_formal >= 60 ? 'formal' : bs.tone_formal >= 40 ? 'neutral' : 'casual'})`,
+    `Tecnicismo: ${bs.tone_clinical}/100 (${bs.tone_clinical >= 60 ? 'clínico' : bs.tone_clinical >= 35 ? 'semi-técnico' : 'accesible'})`,
+    `Enfoque: ${bs.tone_educational}/100 (${bs.tone_educational >= 60 ? 'educativo' : bs.tone_educational >= 40 ? 'equilibrado' : 'promocional'})`,
+  ].join(' · ');
+  ctx += `\n\n## CALIBRACIÓN DE TONO:\n${toneDesc}\n`;
+
+  // Custom vocabulary
+  if (bs.preferred_vocabulary?.length) {
+    ctx += `\n\n## VOCABULARIO PREFERIDO:\n${bs.preferred_vocabulary.slice(0, 10).map(v => `- ${v}`).join('\n')}\n`;
+  }
+  if (bs.forbidden_phrases?.length) {
+    ctx += `\n\n## FRASES PROHIBIDAS (nunca usar):\n${bs.forbidden_phrases.slice(0, 10).map(v => `- ${v}`).join('\n')}\n`;
+  }
+
+  // Social channels
   const hasProfiles = Object.values(profiles).some(Boolean);
   if (hasProfiles) {
-    ctx += '\n\n## CANALES ACTIVOS DE LA MARCA:\n';
+    ctx += '\n\n## CANALES ACTIVOS:\n';
     if (profiles.instagram)       ctx += `- Instagram: ${profiles.instagram}\n`;
     if (profiles.facebook)        ctx += `- Facebook: ${profiles.facebook}\n`;
     if (profiles.tiktok)          ctx += `- TikTok: ${profiles.tiktok}\n`;
@@ -140,6 +163,7 @@ function getDynamicContext() {
     if (profiles.google_business) ctx += `- Google Business: ${profiles.google_business}\n`;
   }
 
+  // Recent learnings
   const recent = learnings.slice(-10);
   if (recent.length > 0) {
     ctx += '\n\n## APRENDIZAJES RECIENTES (aplícalos al generar contenido):\n';
@@ -281,7 +305,36 @@ Genera mensajes cálidos, personales y listos para enviar por WhatsApp.`;
     return callClaude(PROMPTS.patientNurture, msg, onChunk);
   },
 
-  // 13. Visual Concepts Agent
+  // 13. Tone Preview Agent
+  async tonePreview(bs, onChunk) {
+    const formal      = bs.tone_formal ?? 50;
+    const clinical    = bs.tone_clinical ?? 30;
+    const educational = bs.tone_educational ?? 70;
+    const voiceDesc   = bs.brand_voice_description || '';
+    const preferred   = (bs.preferred_vocabulary || []).slice(0, 5).join(', ');
+    const forbidden   = (bs.forbidden_phrases || []).slice(0, 5).join(', ');
+
+    const system = `Eres el copywriter de FisioBox, una clínica de fisioterapia deportiva en Escazú, Costa Rica.
+Tu única tarea es generar una muestra de contenido aplicando exactamente la configuración de voz indicada.
+NO expliques tu proceso. NO agregues comentarios. Solo entrega el contenido.`;
+
+    const msg = `Genera UN caption de Instagram (máximo 4 oraciones) sobre los beneficios del fortalecimiento muscular para prevenir lesiones en corredores. Aplica esta configuración de voz exacta:
+
+CALIBRACIÓN:
+- Formalidad: ${formal}/100 → ${formal >= 60 ? 'tono formal y profesional' : formal >= 40 ? 'tono neutral, ni muy casual ni muy formal' : 'tono casual y cercano'}
+- Tecnicismo: ${clinical}/100 → ${clinical >= 60 ? 'usa terminología clínica y técnica' : clinical >= 35 ? 'mezcla términos técnicos con lenguaje accesible' : 'lenguaje completamente accesible, sin jerga médica'}
+- Enfoque: ${educational}/100 → ${educational >= 60 ? 'principalmente educativo, aporta conocimiento' : educational >= 40 ? 'equilibra información con promoción' : 'orientado a promocionar el servicio'}
+
+${voiceDesc ? `VOZ DE MARCA: ${voiceDesc}` : ''}
+${preferred ? `FRASES QUE DEBES USAR (al menos una): ${preferred}` : ''}
+${forbidden ? `FRASES PROHIBIDAS (nunca incluir): ${forbidden}` : ''}
+
+Entrega solo el caption, sin emojis iniciales, sin hashtags, sin explicación.`;
+
+    return callClaude(system, msg, onChunk);
+  },
+
+  // 14. Visual Concepts Agent
   async visualConcepts({ platform, format, topic, brief = '' }, onChunk) {
     const systemPrompt = `Eres un director creativo y productor de contenido visual para FisioBox, clínica de fisioterapia deportiva en Escazú, Costa Rica.
 Tu trabajo es generar conceptos visuales concretos, listos para producción, que complementen piezas de contenido de marketing.

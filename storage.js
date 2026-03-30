@@ -32,7 +32,10 @@ const Storage = {
         condicion: ['#lesionesdeportivas', '#prevencionlesiones', '#fisioterapia', '#salud']
       },
       medical_disclaimer: 'Consulta con tu fisioterapeuta antes de iniciar cualquier programa de ejercicio. El contenido de este post es educativo y no reemplaza la evaluación clínica individualizada.',
-      results_disclaimer: 'Los resultados pueden variar según cada persona y condición.'
+      results_disclaimer: 'Los resultados pueden variar según cada persona y condición.',
+      brand_voice_description: '',
+      brand_primary: '', brand_secondary: '', brand_accent: '',
+      brand_neutral: '', brand_bg: '', visual_style: ''
     };
     const saved = localStorage.getItem('fisiobox_brand_settings');
     return saved ? { ...defaults, ...JSON.parse(saved) } : defaults;

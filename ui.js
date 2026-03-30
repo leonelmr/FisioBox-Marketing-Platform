@@ -381,10 +381,11 @@ const UI = {
     const learnings = Storage.getLearnings();
 
     const tabs = [
-      { id: 'identidad', label: 'Identidad Visual',  icon: 'fa-palette' },
-      { id: 'activos',   label: 'Activos',            icon: 'fa-images' },
-      { id: 'canales',   label: 'Canales Sociales',   icon: 'fa-share-nodes' },
-      { id: 'memoria',   label: 'Aprendizajes',       icon: 'fa-brain' },
+      { id: 'identidad', label: 'Identidad Visual', icon: 'fa-palette' },
+      { id: 'activos',   label: 'Activos',           icon: 'fa-images' },
+      { id: 'voz',       label: 'Voz de Marca',      icon: 'fa-microphone' },
+      { id: 'canales',   label: 'Canales',           icon: 'fa-share-nodes' },
+      { id: 'memoria',   label: 'Memoria',           icon: 'fa-brain' },
     ];
 
     const tabContent = () => {
@@ -496,6 +497,150 @@ const UI = {
       </div>
     </div>`).join('')}
   </div>`}
+</div>`;
+      }
+
+      if (tab === 'voz') {
+        const pillarDefs = [
+          { key: 'educativo',     label: 'Educativo',       desc: 'Consejos, ejercicios, anatomía' },
+          { key: 'promocional',   label: 'Promocional',     desc: 'Servicios, precios, ofertas' },
+          { key: 'prueba_social', label: 'Prueba Social',   desc: 'Testimonios, casos de éxito' },
+          { key: 'cultura',       label: 'Cultura clínica', desc: 'Equipo, instalaciones, detrás de escenas' },
+          { key: 'comunidad',     label: 'Comunidad',       desc: 'Eventos, deporte local, comunidad CR' },
+        ];
+        return `
+<div class="space-y-6">
+
+  <!-- Brand voice description -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Descripción de la voz de marca</h3>
+    <p class="text-sm mb-3" style="color:var(--text-secondary);">Describe cómo habla FisioBox: personalidad, estilo narrativo, relación con el paciente. Esta descripción se inyecta en todos los agentes de IA.</p>
+    <textarea id="brand-voice-desc" class="textarea" rows="4"
+      placeholder="Ej: FisioBox habla como un experto accesible — usa términos técnicos pero siempre los explica. Es cercano, motivador y honesto. Nunca promete resultados milagrosos. Trata al paciente como un deportista serio, no como un enfermo."
+    >${bs.brand_voice_description || ''}</textarea>
+    <button id="save-voice-desc" class="btn-primary px-6 py-2 mt-3 font-semibold">Guardar descripción</button>
+  </div>
+
+  <!-- Tone sliders -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Ajuste de tono</h3>
+    <p class="text-sm mb-5" style="color:var(--text-secondary);">Calibra los matices de comunicación. Los agentes interpretan estos valores al generar contenido.</p>
+    <div class="space-y-6">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="label m-0">Formalidad</label>
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
+            <span>Casual</span>
+            <span id="tone-formal-val" class="font-bold" style="color:var(--accent);">${bs.tone_formal}</span>
+            <span>Formal</span>
+          </div>
+        </div>
+        <input type="range" id="tone-formal" min="0" max="100" value="${bs.tone_formal}" class="w-full" />
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="label m-0">Tecnicismo</label>
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
+            <span>Accesible</span>
+            <span id="tone-clinical-val" class="font-bold" style="color:var(--accent);">${bs.tone_clinical}</span>
+            <span>Clínico</span>
+          </div>
+        </div>
+        <input type="range" id="tone-clinical" min="0" max="100" value="${bs.tone_clinical}" class="w-full" />
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="label m-0">Enfoque</label>
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
+            <span>Promocional</span>
+            <span id="tone-educational-val" class="font-bold" style="color:var(--accent);">${bs.tone_educational}</span>
+            <span>Educativo</span>
+          </div>
+        </div>
+        <input type="range" id="tone-educational" min="0" max="100" value="${bs.tone_educational}" class="w-full" />
+      </div>
+    </div>
+    <button id="save-brand-tone" class="btn-primary px-6 py-2 mt-5 font-semibold">Guardar tono</button>
+  </div>
+
+  <!-- Tone preview -->
+  <div class="card p-6">
+    <div class="flex items-center justify-between flex-wrap gap-3 mb-2">
+      <div>
+        <h3 class="font-bold text-lg">Preview de voz</h3>
+        <p class="text-sm" style="color:var(--text-secondary);">Genera una muestra de cómo sonará FisioBox con la configuración actual.</p>
+      </div>
+      <button id="btn-tone-preview" class="btn-orange px-5 py-2 text-sm font-semibold">
+        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar muestra
+      </button>
+    </div>
+    <div id="tone-preview-output" class="hidden mt-4 p-4 rounded-xl" style="background:var(--glass-border);">
+      <div class="text-xs font-semibold mb-2" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">
+        <i class="fa-brands fa-instagram mr-1"></i>Muestra · Caption Instagram
+      </div>
+      <div id="tone-preview-text" class="text-sm content-output" style="max-height:none;background:none;padding:0;border:none;"></div>
+    </div>
+  </div>
+
+  <!-- Content pillars -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Distribución de pilares de contenido</h3>
+    <p class="text-sm mb-5" style="color:var(--text-secondary);">Define qué porcentaje de tu contenido dedicarás a cada pilar. El total debe sumar 100%.</p>
+    <div class="space-y-4">
+      ${pillarDefs.map(p => `
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="label m-0">${p.label}</label>
+          <div class="flex items-center gap-2">
+            <input id="pillar-${p.key}" type="number" min="0" max="100"
+              value="${bs.pillars[p.key] || 0}"
+              class="input text-center" style="width:70px;padding:6px;font-size:1rem;font-weight:bold;color:var(--accent);" />
+            <span class="text-sm" style="color:var(--text-tertiary);">%</span>
+          </div>
+        </div>
+        <p class="text-xs mb-2" style="color:var(--text-tertiary);">${p.desc}</p>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${bs.pillars[p.key] || 0}%;background:var(--accent);"></div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <button id="save-pillars" class="btn-primary px-6 py-2 mt-5 font-semibold">Guardar distribución</button>
+  </div>
+
+  <!-- Vocabulary -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Vocabulario de marca</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Los agentes evitan las frases prohibidas y priorizan las preferidas en todo el contenido generado.</p>
+    <div class="space-y-4">
+      <div>
+        <label class="label">Frases preferidas <span style="color:var(--text-tertiary);">(una por línea)</span></label>
+        <textarea id="preferred-vocab" class="textarea" rows="5">${(bs.preferred_vocabulary || []).join('\n')}</textarea>
+      </div>
+      <div>
+        <label class="label">Frases prohibidas <span style="color:var(--text-tertiary);">(una por línea)</span></label>
+        <textarea id="forbidden-phrases" class="textarea" rows="4">${(bs.forbidden_phrases || []).join('\n')}</textarea>
+      </div>
+    </div>
+    <button id="save-vocab" class="btn-primary px-6 py-2 mt-4 font-semibold">Guardar vocabulario</button>
+  </div>
+
+  <!-- Medical disclaimers -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Avisos médicos</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">El agente de seguridad médica verifica que el contenido incluya estos avisos cuando es necesario.</p>
+    <div class="space-y-4">
+      <div>
+        <label class="label">Disclaimer médico principal</label>
+        <textarea id="medical-disclaimer" class="textarea" rows="3">${bs.medical_disclaimer || ''}</textarea>
+      </div>
+      <div>
+        <label class="label">Disclaimer de resultados</label>
+        <textarea id="results-disclaimer" class="textarea" rows="2">${bs.results_disclaimer || ''}</textarea>
+      </div>
+    </div>
+    <button id="save-disclaimers" class="btn-primary px-6 py-2 mt-4 font-semibold">Guardar avisos</button>
+  </div>
+
 </div>`;
       }
 
@@ -1241,6 +1386,93 @@ const UI = {
         render();
       };
       reader.readAsDataURL(file);
+    });
+
+    // ── Voz de Marca ──────────────────────────────────────────
+    document.getElementById('save-voice-desc')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      bs.brand_voice_description = document.getElementById('brand-voice-desc')?.value || '';
+      Storage.setBrandSettings(bs);
+      showToast('Descripción de voz guardada', 'success');
+    });
+
+    ['tone-formal', 'tone-clinical', 'tone-educational'].forEach(id => {
+      const el = document.getElementById(id);
+      const valEl = document.getElementById(id + '-val');
+      if (el && valEl) el.addEventListener('input', () => { valEl.textContent = el.value; });
+    });
+
+    document.getElementById('save-brand-tone')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      bs.tone_formal      = parseInt(document.getElementById('tone-formal')?.value || 50);
+      bs.tone_clinical    = parseInt(document.getElementById('tone-clinical')?.value || 30);
+      bs.tone_educational = parseInt(document.getElementById('tone-educational')?.value || 70);
+      Storage.setBrandSettings(bs);
+      showToast('Tono guardado', 'success');
+    });
+
+    document.getElementById('save-pillars')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      const keys = ['educativo', 'promocional', 'prueba_social', 'cultura', 'comunidad'];
+      let total = 0;
+      const vals = {};
+      keys.forEach(k => {
+        const v = parseInt(document.getElementById('pillar-' + k)?.value || 0);
+        vals[k] = v;
+        total += v;
+      });
+      if (total !== 100) { showToast(`El total es ${total}%. Debe sumar exactamente 100%.`, 'warning'); return; }
+      bs.pillars = vals;
+      Storage.setBrandSettings(bs);
+      showToast('Distribución guardada', 'success');
+      render();
+    });
+
+    document.getElementById('save-vocab')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      bs.preferred_vocabulary = document.getElementById('preferred-vocab')?.value.split('\n').map(s => s.trim()).filter(Boolean) || [];
+      bs.forbidden_phrases    = document.getElementById('forbidden-phrases')?.value.split('\n').map(s => s.trim()).filter(Boolean) || [];
+      Storage.setBrandSettings(bs);
+      showToast('Vocabulario guardado', 'success');
+    });
+
+    document.getElementById('save-disclaimers')?.addEventListener('click', () => {
+      const bs = Storage.getBrandSettings();
+      bs.medical_disclaimer = document.getElementById('medical-disclaimer')?.value || '';
+      bs.results_disclaimer = document.getElementById('results-disclaimer')?.value || '';
+      Storage.setBrandSettings(bs);
+      showToast('Avisos guardados', 'success');
+    });
+
+    // ── Tone preview ───────────────────────────────────────────
+    document.getElementById('btn-tone-preview')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-tone-preview');
+      const outputWrap = document.getElementById('tone-preview-output');
+      const outputEl = document.getElementById('tone-preview-text');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando...';
+      outputWrap.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.textContent = '';
+      const bs = Storage.getBrandSettings();
+      let result = '';
+      try {
+        await Agents.tonePreview(bs, (chunk, full) => {
+          result = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(result);
+      } catch (err) {
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
     });
 
     // ── Social channels ────────────────────────────────────────
@@ -2848,10 +3080,9 @@ Puedes pegar datos de múltiples posts..."></textarea>
   // SETTINGS VIEW
   // ══════════════════════════════════════════════════════════
   renderSettings() {
-    const bs = Storage.getBrandSettings();
     const apiKey = Storage.getApiKey();
     return `
-<div class="max-w-3xl mx-auto space-y-6">
+<div class="max-w-2xl mx-auto space-y-6">
 
   <!-- API Key -->
   <div class="card p-6">
@@ -2863,116 +3094,21 @@ Puedes pegar datos de múltiples posts..."></textarea>
         value="${apiKey ? apiKey.substring(0, 8) + '••••••••••••••••••••' : ''}" />
       <button id="save-api-key" class="btn-primary px-6 py-2 font-semibold flex-shrink-0">Guardar</button>
     </div>
-    ${apiKey ? `<p class="text-xs mt-2" style="color:var(--success);"><i class="fa-solid fa-circle-check mr-1"></i>Clave configurada</p>` : `<p class="text-xs mt-2" style="color:var(--warning);"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Sin clave configurada</p>`}
+    ${apiKey
+      ? `<p class="text-xs mt-2" style="color:var(--success);"><i class="fa-solid fa-circle-check mr-1"></i>Clave configurada</p>`
+      : `<p class="text-xs mt-2" style="color:var(--warning);"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Sin clave configurada</p>`}
   </div>
 
-  <!-- Brand tone sliders -->
-  <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2">Tono de marca</h3>
-    <p class="text-sm mb-5" style="color:var(--text-secondary);">Configura cómo debe sonar FisioBox en el contenido generado.</p>
-    <div class="space-y-6">
-
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <label class="label m-0">Formalidad</label>
-          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
-            <span>Casual</span>
-            <span id="tone-formal-val" class="font-bold" style="color:var(--accent);">${bs.tone_formal}</span>
-            <span>Formal</span>
-          </div>
-        </div>
-        <input type="range" id="tone-formal" min="0" max="100" value="${bs.tone_formal}" class="w-full" />
-      </div>
-
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <label class="label m-0">Tecnicismo</label>
-          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
-            <span>Accesible</span>
-            <span id="tone-clinical-val" class="font-bold" style="color:var(--accent);">${bs.tone_clinical}</span>
-            <span>Clínico</span>
-          </div>
-        </div>
-        <input type="range" id="tone-clinical" min="0" max="100" value="${bs.tone_clinical}" class="w-full" />
-      </div>
-
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <label class="label m-0">Enfoque</label>
-          <div class="flex items-center gap-3 text-xs" style="color:var(--text-secondary);">
-            <span>Promocional</span>
-            <span id="tone-educational-val" class="font-bold" style="color:var(--accent);">${bs.tone_educational}</span>
-            <span>Educativo</span>
-          </div>
-        </div>
-        <input type="range" id="tone-educational" min="0" max="100" value="${bs.tone_educational}" class="w-full" />
-      </div>
+  <!-- Pointer to Marca -->
+  <div class="card p-5 flex items-center gap-4" style="background:linear-gradient(135deg,rgba(14,165,233,0.08),var(--glass-bg));">
+    <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(14,165,233,0.15);">
+      <i class="fa-solid fa-palette" style="color:var(--accent);"></i>
     </div>
-    <button id="save-brand-tone" class="btn-primary px-6 py-2 mt-5 font-semibold">Guardar configuración de tono</button>
-  </div>
-
-  <!-- Content pillars -->
-  <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2">Distribución de pilares de contenido</h3>
-    <p class="text-sm mb-5" style="color:var(--text-secondary);">Define qué porcentaje de tu contenido dedicarás a cada pilar. El total debe sumar 100%.</p>
-    <div class="space-y-4">
-      ${[
-        { key: 'educativo',     label: 'Educativo',      desc: 'Consejos, ejercicios, anatomía' },
-        { key: 'promocional',   label: 'Promocional',    desc: 'Servicios, precios, ofertas' },
-        { key: 'prueba_social', label: 'Prueba Social',  desc: 'Testimonios, casos de éxito' },
-        { key: 'cultura',       label: 'Cultura clínica',desc: 'Equipo, instalaciones, detrás de escenas' },
-        { key: 'comunidad',     label: 'Comunidad',      desc: 'Eventos, deporte local, comunidad CR' },
-      ].map(p => `
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="label m-0">${p.label}</label>
-            <div class="flex items-center gap-2">
-              <input id="pillar-${p.key}" type="number" min="0" max="100"
-                value="${bs.pillars[p.key] || 0}"
-                class="input text-center" style="width:70px;padding:6px;font-size:1rem;font-weight:bold;color:var(--accent);" />
-              <span class="text-sm" style="color:var(--text-tertiary);">%</span>
-            </div>
-          </div>
-          <p class="text-xs mb-2" style="color:var(--text-tertiary);">${p.desc}</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:${bs.pillars[p.key] || 0}%;background:var(--accent);"></div>
-          </div>
-        </div>
-      `).join('')}
+    <div class="flex-1">
+      <div class="font-semibold text-sm">Configuración de marca</div>
+      <div class="text-xs mt-0.5" style="color:var(--text-secondary);">Tono, voz, pilares de contenido, vocabulario y avisos médicos han sido movidos a la sección <strong>Marca → Voz de Marca</strong>.</div>
     </div>
-    <button id="save-pillars" class="btn-primary px-6 py-2 mt-5 font-semibold">Guardar distribución</button>
-  </div>
-
-  <!-- Vocabulary -->
-  <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2">Vocabulario de marca</h3>
-    <div class="space-y-4">
-      <div>
-        <label class="label">Frases preferidas (una por línea)</label>
-        <textarea id="preferred-vocab" class="textarea" rows="5">${(bs.preferred_vocabulary || []).join('\n')}</textarea>
-      </div>
-      <div>
-        <label class="label">Frases prohibidas (una por línea)</label>
-        <textarea id="forbidden-phrases" class="textarea" rows="4">${(bs.forbidden_phrases || []).join('\n')}</textarea>
-      </div>
-    </div>
-    <button id="save-vocab" class="btn-primary px-6 py-2 mt-4 font-semibold">Guardar vocabulario</button>
-  </div>
-
-  <!-- Medical disclaimers -->
-  <div class="card p-6">
-    <h3 class="font-bold text-lg mb-2">Avisos médicos</h3>
-    <div class="space-y-4">
-      <div>
-        <label class="label">Disclaimer médico principal</label>
-        <textarea id="medical-disclaimer" class="textarea" rows="3">${bs.medical_disclaimer || ''}</textarea>
-      </div>
-      <div>
-        <label class="label">Disclaimer de resultados</label>
-        <textarea id="results-disclaimer" class="textarea" rows="2">${bs.results_disclaimer || ''}</textarea>
-      </div>
-    </div>
-    <button id="save-disclaimers" class="btn-primary px-6 py-2 mt-4 font-semibold">Guardar avisos</button>
+    <button onclick="navigate('marca');App._marcaTab='voz';" class="btn-primary px-4 py-2 text-sm flex-shrink-0">Ir a Marca</button>
   </div>
 
   <!-- Danger zone -->
@@ -2989,7 +3125,6 @@ Puedes pegar datos de múltiples posts..."></textarea>
   },
 
   bindSettings() {
-    // API Key
     document.getElementById('save-api-key')?.addEventListener('click', () => {
       const val = document.getElementById('api-key-input').value.trim();
       if (!val || val.includes('•')) { showToast('Ingresa una clave válida', 'warning'); return; }
@@ -2998,63 +3133,6 @@ Puedes pegar datos de múltiples posts..."></textarea>
       render();
     });
 
-    // Tone sliders
-    ['tone-formal', 'tone-clinical', 'tone-educational'].forEach(id => {
-      const el = document.getElementById(id);
-      const valEl = document.getElementById(id + '-val');
-      if (el && valEl) {
-        el.addEventListener('input', () => { valEl.textContent = el.value; });
-      }
-    });
-
-    document.getElementById('save-brand-tone')?.addEventListener('click', () => {
-      const bs = Storage.getBrandSettings();
-      bs.tone_formal = parseInt(document.getElementById('tone-formal')?.value || 50);
-      bs.tone_clinical = parseInt(document.getElementById('tone-clinical')?.value || 30);
-      bs.tone_educational = parseInt(document.getElementById('tone-educational')?.value || 70);
-      Storage.setBrandSettings(bs);
-      showToast('Configuración de tono guardada', 'success');
-    });
-
-    // Pillars
-    document.getElementById('save-pillars')?.addEventListener('click', () => {
-      const bs = Storage.getBrandSettings();
-      const keys = ['educativo', 'promocional', 'prueba_social', 'cultura', 'comunidad'];
-      let total = 0;
-      const vals = {};
-      keys.forEach(k => {
-        const v = parseInt(document.getElementById('pillar-' + k)?.value || 0);
-        vals[k] = v;
-        total += v;
-      });
-      if (total !== 100) { showToast(`El total es ${total}%. Debe sumar exactamente 100%.`, 'warning'); return; }
-      bs.pillars = vals;
-      Storage.setBrandSettings(bs);
-      showToast('Distribución de pilares guardada', 'success');
-      render();
-    });
-
-    // Vocabulary
-    document.getElementById('save-vocab')?.addEventListener('click', () => {
-      const bs = Storage.getBrandSettings();
-      const preferred = document.getElementById('preferred-vocab')?.value.split('\n').map(s => s.trim()).filter(Boolean) || [];
-      const forbidden = document.getElementById('forbidden-phrases')?.value.split('\n').map(s => s.trim()).filter(Boolean) || [];
-      bs.preferred_vocabulary = preferred;
-      bs.forbidden_phrases = forbidden;
-      Storage.setBrandSettings(bs);
-      showToast('Vocabulario guardado', 'success');
-    });
-
-    // Disclaimers
-    document.getElementById('save-disclaimers')?.addEventListener('click', () => {
-      const bs = Storage.getBrandSettings();
-      bs.medical_disclaimer = document.getElementById('medical-disclaimer')?.value || '';
-      bs.results_disclaimer = document.getElementById('results-disclaimer')?.value || '';
-      Storage.setBrandSettings(bs);
-      showToast('Avisos médicos guardados', 'success');
-    });
-
-    // Clear all
     document.getElementById('clear-all-data')?.addEventListener('click', () => {
       if (confirm('¿Estás seguro? Se eliminarán TODOS los datos: borradores, calendario, campañas, configuración y estadísticas. Esta acción no se puede deshacer.')) {
         Storage.clearAll();
