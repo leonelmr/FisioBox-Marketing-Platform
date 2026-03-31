@@ -2916,343 +2916,257 @@ Puedes pegar datos de múltiples posts..."></textarea>
   // INTELLIGENCE VIEW
   // ══════════════════════════════════════════════════════════
   renderIntelligence() {
-    return `
-<div class="space-y-6">
+    const activeTab = App._intelTab || 'tendencias';
+    const tools = [
+      { id: 'tendencias',   label: 'Tendencias',   icon: 'fa-microphone',    color: 'var(--accent)',        colorRaw: '#0ea5e9' },
+      { id: 'competencia',  label: 'Competencia',  icon: 'fa-chart-line',    color: 'var(--error)',         colorRaw: '#ff453a' },
+      { id: 'seo',          label: 'SEO',           icon: 'fa-magnifying-glass', color: 'var(--success)',   colorRaw: '#30d158' },
+      { id: 'rtp',          label: 'RTP',           icon: 'fa-person-running', color: 'var(--accent-orange)', colorRaw: '#f97316' },
+      { id: 'testimonios',  label: 'Testimonios',  icon: 'fa-star',          color: '#ec4899',              colorRaw: '#ec4899' },
+    ];
+    const active = tools.find(t => t.id === activeTab);
 
-  <!-- Header -->
-  <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    const tabContent = () => {
+
+      if (activeTab === 'tendencias') return `
+<div class="space-y-5">
+  <div class="rounded-xl p-4" style="background:rgba(10,132,255,0.07);border:1px solid rgba(10,132,255,0.2);">
+    <p class="text-sm font-semibold mb-1" style="color:var(--accent);">Qué obtendrás</p>
+    <ul class="space-y-1 text-sm" style="color:var(--text-secondary);">
+      ${['Temas de alto interés esta semana en fisio y deporte','Formatos y ángulos de contenido recomendados','Sugerencias de hashtags y horarios de publicación'].map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0 text-xs" style="color:var(--success);"></i>${i}</li>`).join('')}
+    </ul>
+  </div>
+  <div>
+    <label class="label">Contexto de la semana <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+    <input id="listener-context" class="input mb-3" type="text"
+      placeholder="Ej: inicio temporada fútbol, semana del back to school, torneo nacional..." />
+    <button id="run-listener" class="btn-primary w-full py-2.5 text-sm font-semibold">
+      <i class="fa-solid fa-microphone mr-2"></i>Analizar tendencias
+    </button>
+  </div>
+  <div id="listener-output-wrap" class="hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-semibold" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('listener-output')"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+    <div id="listener-output" class="content-output" style="min-height:200px;"></div>
+  </div>
+</div>`;
+
+      if (activeTab === 'competencia') return `
+<div class="space-y-5">
+  <div class="rounded-xl p-4" style="background:rgba(255,69,58,0.07);border:1px solid rgba(255,69,58,0.2);">
+    <p class="text-sm font-semibold mb-1" style="color:var(--error);">Qué obtendrás</p>
+    <ul class="space-y-1 text-sm" style="color:var(--text-secondary);">
+      ${['Fortalezas y debilidades de la competencia local','Brechas de contenido que nadie está cubriendo','Oportunidades de diferenciación para FisioBox'].map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0 text-xs" style="color:var(--success);"></i>${i}</li>`).join('')}
+    </ul>
+  </div>
+  <div>
+    <label class="label">Novedades del mercado <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+    <input id="competitor-context" class="input mb-3" type="text"
+      placeholder="Ej: abrió nueva clínica en Escazú, clínica X publicó mucho sobre rodilla..." />
+    <button id="run-competitor" class="btn-primary w-full py-2.5 text-sm font-semibold" style="background:var(--error);">
+      <i class="fa-solid fa-chart-line mr-2"></i>Analizar competencia
+    </button>
+  </div>
+  <div id="competitor-output-wrap" class="hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-semibold" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('competitor-output')"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+    <div id="competitor-output" class="content-output" style="min-height:200px;"></div>
+  </div>
+</div>`;
+
+      if (activeTab === 'seo') return `
+<div class="space-y-5">
+  <div class="rounded-xl p-4" style="background:rgba(48,209,88,0.07);border:1px solid rgba(48,209,88,0.2);">
+    <p class="text-sm font-semibold mb-1" style="color:var(--success);">Qué obtendrás</p>
+    <ul class="space-y-1 text-sm" style="color:var(--text-secondary);">
+      ${['Palabras clave de alto valor para Escazú y CR','Brief completo listo para redactar el artículo','Post optimizado para Google Business Profile'].map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0 text-xs" style="color:var(--success);"></i>${i}</li>`).join('')}
+    </ul>
+  </div>
+  <div class="space-y-4">
+    <div>
+      <label class="label">Tema a posicionar</label>
+      <input id="seo-topic" class="input" type="text"
+        placeholder="Ej: fisioterapia de rodilla para runners en Escazú" />
+    </div>
+    <div>
+      <label class="label">¿Qué quieres generar?</label>
+      <select id="seo-type" class="select">
+        <option value="blog_brief">Brief para artículo de blog (SEO)</option>
+        <option value="google_business">Post para Google Business Profile</option>
+      </select>
+    </div>
+    <button id="run-seo" class="btn-primary w-full py-2.5 text-sm font-semibold" style="background:var(--success);">
+      <i class="fa-solid fa-magnifying-glass mr-2"></i>Generar estrategia SEO
+    </button>
+  </div>
+  <div id="seo-output-wrap" class="hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-semibold" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('seo-output')"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+    <div id="seo-output" class="content-output" style="min-height:200px;"></div>
+  </div>
+</div>`;
+
+      if (activeTab === 'rtp') return `
+<div class="space-y-5">
+  <div class="rounded-xl p-4" style="background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);">
+    <p class="text-sm font-semibold mb-1" style="color:var(--accent-orange);">Qué obtendrás</p>
+    <ul class="space-y-1 text-sm" style="color:var(--text-secondary);">
+      ${['Contenido clínico validado para pacientes deportistas','Artículos, carruseles o guiones de reel listos para publicar','Diferenciación como expertos en lesiones deportivas'].map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0 text-xs" style="color:var(--success);"></i>${i}</li>`).join('')}
+    </ul>
+  </div>
+  <div class="space-y-4">
+    <div class="grid grid-cols-2 gap-4">
       <div>
-        <h2 class="text-xl font-bold mb-1">Centro de Inteligencia</h2>
-        <p style="color:var(--text-secondary);font-size:14px;">Cuatro herramientas de análisis que te ayudan a tomar mejores decisiones de marketing.</p>
+        <label class="label">Deporte</label>
+        <input id="rtp-sport" class="input" type="text" placeholder="Fútbol, Running, CrossFit..." />
+      </div>
+      <div>
+        <label class="label">Lesión</label>
+        <input id="rtp-injury" class="input" type="text" placeholder="LCA, esguince, hombro..." />
       </div>
     </div>
-    <!-- How-to strip -->
-    <div class="grid grid-cols-3 gap-3 mt-5">
-      ${[
-        { n:'1', label:'Elige una herramienta', desc:'Cada una tiene un propósito distinto' },
-        { n:'2', label:'Añade contexto (opcional)', desc:'Más detalle = mejores resultados' },
-        { n:'3', label:'Usa el resultado', desc:'Copia, guarda o crea contenido' },
-      ].map(s => `
-        <div class="flex items-start gap-3 p-3 rounded-xl" style="background:var(--glass-bg);">
-          <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
-            style="background:var(--accent);color:#fff;">${s.n}</div>
-          <div>
-            <div class="text-xs font-semibold" style="color:var(--text-primary);">${s.label}</div>
-            <div class="text-xs mt-0.5" style="color:var(--text-tertiary);">${s.desc}</div>
-          </div>
-        </div>
+    <div>
+      <label class="label">Etapa de recuperación</label>
+      <select id="rtp-phase" class="select">
+        <option value="">Todas las etapas (visión general)</option>
+        <option value="Fase aguda / primeras 48-72h">Fase 1 — Lesión aguda (primeras 48-72h)</option>
+        <option value="Rehabilitación funcional">Fase 2 — Rehabilitación funcional</option>
+        <option value="Retorno al entrenamiento">Fase 3 — Retorno al entrenamiento</option>
+        <option value="Retorno a la competencia">Fase 4 — Retorno a la competencia</option>
+      </select>
+    </div>
+    <div>
+      <label class="label">Formato de contenido</label>
+      <select id="rtp-format" class="select">
+        <option value="carrusel educativo">Carrusel educativo (Instagram)</option>
+        <option value="post informativo">Post informativo (Instagram/Facebook)</option>
+        <option value="guión reel">Guión de Reel (60s)</option>
+        <option value="artículo blog">Artículo de blog (SEO)</option>
+      </select>
+    </div>
+    <button id="run-rtp" class="btn-orange w-full py-2.5 text-sm font-semibold">
+      <i class="fa-solid fa-person-running mr-2"></i>Generar contenido RTP
+    </button>
+  </div>
+  <div id="rtp-output-wrap" class="hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-semibold" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('rtp-output')"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+    <div id="rtp-output" class="content-output" style="min-height:200px;"></div>
+  </div>
+</div>`;
+
+      if (activeTab === 'testimonios') return `
+<div class="space-y-5">
+  <div class="rounded-xl p-4" style="background:rgba(236,72,153,0.07);border:1px solid rgba(236,72,153,0.2);">
+    <p class="text-sm font-semibold mb-1" style="color:#ec4899;">Qué obtendrás</p>
+    <ul class="space-y-1 text-sm" style="color:var(--text-secondary);">
+      ${['Carrusel de 6 slides con historia del paciente','Script de Reel 30–60s listo para grabar','Post de Facebook narrativo + guía de entrevista'].map(i => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0 text-xs" style="color:var(--success);"></i>${i}</li>`).join('')}
+    </ul>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="label">Deporte</label>
+        <input id="test-sport" class="input" type="text" placeholder="Fútbol, Running..." />
+      </div>
+      <div>
+        <label class="label">Lesión</label>
+        <input id="test-injury" class="input" type="text" placeholder="LCA, esguince..." />
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="label">Duración del tto.</label>
+        <input id="test-duration" class="input" type="text" placeholder="8 semanas..." />
+      </div>
+      <div>
+        <label class="label">Resultado clave</label>
+        <input id="test-outcome" class="input" type="text" placeholder="Regresó a competir..." />
+      </div>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label">Contexto adicional <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+      <input id="test-context" class="input" type="text"
+        placeholder="Edad aproximada, nivel deportivo, particularidades del caso..." />
+    </div>
+  </div>
+  <button id="run-testimonial" class="w-full py-2.5 text-sm font-semibold rounded-xl text-white"
+    style="background:linear-gradient(135deg,#ec4899,#8b5cf6);">
+    <i class="fa-solid fa-star mr-2"></i>Generar paquete de testimonio
+  </button>
+  <div id="testimonial-output-wrap" class="hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-semibold" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('testimonial-output')"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+    <div id="testimonial-output" class="content-output" style="min-height:200px;"></div>
+  </div>
+</div>`;
+
+      return '';
+    };
+
+    return `
+<div class="max-w-3xl mx-auto space-y-5">
+
+  <!-- Header -->
+  <div class="card p-5">
+    <h2 class="text-xl font-bold mb-0.5">Centro de Inteligencia</h2>
+    <p class="text-sm" style="color:var(--text-secondary);">Cinco herramientas especializadas para análisis, SEO, competencia y creación de contenido clínico.</p>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="card p-2">
+    <div class="flex gap-1 overflow-x-auto">
+      ${tools.map(t => `
+        <button onclick="App._intelTab='${t.id}';render();"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex-shrink-0"
+          style="${t.id === activeTab
+            ? `background:${t.colorRaw}18;color:${t.colorRaw};border:1px solid ${t.colorRaw}40;`
+            : 'background:transparent;color:var(--text-secondary);border:1px solid transparent;'}">
+          <i class="fa-solid ${t.icon} text-xs"></i>
+          ${t.label}
+        </button>
       `).join('')}
     </div>
   </div>
 
-  <!-- Tool cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-    <!-- TOOL 1: Tendencias de la Semana -->
-    <div class="card p-0 overflow-hidden">
-      <div class="p-5">
-        <!-- Tool header -->
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style="background:rgba(10,132,255,0.15);">
-            <i class="fa-solid fa-microphone" style="color:var(--accent);font-size:16px;"></i>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-semibold" style="font-size:15px;">Tendencias de la Semana</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(10,132,255,0.12);color:var(--accent);">Ideal: inicio de semana</span>
-            </div>
-            <p class="text-sm mt-1" style="color:var(--text-secondary);">
-              Descubre qué temas de fisioterapia y deporte están en tendencia para enfocar tu contenido donde hay audiencia activa.
-            </p>
-          </div>
-        </div>
-        <!-- What you get -->
-        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
-          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
-          <ul class="space-y-1">
-            ${['Temas de alto interés esta semana en fisio y deporte','Formatos y ángulos de contenido recomendados','Sugerencias de hashtags y horarios de publicación'].map(i =>
-              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
-                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
-              </li>`
-            ).join('')}
-          </ul>
-        </div>
-        <!-- Form -->
-        <div>
-          <label class="label">Contexto de la semana <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
-          <input id="listener-context" class="input mb-3" type="text"
-            placeholder="Ej: inicio temporada fútbol, semana del back to school, torneo nacional..." />
-          <button id="run-listener" class="btn-primary w-full py-2.5 text-sm font-medium">
-            <i class="fa-solid fa-microphone mr-2"></i>Analizar tendencias
-          </button>
-        </div>
+  <!-- Active tool panel -->
+  <div class="card p-6">
+    <!-- Tool heading -->
+    <div class="flex items-center gap-3 mb-5 pb-4" style="border-bottom:1px solid var(--glass-border);">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+        style="background:${active.colorRaw}18;">
+        <i class="fa-solid ${active.icon}" style="color:${active.colorRaw};font-size:16px;"></i>
       </div>
-      <!-- Output -->
-      <div id="listener-output-wrap" class="hidden">
-        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
-          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
-          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('listener-output')">
-            <i class="fa-regular fa-copy mr-1"></i>Copiar
-          </button>
-        </div>
-        <div id="listener-output" class="content-output mx-5 mb-5" style="max-height:320px;"></div>
+      <div>
+        <h3 class="font-bold" style="font-size:16px;">${
+          activeTab === 'tendencias'  ? 'Tendencias de la Semana' :
+          activeTab === 'competencia' ? 'Análisis de la Competencia' :
+          activeTab === 'seo'         ? 'Posicionamiento en Google' :
+          activeTab === 'rtp'         ? 'Contenido de Recuperación Deportiva' :
+                                        'Taller de Testimonios'
+        }</h3>
+        <p class="text-xs mt-0.5" style="color:var(--text-tertiary);">${
+          activeTab === 'tendencias'  ? 'Ideal: inicio de semana' :
+          activeTab === 'competencia' ? 'Ideal: revisión trimestral' :
+          activeTab === 'seo'         ? 'Ideal: antes de publicar blog' :
+          activeTab === 'rtp'         ? 'Diferenciador clave de FisioBox' :
+                                        'Convierte casos en contenido'
+        }</p>
       </div>
     </div>
-
-    <!-- TOOL 2: Análisis de Competencia -->
-    <div class="card p-0 overflow-hidden">
-      <div class="p-5">
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style="background:rgba(255,69,58,0.12);">
-            <i class="fa-solid fa-chart-line" style="color:var(--error);font-size:16px;"></i>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-semibold" style="font-size:15px;">Análisis de la Competencia</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(255,69,58,0.10);color:var(--error);">Ideal: revisión trimestral</span>
-            </div>
-            <p class="text-sm mt-1" style="color:var(--text-secondary);">
-              Identifica qué hacen otras clínicas de fisio en Costa Rica y encuentra brechas de mercado que FisioBox puede aprovechar.
-            </p>
-          </div>
-        </div>
-        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
-          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
-          <ul class="space-y-1">
-            ${['Fortalezas y debilidades de la competencia local','Brechas de contenido que nadie está cubriendo','Oportunidades de diferenciación para FisioBox'].map(i =>
-              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
-                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
-              </li>`
-            ).join('')}
-          </ul>
-        </div>
-        <div>
-          <label class="label">Novedades del mercado <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
-          <input id="competitor-context" class="input mb-3" type="text"
-            placeholder="Ej: abrió nueva clínica en Escazú, clínica X publicó mucho sobre rodilla..." />
-          <button id="run-competitor" class="btn-primary w-full py-2.5 text-sm font-medium">
-            <i class="fa-solid fa-chart-line mr-2"></i>Analizar competencia
-          </button>
-        </div>
-      </div>
-      <div id="competitor-output-wrap" class="hidden">
-        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
-          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
-          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('competitor-output')">
-            <i class="fa-regular fa-copy mr-1"></i>Copiar
-          </button>
-        </div>
-        <div id="competitor-output" class="content-output mx-5 mb-5" style="max-height:320px;"></div>
-      </div>
-    </div>
-
-    <!-- TOOL 3: Posicionamiento en Google -->
-    <div class="card p-0 overflow-hidden">
-      <div class="p-5">
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style="background:rgba(48,209,88,0.12);">
-            <i class="fa-solid fa-magnifying-glass" style="color:var(--success);font-size:16px;"></i>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-semibold" style="font-size:15px;">Posicionamiento en Google</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(48,209,88,0.10);color:var(--success);">Ideal: antes de publicar blog</span>
-            </div>
-            <p class="text-sm mt-1" style="color:var(--text-secondary);">
-              Genera briefs y posts optimizados para que FisioBox aparezca primero cuando alguien busque fisioterapia deportiva en Escazú.
-            </p>
-          </div>
-        </div>
-        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
-          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
-          <ul class="space-y-1">
-            ${['Palabras clave de alto valor para Escazú y CR','Brief completo listo para redactar el artículo','Post optimizado para Google Business Profile'].map(i =>
-              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
-                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
-              </li>`
-            ).join('')}
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <div>
-            <label class="label">Tema a posicionar</label>
-            <input id="seo-topic" class="input" type="text"
-              placeholder="Ej: fisioterapia de rodilla para runners en Escazú" />
-          </div>
-          <div>
-            <label class="label">¿Qué quieres generar?</label>
-            <select id="seo-type" class="select">
-              <option value="blog_brief">Brief para artículo de blog (SEO)</option>
-              <option value="google_business">Post para Google Business Profile</option>
-            </select>
-          </div>
-          <button id="run-seo" class="btn-primary w-full py-2.5 text-sm font-medium">
-            <i class="fa-solid fa-magnifying-glass mr-2"></i>Generar estrategia SEO
-          </button>
-        </div>
-      </div>
-      <div id="seo-output-wrap" class="hidden">
-        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
-          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
-          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('seo-output')">
-            <i class="fa-regular fa-copy mr-1"></i>Copiar
-          </button>
-        </div>
-        <div id="seo-output" class="content-output mx-5 mb-5" style="max-height:320px;"></div>
-      </div>
-    </div>
-
-    <!-- TOOL 4: Contenido de Recuperación Deportiva (RTP) -->
-    <div class="card p-0 overflow-hidden">
-      <div class="p-5">
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style="background:rgba(224,96,28,0.12);">
-            <i class="fa-solid fa-person-running" style="color:var(--accent-orange);font-size:16px;"></i>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-semibold" style="font-size:15px;">Contenido de Recuperación Deportiva</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(224,96,28,0.10);color:var(--accent-orange);">Diferenciador clave</span>
-            </div>
-            <p class="text-sm mt-1" style="color:var(--text-secondary);">
-              Crea contenido educativo especializado sobre el regreso al deporte (RTP) — el proceso por el que un atleta vuelve a competir tras una lesión.
-            </p>
-          </div>
-        </div>
-        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
-          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
-          <ul class="space-y-1">
-            ${['Contenido clínico validado para pacientes deportistas','Artículos, carruseles o guiones de reel listos para publicar','Diferenciación como expertos en lesiones deportivas'].map(i =>
-              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
-                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
-              </li>`
-            ).join('')}
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="label">Deporte</label>
-              <input id="rtp-sport" class="input" type="text" placeholder="Fútbol, Running, CrossFit..." />
-            </div>
-            <div>
-              <label class="label">Lesión</label>
-              <input id="rtp-injury" class="input" type="text" placeholder="LCA, esguince, hombro..." />
-            </div>
-          </div>
-          <div>
-            <label class="label">Etapa de recuperación</label>
-            <select id="rtp-phase" class="select">
-              <option value="">Todas las etapas (visión general)</option>
-              <option value="Fase aguda / primeras 48-72h">Fase 1 — Lesión aguda (primeras 48-72h)</option>
-              <option value="Rehabilitación funcional">Fase 2 — Rehabilitación funcional</option>
-              <option value="Retorno al entrenamiento">Fase 3 — Retorno al entrenamiento</option>
-              <option value="Retorno a la competencia">Fase 4 — Retorno a la competencia</option>
-            </select>
-          </div>
-          <div>
-            <label class="label">Formato de contenido</label>
-            <select id="rtp-format" class="select">
-              <option value="carrusel educativo">Carrusel educativo (Instagram)</option>
-              <option value="post informativo">Post informativo (Instagram/Facebook)</option>
-              <option value="guión reel">Guión de Reel (60s)</option>
-              <option value="artículo blog">Artículo de blog (SEO)</option>
-            </select>
-          </div>
-          <button id="run-rtp" class="btn-orange w-full py-2.5 text-sm font-semibold">
-            <i class="fa-solid fa-person-running mr-2"></i>Generar contenido RTP
-          </button>
-        </div>
-      </div>
-      <div id="rtp-output-wrap" class="hidden">
-        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
-          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
-          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('rtp-output')">
-            <i class="fa-regular fa-copy mr-1"></i>Copiar
-          </button>
-        </div>
-        <div id="rtp-output" class="content-output mx-5 mb-5" style="max-height:320px;"></div>
-      </div>
-    </div>
-
-    <!-- TOOL 5: Taller de Testimonios -->
-    <div class="card p-0 overflow-hidden md:col-span-2">
-      <div class="p-5">
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style="background:rgba(236,72,153,0.12);">
-            <i class="fa-solid fa-star" style="color:#ec4899;font-size:16px;"></i>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-semibold" style="font-size:15px;">Taller de Testimonios</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(236,72,153,0.10);color:#ec4899;">Convierte casos en contenido</span>
-            </div>
-            <p class="text-sm mt-1" style="color:var(--text-secondary);">
-              Transforma el éxito de un paciente en 4 piezas de contenido listas — carrusel, reel, post de Facebook y guía de entrevista — con framing médico seguro.
-            </p>
-          </div>
-        </div>
-        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
-          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
-          <ul class="space-y-1">
-            ${['Carrusel de 6 slides con historia del paciente','Script de Reel 30–60s listo para grabar','Post de Facebook narrativo + guía de entrevista'].map(i =>
-              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
-                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
-              </li>`
-            ).join('')}
-          </ul>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="label">Deporte</label>
-              <input id="test-sport" class="input" type="text" placeholder="Fútbol, Running..." />
-            </div>
-            <div>
-              <label class="label">Lesión</label>
-              <input id="test-injury" class="input" type="text" placeholder="LCA, esguince..." />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="label">Duración del tto.</label>
-              <input id="test-duration" class="input" type="text" placeholder="8 semanas, 3 meses..." />
-            </div>
-            <div>
-              <label class="label">Resultado clave</label>
-              <input id="test-outcome" class="input" type="text" placeholder="Regresó a competir..." />
-            </div>
-          </div>
-          <div class="md:col-span-2">
-            <label class="label">Contexto adicional <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
-            <input id="test-context" class="input" type="text"
-              placeholder="Edad aproximada, nivel deportivo, particularidades del caso..." />
-          </div>
-        </div>
-        <div class="mt-4">
-          <button id="run-testimonial" class="btn-primary w-full py-2.5 text-sm font-semibold" style="background:linear-gradient(135deg,#ec4899,#8b5cf6);">
-            <i class="fa-solid fa-star mr-2"></i>Generar paquete de testimonio
-          </button>
-        </div>
-      </div>
-      <div id="testimonial-output-wrap" class="hidden">
-        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
-          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
-          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('testimonial-output')">
-            <i class="fa-regular fa-copy mr-1"></i>Copiar
-          </button>
-        </div>
-        <div id="testimonial-output" class="content-output mx-5 mb-5" style="max-height:450px;"></div>
-      </div>
-    </div>
-
+    ${tabContent()}
   </div>
+
 </div>
     `;
   },
