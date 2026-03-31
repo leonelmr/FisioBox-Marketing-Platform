@@ -76,6 +76,9 @@ const UI = {
     const isDark = document.documentElement?.getAttribute('data-theme') !== 'light';
     return `
 <div class="flex min-h-screen">
+  <!-- Mobile sidebar backdrop -->
+  ${sidebarOpen ? `<div id="sidebar-backdrop" onclick="App.sidebarOpen=false;render();"
+    style="display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,0.55);" class="md-hidden-backdrop"></div>` : ''}
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar-glass w-64 flex-shrink-0 flex flex-col ${sidebarOpen}"
     style="min-height:100vh;position:fixed;top:0;left:0;height:100%;z-index:50;">
@@ -108,7 +111,7 @@ const UI = {
   <!-- Main content -->
   <div id="main-content" class="flex-1 flex flex-col min-h-screen" style="margin-left:256px;">
     <!-- Top bar -->
-    <header class="header-glass flex items-center justify-between px-6 py-3 sticky top-0 z-30">
+    <header class="header-glass flex items-center justify-between px-4 py-3 md:px-6 sticky top-0 z-30">
       <div class="flex items-center gap-4">
         <button id="sidebar-toggle" class="btn-ghost p-2 md:hidden">
           <i class="fa-solid fa-bars" style="font-size:13px;"></i>
@@ -124,7 +127,7 @@ const UI = {
         </button>
         ${App._userEmail ? `
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:11px;color:var(--text-secondary);max-width:160px;overflow:hidden;
+          <span id="user-email-chip" style="font-size:11px;color:var(--text-secondary);max-width:160px;overflow:hidden;
                 text-overflow:ellipsis;white-space:nowrap;padding:5px 10px;
                 background:var(--glass-bg);border:1px solid var(--glass-border);
                 border-radius:var(--radius-pill);" title="${App._userEmail}">
@@ -142,7 +145,7 @@ const UI = {
     </header>
 
     <!-- Page content -->
-    <main class="flex-1 p-6 fade-in" style="position:relative;z-index:1;">
+    <main class="flex-1 p-4 md:p-6 fade-in" style="position:relative;z-index:1;">
       ${viewContent}
     </main>
   </div>
@@ -231,7 +234,7 @@ const UI = {
     return `
 <div class="space-y-6">
   <!-- Welcome banner -->
-  <div class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
+  <div id="dashboard-hero" class="card p-6" style="background:linear-gradient(135deg,rgba(10,132,255,0.10),var(--glass-bg));">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
         <h2 class="text-2xl font-bold mb-1">Bienvenido a FisioBox AI</h2>
@@ -243,7 +246,7 @@ const UI = {
   </div>
 
   <!-- Stats grid -->
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
     ${statCards.map(s => `
       <div class="card p-4 text-center">
         <div class="text-3xl font-bold mb-1" style="color:var(--accent);">${s.value}</div>
@@ -256,7 +259,7 @@ const UI = {
   <!-- Quick actions -->
   <div class="card p-5">
     <h3 class="font-semibold mb-4">Acciones rápidas</h3>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
       <button onclick="App.generatorData={};App.generatorStep=1;navigate('generator')" class="btn-primary px-4 py-3 text-sm font-medium">Generar post</button>
       <button onclick="navigate('intelligence')" class="btn-ghost px-4 py-3 text-sm font-medium">Análisis de tendencias</button>
       <button onclick="navigate('whatsapp')" class="btn-ghost px-4 py-3 text-sm font-medium">Nueva secuencia WA</button>
@@ -500,7 +503,7 @@ const UI = {
     <i class="fa-regular fa-images text-4xl mb-3 block"></i>
     <p class="text-sm">Aún no tienes activos subidos.</p>
   </div>` : `
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     ${nonLogoAssets.map(a => `
     <div class="card p-0 overflow-hidden group">
       <div class="relative" style="aspect-ratio:4/3;background:var(--glass-border);">
@@ -942,7 +945,7 @@ const UI = {
         <p class="text-sm" style="color:var(--text-secondary);">Se generará contenido para 6 formatos de una sola vez.</p>
       </div>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-5">
       ${['Instagram Carrusel','Instagram Reel','Facebook Post','WhatsApp Mensaje','Blog/SEO Brief','Instagram Stories'].map(f => `
         <div class="flex items-center gap-2 p-2 rounded-lg text-sm" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
           <i class="fa-solid fa-circle-check text-xs flex-shrink-0" style="color:var(--success);"></i>
@@ -960,7 +963,7 @@ const UI = {
   <div class="card p-6">
     <h2 class="text-xl font-bold mb-2">Elige la plataforma</h2>
     <p class="text-sm mb-6" style="color:var(--text-secondary);">Selecciona dónde se publicará este contenido</p>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="platform-grid">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="platform-grid">
       ${this.platforms.map(p => `
         <button data-platform="${p.id}"
           class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'card-selected' : ''}"
@@ -1123,7 +1126,7 @@ const UI = {
     }
     if (platform === 'WhatsApp') {
       html += `
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="label">Lesión / Condición</label>
             <input id="gen-injury" class="input" type="text"
@@ -1140,7 +1143,7 @@ const UI = {
     }
     if (format && (format.includes('rtp') || platform === 'Instagram' && format === 'carrusel')) {
       html += `
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="label">Deporte (si aplica)</label>
             <input id="gen-sport" class="input" type="text"
@@ -1309,7 +1312,7 @@ const UI = {
             <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Generar 4 imágenes
           </button>
         </div>
-        <div id="image-grid" class="hidden grid grid-cols-2 gap-3"></div>
+        <div id="image-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
       </div>
     </div>
 
@@ -2419,6 +2422,8 @@ const UI = {
 
   <!-- Day headers -->
   <div class="card overflow-hidden">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+    <div style="min-width:560px;">
     <div class="grid grid-cols-7 border-b" style="border-color:var(--glass-border);">
       ${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(d => `
         <div class="p-2 text-center text-xs font-semibold" style="color:var(--text-secondary);">${d}</div>
@@ -2443,6 +2448,8 @@ const UI = {
         `;
       }).join('')}
     </div>
+    </div><!-- /min-width -->
+    </div><!-- /overflow-x:auto -->
   </div>
 
   <!-- Legend -->
@@ -3038,7 +3045,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     </ul>
   </div>
   <div class="space-y-4">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label class="label">Deporte</label>
         <input id="rtp-sport" class="input" type="text" placeholder="Fútbol, Running, CrossFit..." />
@@ -3089,7 +3096,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
     </ul>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label class="label">Deporte</label>
         <input id="test-sport" class="input" type="text" placeholder="Fútbol, Running..." />
@@ -3099,7 +3106,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         <input id="test-injury" class="input" type="text" placeholder="LCA, esguince..." />
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label class="label">Duración del tto.</label>
         <input id="test-duration" class="input" type="text" placeholder="8 semanas..." />
@@ -3310,7 +3317,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
             <option value="recordatorio_ejercicios">Recordatorio de ejercicios en casa</option>
           </select>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="label">Lesión / condición</label>
             <input id="wa-injury" class="input" type="text" placeholder="Ej: Esguince tobillo" />
@@ -3817,7 +3824,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
 
   <!-- Stage selector -->
   <div class="card p-5">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
       ${stages.map(s => `
         <button class="journey-stage-btn flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all"
           data-stage="${s.id}"

@@ -458,9 +458,51 @@
 
     /* ── MOBILE ────────────────────────────────────────────── */
     @media (max-width: 768px) {
+      /* Sidebar slides off-screen; .open class reveals it */
       #sidebar { transform: translateX(-100%); position: fixed; z-index: 50; transition: transform 250ms var(--ease); }
       #sidebar.open { transform: translateX(0); }
+      /* Backdrop visible when sidebar is open */
+      .md-hidden-backdrop { display: block !important; }
+      /* Remove 256px left offset — full width on mobile */
       #main-content { margin-left: 0 !important; }
+
+      /* Reduce card padding */
+      .card { padding: 16px !important; }
+
+      /* Modals — full width with tighter padding */
+      .modal { padding: 18px !important; margin: 12px !important; max-width: calc(100vw - 24px) !important; }
+
+      /* Hide user email text chip on small screens to save header space */
+      #user-email-chip { display: none !important; }
+
+      /* Auth screen — tighter padding on small phones */
+      #auth-screen > div { padding: 0 12px; }
+
+      /* Ensure inputs are large enough to tap comfortably */
+      .input, .select, input[type="text"], input[type="email"],
+      input[type="password"], textarea, select {
+        font-size: 16px !important; /* prevents iOS zoom on focus */
+        min-height: 44px;
+      }
+
+      /* Navigation items — slightly larger tap targets */
+      .nav-item { padding-top: 12px !important; padding-bottom: 12px !important; }
+
+      /* Full-width buttons in modals and action rows */
+      .modal .btn-primary, .modal .btn-ghost { width: 100%; justify-content: center; }
+
+      /* Score/stat cards — reduce font size */
+      .text-3xl { font-size: 1.4rem !important; }
+
+      /* Toast — full width bottom bar on mobile */
+      #toast-root > div { right: 12px !important; left: 12px !important; max-width: 100% !important; }
+    }
+
+    /* Slightly smaller phones */
+    @media (max-width: 480px) {
+      /* Stack hero dashboard card content */
+      #dashboard-hero .flex { flex-direction: column; gap: 12px; }
+      #dashboard-hero .btn-orange { width: 100%; text-align: center; }
     }
   </style>
 </head>
