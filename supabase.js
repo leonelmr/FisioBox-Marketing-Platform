@@ -3,8 +3,8 @@
 // anon (public) key, found in: Supabase Dashboard → Settings → API
 // ────────────────────────────────────────────────────────────────────────────
 
-const SUPABASE_URL  = window.__SUPABASE_URL  || 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON = window.__SUPABASE_ANON || 'YOUR_ANON_KEY';
+const SUPABASE_URL = window.__SUPABASE_URL || 'https://stqzapqbxohyoaadhjrg.supabase.co';
+const SUPABASE_ANON = window.__SUPABASE_ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0cXphcHFieG9oeW9hYWRoanJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5ODQ3NzAsImV4cCI6MjA5MDU2MDc3MH0.NzAPtD3VPx8lHYKvInDVInGpa4oDq1wk4mB9qybYjWc';
 
 // Supabase JS v2 is loaded via CDN in index.html before this file.
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -72,7 +72,7 @@ const DB = {
       try { value = JSON.parse(rawValue); } catch { value = rawValue; }
       _sb.from('app_data')
         .upsert({ user_id: user.id, key, value, updated_at: new Date().toISOString() },
-                 { onConflict: 'user_id,key' })
+          { onConflict: 'user_id,key' })
         .then(({ error }) => {
           if (error) console.warn('[DB.sync] error for key', key, error.message);
         });
