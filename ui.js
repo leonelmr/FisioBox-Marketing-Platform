@@ -2164,19 +2164,20 @@ const UI = {
 
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Generando imágenes...';
 
-        // Step 3: Load images in parallel
-        await Promise.allSettled(prompts.map((prompt, i) =>
-          Agents.loadPollinationsImage(prompt, i).then(url => {
+        // Step 3: Load images sequentially to avoid Pollinations rate limiting
+        for (let i = 0; i < prompts.length; i++) {
+          if (i > 0) await new Promise(r => setTimeout(r, 1500)); // 1.5s gap between requests
+          try {
+            const url = await Agents.loadPollinationsImage(prompts[i], i);
             const card = document.getElementById(`img-card-${i}`);
             const skeleton = document.getElementById(`img-skeleton-${i}`);
-            if (!card) return;
+            if (!card) continue;
             if (skeleton) skeleton.remove();
             const img = document.createElement('img');
             img.src = url;
             img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
             img.alt = `Concepto visual ${i + 1}`;
             card.appendChild(img);
-            // Download overlay on hover
             const overlay = document.createElement('div');
             overlay.className = 'absolute inset-0 flex items-end p-2 opacity-0 hover:opacity-100 transition-opacity';
             overlay.style.background = 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)';
@@ -2186,11 +2187,14 @@ const UI = {
                 <i class="fa-solid fa-download mr-1"></i>Descargar
               </a>`;
             card.appendChild(overlay);
-          }).catch(() => {
+          } catch {
             const skeleton = document.getElementById(`img-skeleton-${i}`);
-            if (skeleton) skeleton.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span class="text-xs mt-1">Error</span>';
-          })
-        ));
+            if (skeleton) skeleton.innerHTML = `
+              <i class="fa-solid fa-triangle-exclamation text-xl mb-1"></i>
+              <span class="text-xs">Error imagen ${i + 1}</span>`;
+          }
+          btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i>Imagen ${i + 1}/4 lista...`;
+        }
 
         btn.innerHTML = '<i class="fa-solid fa-rotate-right mr-1"></i>Regenerar';
         btn.disabled = false;

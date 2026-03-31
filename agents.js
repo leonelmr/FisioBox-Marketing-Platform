@@ -398,12 +398,17 @@ Responde ÚNICAMENTE con el JSON array: ["prompt1", "prompt2", "prompt3", "promp
 
   // 16. Load an image from Pollinations.ai (Flux, free, CORS-enabled)
   loadPollinationsImage(prompt, index) {
-    const seed = 1000 + index * 137; // stable deterministic seeds per concept
+    const seed = 1000 + index * 137;
     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&model=flux&seed=${seed}&nologo=true`;
+    const timeout = 60000; // 60s — Pollinations can be slow on free tier
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => resolve(url);
-      img.onerror = () => reject(new Error(`Error cargando imagen ${index + 1}`));
+      const timer = setTimeout(() => {
+        img.src = ''; // abort
+        reject(new Error(`Timeout cargando imagen ${index + 1}`));
+      }, timeout);
+      img.onload = () => { clearTimeout(timer); resolve(url); };
+      img.onerror = () => { clearTimeout(timer); reject(new Error(`Error cargando imagen ${index + 1}`)); };
       img.src = url;
     });
   },
