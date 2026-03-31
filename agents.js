@@ -408,6 +408,160 @@ Responde ÚNICAMENTE con el JSON array: ["prompt1", "prompt2", "prompt3", "promp
     });
   },
 
+  // 17. Content Package Agent — one topic → all formats at once
+  async contentPackage({ topic, brief = '', category = 'educativo', formats = [] }, onChunk) {
+    const formatList = formats.length > 0 ? formats : [
+      'Instagram Carrusel', 'Instagram Reel', 'Facebook Post',
+      'WhatsApp Mensaje', 'Blog/SEO Brief', 'Instagram Stories'
+    ];
+    const system = `Eres el estratega de contenido de FisioBox, clínica de fisioterapia deportiva en Escazú, Costa Rica.
+Tu especialidad es crear paquetes de contenido temáticos: un mismo tema trabajado para múltiples formatos y plataformas simultáneamente.
+Mantén coherencia temática entre todas las piezas. Adapta cada una a las normas de su plataforma.
+Responde ÚNICAMENTE con JSON válido. Sin markdown, sin bloque de código, sin explicaciones.`;
+
+    const msg = `Crea un paquete de contenido completo para FisioBox sobre este tema:
+
+TEMA: ${topic}
+${brief ? `CONTEXTO: ${brief}` : ''}
+CATEGORÍA: ${category}
+FORMATOS: ${formatList.join(', ')}
+
+Responde con este JSON exacto:
+{
+  "topic": "${topic}",
+  "key_message": "mensaje central en 1 oración",
+  "formats": [
+    {
+      "format": "nombre del formato",
+      "platform": "plataforma principal",
+      "content": "contenido completo listo para usar",
+      "notes": "hashtags o notas de producción"
+    }
+  ]
+}
+
+Genera ${formatList.length} objetos en "formats", uno por cada formato. Cada pieza debe ser completa y lista para publicar.`;
+
+    const result = await callClaude(system, msg, onChunk);
+    const match = result.match(/\{[\s\S]*\}/);
+    if (match) {
+      try { return { raw: result, parsed: JSON.parse(match[0]) }; } catch {}
+    }
+    return { raw: result, parsed: null };
+  },
+
+  // 18. Repurpose Agent — adapt existing content to a new platform
+  async repurpose({ content, targetPlatform, targetFormat = '' }, onChunk) {
+    const msg = `Repropón el siguiente contenido de FisioBox para ${targetPlatform}${targetFormat ? ` — formato: ${targetFormat}` : ''}:
+
+CONTENIDO ORIGINAL:
+${content}
+
+Adapta completamente este contenido a las normas y mejores prácticas de ${targetPlatform}.
+Mantén el mensaje central pero transforma formato, longitud, estructura y vocabulario.
+El resultado debe sentirse 100% nativo en ${targetPlatform}.
+
+${targetPlatform === 'Instagram' ? 'Incluye caption completo + hashtags (20-30) + CTA.' : ''}
+${targetPlatform === 'TikTok' ? 'Genera hook (primeros 3s) + guión completo + CTA + hashtags TikTok.' : ''}
+${targetPlatform === 'Facebook' ? 'Post completo con enganche, desarrollo y pregunta de engagement al final.' : ''}
+${targetPlatform === 'Blog' ? 'Expande a artículo SEO completo: H1, introducción, 3+ secciones con subtítulos H2, conclusión, CTA.' : ''}
+${targetPlatform === 'WhatsApp' ? 'Mensaje cálido, personal, máx. 3 párrafos cortos, sin jerga de redes sociales.' : ''}
+${targetPlatform === 'Ads' ? 'Genera 3 variantes de copy corto (headline + descripción): racional, emocional y urgencia.' : ''}`;
+    return callClaude(PROMPTS.socialMedia, msg, onChunk);
+  },
+
+  // 19. Hashtag Suggestions Agent
+  async hashtagSuggestions({ topic, platform = 'Instagram', existingTags = [] }, onChunk) {
+    const existing = existingTags.join(', ');
+    const msg = `Genera hashtags estratégicos para FisioBox sobre el tema: "${topic}" en ${platform}.
+${existing ? `Hashtags existentes (no repetir): ${existing}` : ''}
+
+Genera 15-20 hashtags nuevos organizados en grupos:
+- **Marca** (2-3): relacionados directamente con FisioBox
+- **Especialidad** (4-5): fisioterapia deportiva, rehabilitación
+- **Tema específico** (4-5): relacionados con "${topic}"
+- **Local** (2-3): Costa Rica, Escazú y alrededores
+- **Tendencia** (2-3): hashtags populares en salud/deporte
+
+Para cada grupo indica el nivel de competencia (alto/medio/bajo) y alcance estimado.`;
+    return callClaude(PROMPTS.socialMedia, msg, onChunk);
+  },
+
+  // 20. Performance Coach Agent — cumulative analytics insights
+  async performanceCoach(historicalEntries, onChunk) {
+    const summary = historicalEntries.slice(0, 20).map((e, i) =>
+      `Reporte ${i + 1} (${e.savedAt?.slice(0, 10) || 'sin fecha'}): ${e.summary || 'Sin título'}\n${(e.content || '').slice(0, 400)}`
+    ).join('\n\n---\n\n');
+
+    const msg = `Analiza el historial de rendimiento de FisioBox y genera insights acumulados:
+
+HISTORIAL (${historicalEntries.length} reportes):
+${summary}
+
+Proporciona:
+1. **Patrones identificados**: Qué tipos de contenido rinden mejor consistentemente
+2. **Tendencias**: Mejoras o deterioros a lo largo del tiempo
+3. **Top performers**: Formatos, temas y plataformas más exitosas
+4. **Brechas**: Qué falta o tiene bajo rendimiento
+5. **Recomendaciones para el próximo mes**: 3-5 acciones concretas y priorizadas`;
+    return callClaude(PROMPTS.analytics, msg, onChunk);
+  },
+
+  // 21. Journey Content Agent — stage-aware content
+  async journeyContent({ stage, topic = '', brief = '' }, onChunk) {
+    const stageGuides = {
+      descubrimiento:   { label: 'Descubrimiento',   tone: 'educativo, inspirador, accesible',           goal: 'Generar conciencia y atraer nuevos pacientes potenciales' },
+      primera_consulta: { label: 'Primera Consulta', tone: 'tranquilizador, profesional, empático',       goal: 'Reducir ansiedad y generar confianza antes de la primera visita' },
+      tratamiento:      { label: 'Tratamiento',       tone: 'motivador, técnico-accesible, de apoyo',     goal: 'Mantener adherencia al tratamiento y educar durante el proceso' },
+      alta:             { label: 'Alta',              tone: 'celebratorio, motivador, empoderador',        goal: 'Celebrar el alta y preparar para la prevención a largo plazo' },
+      retencion:        { label: 'Retención',         tone: 'comunitario, exclusivo, proactivo',          goal: 'Fidelizar pacientes y generar referidos' },
+    };
+    const guide = stageGuides[stage] || stageGuides['descubrimiento'];
+    const msg = `Crea contenido para la etapa "${guide.label}" del viaje del paciente de FisioBox.
+
+OBJETIVO DE ESTA ETAPA: ${guide.goal}
+TONO RECOMENDADO: ${guide.tone}
+${topic ? `TEMA ESPECÍFICO: ${topic}` : ''}
+${brief ? `CONTEXTO ADICIONAL: ${brief}` : ''}
+
+El contenido debe resonar con alguien que está exactamente en este momento de su proceso.
+Genera contenido completo (caption + hashtags) listo para publicar en Instagram.`;
+    return callClaude(PROMPTS.socialMedia, msg, onChunk);
+  },
+
+  // 22. Testimonial Workshop Agent — structured patient success story
+  async testimonialWorkshop({ sport, injury, duration, outcome, patientContext = '' }, onChunk) {
+    const disclaimer = Storage.getBrandSettings().results_disclaimer || 'Los resultados pueden variar según cada persona y condición.';
+    const msg = `Crea un caso de éxito completo para FisioBox:
+
+DEPORTE: ${sport}
+LESIÓN: ${injury}
+DURACIÓN DEL TRATAMIENTO: ${duration}
+RESULTADO CLAVE: ${outcome}
+${patientContext ? `CONTEXTO ADICIONAL: ${patientContext}` : ''}
+
+Genera 4 piezas de contenido:
+
+## 1. Instagram Carrusel (6 slides)
+Slide 1 — Hook visual (el reto inicial)
+Slide 2–4 — El proceso de tratamiento paso a paso
+Slide 5 — El resultado: "${outcome}"
+Slide 6 — CTA hacia consulta + disclaimer
+
+## 2. Script de Reel (30-60 segundos)
+Hook (0-3s) | Desarrollo | Resultado | CTA
+
+## 3. Facebook Post
+Historia narrativa completa con inicio, proceso y desenlace positivo
+
+## 4. Guía de entrevista al paciente
+7-8 preguntas abiertas para obtener la historia en sus propias palabras
+
+FRAMING OBLIGATORIO: Usa "Este atleta logró..." y "El proceso permitió..." nunca "Curamos" ni promesas.
+Añade al final de cada pieza: "${disclaimer}"`;
+    return callClaude(PROMPTS.socialMedia, msg, onChunk);
+  },
+
   // ── COMBINED REVIEW PIPELINE ────────────────────────────────
   async runReviewPipeline(content, platform) {
     const [brandResult, medicalResult, engagementResult] = await Promise.all([

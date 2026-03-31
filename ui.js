@@ -9,6 +9,8 @@ const UI = {
     { id: 'dashboard',    label: 'Dashboard'              },
     { id: 'marca',        label: 'Marca'                  },
     { id: 'generator',   label: 'Generador de Contenido' },
+    { id: 'repurpose',   label: 'Repropositor'           },
+    { id: 'paciente',    label: 'Journey del Paciente'   },
     { id: 'calendar',    label: 'Calendario'             },
     { id: 'library',     label: 'Biblioteca'             },
     { id: 'analytics',   label: 'Analítica'              },
@@ -154,6 +156,8 @@ const UI = {
       case 'dashboard':    return this.renderDashboard();
       case 'marca':        return this.renderMarca();
       case 'generator':    return this.renderGenerator();
+      case 'repurpose':    return this.renderRepurpose();
+      case 'paciente':     return this.renderPaciente();
       case 'calendar':     return this.renderCalendar();
       case 'library':      return this.renderLibrary();
       case 'analytics':    return this.renderAnalytics();
@@ -171,6 +175,8 @@ const UI = {
       case 'dashboard':    this.bindDashboard();    break;
       case 'marca':        this.bindMarca();        break;
       case 'generator':    this.bindGenerator();    break;
+      case 'repurpose':    this.bindRepurpose();    break;
+      case 'paciente':     this.bindPaciente();     break;
       case 'calendar':     this.bindCalendar();     break;
       case 'library':      this.bindLibrary();      break;
       case 'analytics':    this.bindAnalytics();    break;
@@ -381,11 +387,12 @@ const UI = {
     const learnings = Storage.getLearnings();
 
     const tabs = [
-      { id: 'identidad', label: 'Identidad Visual', icon: 'fa-palette' },
-      { id: 'activos',   label: 'Activos',           icon: 'fa-images' },
-      { id: 'voz',       label: 'Voz de Marca',      icon: 'fa-microphone' },
-      { id: 'canales',   label: 'Canales',           icon: 'fa-share-nodes' },
-      { id: 'memoria',   label: 'Memoria',           icon: 'fa-brain' },
+      { id: 'identidad', label: 'Identidad Visual', icon: 'fa-palette'      },
+      { id: 'activos',   label: 'Activos',           icon: 'fa-images'       },
+      { id: 'voz',       label: 'Voz de Marca',      icon: 'fa-microphone'   },
+      { id: 'canales',   label: 'Canales',           icon: 'fa-share-nodes'  },
+      { id: 'hashtags',  label: 'Hashtags',          icon: 'fa-hashtag'      },
+      { id: 'memoria',   label: 'Memoria',           icon: 'fa-brain'        },
     ];
 
     const tabContent = () => {
@@ -717,6 +724,99 @@ const UI = {
   </div>
 </div>`;
       }
+      if (tab === 'hashtags') {
+        const bs2 = Storage.getBrandSettings();
+        const groups = bs2.hashtag_groups || {};
+        const groupNames = Object.keys(groups);
+        return `
+<div class="space-y-6">
+
+  <!-- AI Suggestion Generator -->
+  <div class="card p-6">
+    <h3 class="font-bold text-lg mb-1">Generador de hashtags con IA</h3>
+    <p class="text-sm mb-4" style="color:var(--text-secondary);">Genera hashtags estratégicos para cualquier tema y guárdalos en grupos reutilizables.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+      <div>
+        <label class="label">Tema</label>
+        <input id="ht-topic" class="input" type="text" placeholder="Ej: lesión de rodilla, running, CrossFit..." />
+      </div>
+      <div>
+        <label class="label">Plataforma</label>
+        <select id="ht-platform" class="select">
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Facebook">Facebook</option>
+        </select>
+      </div>
+    </div>
+    <button id="btn-ht-suggest" class="btn-primary px-6 py-2.5 text-sm font-semibold">
+      <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Sugerir hashtags
+    </button>
+    <div id="ht-suggest-output-wrap" class="hidden mt-4">
+      <div class="content-output" id="ht-suggest-output" style="max-height:300px;"></div>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <input id="ht-new-group-name" class="input" style="max-width:200px;"
+          placeholder="Nombre del grupo (Ej: Running)" />
+        <button id="btn-ht-save-group" class="btn-ghost px-4 py-2 text-sm">
+          <i class="fa-regular fa-floppy-disk mr-1"></i>Guardar como grupo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual group manager -->
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-lg">Grupos de hashtags</h3>
+      <span class="text-xs" style="color:var(--text-tertiary);">${groupNames.length} grupos · ${Object.values(groups).flat().length} hashtags</span>
+    </div>
+
+    <!-- Create new group -->
+    <div class="rounded-xl p-4 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
+      <label class="label">Añadir grupo manualmente</label>
+      <div class="flex gap-2 mb-2">
+        <input id="ht-manual-group" class="input flex-1" placeholder="Nombre del grupo" />
+        <button id="btn-ht-add-group" class="btn-ghost px-4 py-2 text-sm flex-shrink-0">Crear</button>
+      </div>
+      <textarea id="ht-manual-tags" class="textarea" rows="2"
+        placeholder="#fisioterapia #rehabilitacion #deportistas (uno por línea o separados por espacios)"></textarea>
+    </div>
+
+    ${groupNames.length === 0 ? `
+    <div class="text-center py-8" style="color:var(--text-tertiary);">
+      <i class="fa-solid fa-hashtag text-3xl mb-3 block opacity-30"></i>
+      <p class="text-sm">Aún no hay grupos. Usa el generador de IA o añade uno manualmente.</p>
+    </div>` : `
+    <div class="space-y-3" id="ht-groups-list">
+      ${groupNames.map(gn => {
+        const tags = (groups[gn] || []);
+        return `
+        <div class="rounded-xl overflow-hidden" style="border:1px solid var(--glass-border);">
+          <div class="flex items-center justify-between px-4 py-3" style="background:var(--glass-bg);">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-sm">${gn}</span>
+              <span class="pill text-xs" style="background:rgba(14,165,233,0.12);color:var(--accent);">${tags.length} hashtags</span>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn-ghost px-3 py-1 text-xs ht-copy-group" data-group="${gn}"
+                onclick="copyToClipboard('${tags.join(' ')}','Grupo ${gn}')">
+                <i class="fa-regular fa-copy mr-1"></i>Copiar
+              </button>
+              <button class="btn-ghost px-3 py-1 text-xs ht-delete-group" data-group="${gn}"
+                style="color:var(--error);">
+                <i class="fa-regular fa-trash-can mr-1"></i>Eliminar
+              </button>
+            </div>
+          </div>
+          <div class="px-4 py-3 flex flex-wrap gap-1.5">
+            ${tags.map(t => `<span class="pill text-xs" style="background:rgba(14,165,233,0.08);color:var(--text-secondary);">${t}</span>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`}
+  </div>
+</div>`;
+      }
       return '';
     };
 
@@ -801,26 +901,70 @@ const UI = {
 
   renderGenStep1() {
     const selected = App.generatorData.platform;
+    const pkgMode = App.generatorData.packageMode;
     return `
-<div class="card p-6">
-  <h2 class="text-xl font-bold mb-2">Elige la plataforma</h2>
-  <p class="text-sm mb-6" style="color:var(--text-secondary);">Selecciona dónde se publicará este contenido</p>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="platform-grid">
-    ${this.platforms.map(p => `
-      <button data-platform="${p.id}"
-        class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'card-selected' : ''}"
-        style="${selected === p.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
-        <div class="mb-3"><i class="${p.faIcon}" style="font-size:1.5rem;color:var(--accent);"></i></div>
-        <div class="font-semibold mb-1">${p.label}</div>
-        <div class="text-xs" style="color:var(--text-secondary);">${p.desc}</div>
+<div class="space-y-4">
+  <!-- Mode toggle -->
+  <div class="card p-4 flex items-center justify-between gap-4">
+    <div>
+      <div class="font-semibold text-sm">Modo Paquete <span class="pill text-xs ml-1" style="background:rgba(249,115,22,0.15);color:var(--accent-orange);">Nuevo</span></div>
+      <div class="text-xs mt-0.5" style="color:var(--text-secondary);">Un tema → contenido para todas las plataformas simultáneamente</div>
+    </div>
+    <label class="flex items-center gap-2 cursor-pointer select-none flex-shrink-0">
+      <input type="checkbox" id="pkg-mode-toggle" ${pkgMode ? 'checked' : ''} />
+      <span class="text-sm font-medium">${pkgMode ? 'Activado' : 'Desactivado'}</span>
+    </label>
+  </div>
+
+  ${pkgMode ? `
+  <!-- Package mode: skip platform selection -->
+  <div class="card p-6" style="border-color:var(--accent-orange);box-shadow:0 0 0 1px rgba(249,115,22,0.2);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+        style="background:rgba(249,115,22,0.15);">
+        <i class="fa-solid fa-layer-group" style="color:var(--accent-orange);"></i>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold">Modo Paquete activado</h2>
+        <p class="text-sm" style="color:var(--text-secondary);">Se generará contenido para 6 formatos de una sola vez.</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-5">
+      ${['Instagram Carrusel','Instagram Reel','Facebook Post','WhatsApp Mensaje','Blog/SEO Brief','Instagram Stories'].map(f => `
+        <div class="flex items-center gap-2 p-2 rounded-lg text-sm" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
+          <i class="fa-solid fa-circle-check text-xs flex-shrink-0" style="color:var(--success);"></i>
+          <span>${f}</span>
+        </div>`).join('')}
+    </div>
+    <div class="flex justify-end">
+      <button id="step1-pkg-next" class="btn-orange px-8 py-3 font-semibold">
+        Continuar al tema →
       </button>
-    `).join('')}
+    </div>
   </div>
-  <div class="flex justify-end mt-6">
-    <button id="step1-next" class="btn-primary px-8 py-3 font-semibold" ${!selected ? 'disabled' : ''}>
-      Siguiente →
-    </button>
+  ` : `
+  <!-- Normal mode: pick platform -->
+  <div class="card p-6">
+    <h2 class="text-xl font-bold mb-2">Elige la plataforma</h2>
+    <p class="text-sm mb-6" style="color:var(--text-secondary);">Selecciona dónde se publicará este contenido</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="platform-grid">
+      ${this.platforms.map(p => `
+        <button data-platform="${p.id}"
+          class="platform-card card p-5 text-left transition-all hover:scale-105 ${selected === p.id ? 'card-selected' : ''}"
+          style="${selected === p.id ? 'border-color:var(--accent-orange);box-shadow:0 0 0 2px var(--accent-orange-glow);' : ''}">
+          <div class="mb-3"><i class="${p.faIcon}" style="font-size:1.5rem;color:var(--accent);"></i></div>
+          <div class="font-semibold mb-1">${p.label}</div>
+          <div class="text-xs" style="color:var(--text-secondary);">${p.desc}</div>
+        </button>
+      `).join('')}
+    </div>
+    <div class="flex justify-end mt-6">
+      <button id="step1-next" class="btn-primary px-8 py-3 font-semibold" ${!selected ? 'disabled' : ''}>
+        Siguiente →
+      </button>
+    </div>
   </div>
+  `}
 </div>
     `;
   },
@@ -856,15 +1000,16 @@ const UI = {
   },
 
   renderGenStep3() {
-    const { platform, format } = App.generatorData;
-    const extraFields = this.getExtraFields(platform, format);
+    const { platform, format, packageMode } = App.generatorData;
+    const extraFields = packageMode ? '' : this.getExtraFields(platform, format);
     return `
 <div class="card p-6">
   <div class="flex items-center gap-3 mb-2">
     <button id="step3-back" class="btn-ghost px-3 py-2 text-sm">← Atrás</button>
-    <h2 class="text-xl font-bold">Detalles del contenido</h2>
+    <h2 class="text-xl font-bold">${packageMode ? 'Tema del paquete' : 'Detalles del contenido'}</h2>
+    ${packageMode ? `<span class="pill text-xs" style="background:rgba(249,115,22,0.15);color:var(--accent-orange);">Modo Paquete</span>` : ''}
   </div>
-  <p class="text-sm mb-6" style="color:var(--text-secondary);">Proporciona la información para generar el contenido</p>
+  <p class="text-sm mb-6" style="color:var(--text-secondary);">${packageMode ? 'Define el tema central y se generará contenido para 6 formatos' : 'Proporciona la información para generar el contenido'}</p>
   <div class="space-y-5">
     <div>
       <label class="label">Tema principal *</label>
@@ -893,7 +1038,7 @@ const UI = {
   <div class="flex justify-between mt-6">
     <button id="step3-back" class="btn-ghost px-6 py-3">← Atrás</button>
     <button id="step3-generate" class="btn-orange px-8 py-3 font-semibold text-base">
-      Generar contenido
+      ${App.generatorData.packageMode ? '<i class="fa-solid fa-layer-group mr-2"></i>Generar paquete' : 'Generar contenido'}
     </button>
   </div>
 </div>
@@ -1010,9 +1155,33 @@ const UI = {
   },
 
   renderGenStep4() {
-    const { platform, format, topic } = App.generatorData;
+    const { platform, format, topic, packageMode } = App.generatorData;
     const formatLabel = this.formats[platform]?.find(f => f.id === format)?.label || format;
     const guide = this.getVisualGuide(platform, format);
+
+    if (packageMode) {
+      return `
+<div class="space-y-5">
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="text-xl font-bold">Paquete de contenido</h2>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="pill text-xs" style="background:rgba(249,115,22,0.15);color:var(--accent-orange);">Modo Paquete</span>
+          <span class="text-xs" style="color:var(--text-secondary);">${topic || ''}</span>
+        </div>
+      </div>
+      <button id="step4-back" class="btn-ghost px-4 py-2 text-sm">← Nueva generación</button>
+    </div>
+    <div id="package-loading" class="flex items-center gap-3 py-6" style="color:var(--text-tertiary);">
+      <span class="loading-dots">Generando paquete de contenido</span>
+    </div>
+    <div id="package-output" class="hidden space-y-3"></div>
+  </div>
+</div>
+      `;
+    }
+
     return `
 <div class="space-y-5">
   <!-- Content card -->
@@ -1517,6 +1686,93 @@ const UI = {
         render();
       }
     });
+
+    // ── Hashtags tab ────────────────────────────────────────────
+    if (tab === 'hashtags') {
+      // AI suggestion
+      document.getElementById('btn-ht-suggest')?.addEventListener('click', async () => {
+        const topic = document.getElementById('ht-topic')?.value?.trim();
+        if (!topic) { showToast('Ingresa un tema para generar hashtags', 'warning'); return; }
+        const platform = document.getElementById('ht-platform')?.value || 'Instagram';
+        const btn = document.getElementById('btn-ht-suggest');
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando...';
+
+        const wrapEl = document.getElementById('ht-suggest-output-wrap');
+        const outputEl = document.getElementById('ht-suggest-output');
+        wrapEl.classList.remove('hidden');
+        outputEl.classList.add('streaming');
+        outputEl.textContent = '';
+        let fullText = '';
+
+        const bs = Storage.getBrandSettings();
+        const existing = Object.values(bs.hashtag_groups || {}).flat();
+        try {
+          await Agents.hashtagSuggestions({ topic, platform, existingTags: existing }, (chunk, full) => {
+            fullText = full;
+            outputEl.textContent = full;
+            outputEl.scrollTop = outputEl.scrollHeight;
+          });
+          outputEl.classList.remove('streaming');
+          outputEl.innerHTML = renderMarkdown(fullText);
+          // Store for saving
+          outputEl.dataset.result = fullText;
+        } catch (err) {
+          outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+          showToast(err.message, 'error');
+        } finally {
+          btn.disabled = false; btn.innerHTML = origHTML;
+        }
+      });
+
+      // Save AI results as a group
+      document.getElementById('btn-ht-save-group')?.addEventListener('click', () => {
+        const groupName = document.getElementById('ht-new-group-name')?.value?.trim();
+        const outputEl = document.getElementById('ht-suggest-output');
+        const text = outputEl?.dataset?.result || outputEl?.textContent || '';
+        if (!groupName) { showToast('Escribe un nombre para el grupo', 'warning'); return; }
+        if (!text) { showToast('Genera hashtags primero', 'warning'); return; }
+        // Extract hashtags from text
+        const tags = [...new Set(text.match(/#[\w\u00C0-\u017F]+/g) || [])];
+        if (tags.length === 0) { showToast('No se encontraron hashtags en el resultado', 'warning'); return; }
+        const bs = Storage.getBrandSettings();
+        if (!bs.hashtag_groups) bs.hashtag_groups = {};
+        bs.hashtag_groups[groupName] = tags;
+        Storage.setBrandSettings(bs);
+        showToast(`Grupo "${groupName}" guardado con ${tags.length} hashtags`, 'success');
+        render();
+      });
+
+      // Manual group creation
+      document.getElementById('btn-ht-add-group')?.addEventListener('click', () => {
+        const groupName = document.getElementById('ht-manual-group')?.value?.trim();
+        const rawTags = document.getElementById('ht-manual-tags')?.value?.trim();
+        if (!groupName) { showToast('Ingresa un nombre para el grupo', 'warning'); return; }
+        if (!rawTags) { showToast('Ingresa al menos un hashtag', 'warning'); return; }
+        const tags = rawTags.split(/[\s\n,]+/)
+          .map(t => t.startsWith('#') ? t : '#' + t)
+          .filter(t => t.length > 1);
+        const bs = Storage.getBrandSettings();
+        if (!bs.hashtag_groups) bs.hashtag_groups = {};
+        bs.hashtag_groups[groupName] = [...new Set(tags)];
+        Storage.setBrandSettings(bs);
+        showToast(`Grupo "${groupName}" creado`, 'success');
+        render();
+      });
+
+      // Delete group
+      document.querySelectorAll('.ht-delete-group').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const groupName = btn.dataset.group;
+          if (!confirm(`¿Eliminar el grupo "${groupName}"?`)) return;
+          const bs = Storage.getBrandSettings();
+          delete bs.hashtag_groups[groupName];
+          Storage.setBrandSettings(bs);
+          render();
+        });
+      });
+    }
   },
 
   bindGenerator() {
@@ -1528,6 +1784,22 @@ const UI = {
   },
 
   bindGenStep1() {
+    // Package mode toggle
+    document.getElementById('pkg-mode-toggle')?.addEventListener('change', (e) => {
+      App.generatorData.packageMode = e.target.checked;
+      document.getElementById('generator-step-content').innerHTML = this.renderGenStep1();
+      this.bindGenStep1();
+    });
+
+    // Package mode: skip to step 3 directly
+    document.getElementById('step1-pkg-next')?.addEventListener('click', () => {
+      App.generatorStep = 3;
+      document.getElementById('generator-step-content').innerHTML = this.renderGenStep3();
+      this.bindGenStep3();
+      this.updateStepProgress(3);
+    });
+
+    // Normal mode: platform selection
     document.querySelectorAll('.platform-card').forEach(btn => {
       btn.addEventListener('click', () => {
         App.generatorData.platform = btn.dataset.platform;
@@ -1604,10 +1876,18 @@ const UI = {
 
     document.querySelectorAll('#step3-back').forEach(btn => {
       btn.addEventListener('click', () => {
-        App.generatorStep = 2;
-        document.getElementById('generator-step-content').innerHTML = this.renderGenStep2();
-        this.bindGenStep2();
-        this.updateStepProgress(2);
+        // Package mode skips step 2, so go back to step 1
+        if (App.generatorData.packageMode) {
+          App.generatorStep = 1;
+          document.getElementById('generator-step-content').innerHTML = this.renderGenStep1();
+          this.bindGenStep1();
+          this.updateStepProgress(1);
+        } else {
+          App.generatorStep = 2;
+          document.getElementById('generator-step-content').innerHTML = this.renderGenStep2();
+          this.bindGenStep2();
+          this.updateStepProgress(2);
+        }
       });
     });
     const genBtn = document.getElementById('step3-generate');
@@ -1672,7 +1952,7 @@ const UI = {
   },
 
   async runGeneration() {
-    const { platform, format, topic, category, keywords, audience, injury, sport, goal, includeBrandContext } = App.generatorData;
+    const { platform, format, topic, category, keywords, audience, injury, sport, goal, includeBrandContext, packageMode } = App.generatorData;
     let brief = App.generatorData.brief || '';
     if (includeBrandContext) {
       const bs = Storage.getBrandSettings();
@@ -1683,6 +1963,13 @@ const UI = {
       if (bs.visual_style)    parts.push(`Estilo visual: ${bs.visual_style}`);
       if (parts.length > 0) brief += `\n\nCONTEXTO VISUAL DE MARCA: ${parts.join(' · ')}`;
     }
+
+    // ── Package mode ───────────────────────────────────────────
+    if (packageMode) {
+      await this.runPackageGeneration(topic, brief, category);
+      return;
+    }
+
     const outputEl = document.getElementById('content-output');
     if (!outputEl) return;
 
@@ -1730,6 +2017,91 @@ const UI = {
       outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
       showToast(err.message, 'error');
     }
+  },
+
+  async runPackageGeneration(topic, brief, category) {
+    const loadingEl = document.getElementById('package-loading');
+    const outputEl = document.getElementById('package-output');
+    if (!outputEl) return;
+
+    try {
+      const result = await Agents.contentPackage({ topic, brief, category });
+      if (loadingEl) loadingEl.classList.add('hidden');
+      outputEl.classList.remove('hidden');
+
+      const pkg = result.parsed;
+      if (!pkg || !pkg.formats) {
+        // Fallback: show raw text
+        outputEl.innerHTML = `<div class="content-output">${renderMarkdown(result.raw)}</div>`;
+        return;
+      }
+
+      outputEl.innerHTML = `
+        <div class="p-3 rounded-xl mb-3" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
+          <p class="text-sm font-semibold">${pkg.key_message || ''}</p>
+        </div>
+        ${pkg.formats.map((f, i) => `
+          <div class="rounded-xl overflow-hidden" style="border:1px solid var(--glass-border);">
+            <button type="button" class="pkg-card-toggle w-full flex items-center justify-between px-4 py-3 text-left"
+              style="background:var(--glass-bg);" data-index="${i}">
+              <div class="flex items-center gap-3">
+                <span class="font-semibold text-sm">${f.format}</span>
+                <span class="pill text-xs" style="background:var(--glass-border);color:var(--text-secondary);">${f.platform}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="btn-ghost px-3 py-1 text-xs pkg-copy-btn" data-index="${i}"
+                  onclick="event.stopPropagation();copyToClipboard(this.dataset.content,'${f.format}');"
+                  data-content="${(f.content || '').replace(/"/g,'&quot;')}">
+                  <i class="fa-regular fa-copy mr-1"></i>Copiar
+                </button>
+                <i class="fa-solid fa-chevron-down text-xs transition-transform" id="pkg-chevron-${i}"></i>
+              </div>
+            </button>
+            <div id="pkg-body-${i}" class="hidden px-4 pb-4 pt-3" style="border-top:1px solid var(--glass-border);">
+              <div class="content-output" style="max-height:350px;">${renderMarkdown(f.content || '')}</div>
+              ${f.notes ? `<p class="text-xs mt-2 italic" style="color:var(--text-tertiary);">${f.notes}</p>` : ''}
+              <div class="flex gap-2 mt-3">
+                <button class="btn-ghost px-3 py-1 text-xs"
+                  onclick="UI.savePkgFormatToDraft('${topic}','${f.format}','${f.platform}',${i})">
+                  <i class="fa-regular fa-floppy-disk mr-1"></i>Guardar borrador
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+
+      // Open first card by default
+      const firstBody = document.getElementById('pkg-body-0');
+      const firstChevron = document.getElementById('pkg-chevron-0');
+      if (firstBody) { firstBody.classList.remove('hidden'); if (firstChevron) firstChevron.style.transform = 'rotate(180deg)'; }
+
+      // Bind accordion toggles
+      document.querySelectorAll('.pkg-card-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = btn.dataset.index;
+          const body = document.getElementById(`pkg-body-${idx}`);
+          const chevron = document.getElementById(`pkg-chevron-${idx}`);
+          if (body) {
+            const hidden = body.classList.toggle('hidden');
+            if (chevron) chevron.style.transform = hidden ? '' : 'rotate(180deg)';
+          }
+        });
+      });
+
+      Storage.incrementGenerated();
+    } catch (err) {
+      if (loadingEl) loadingEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+      showToast(err.message, 'error');
+    }
+  },
+
+  savePkgFormatToDraft(topic, format, platform, index) {
+    const body = document.getElementById(`pkg-body-${index}`);
+    const content = body?.querySelector('.content-output')?.textContent || '';
+    if (!content) return;
+    Storage.saveDraft({ title: `${topic} — ${format}`, platform, format, topic, content, status: 'draft', category: 'educativo' });
+    showToast(`Borrador guardado: ${format}`, 'success');
   },
 
   bindVisualConceptsBtn(platform, format, topic, brief) {
@@ -2413,7 +2785,10 @@ Puedes pegar datos de múltiples posts..."></textarea>
   <!-- Historical reports -->
   ${analyticsData.length > 0 ? `
     <div class="card p-6">
-      <h3 class="font-semibold mb-4">Reportes anteriores</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold">Reportes anteriores</h3>
+        <span class="text-xs" style="color:var(--text-tertiary);">${analyticsData.length} guardados</span>
+      </div>
       <div class="space-y-3">
         ${analyticsData.slice(0, 5).map(entry => `
           <div class="flex items-center justify-between p-3 rounded-lg" style="background:var(--bg-base);border:1px solid var(--glass-border);">
@@ -2425,6 +2800,39 @@ Puedes pegar datos de múltiples posts..."></textarea>
           </div>
         `).join('')}
       </div>
+    </div>
+  ` : ''}
+
+  <!-- Performance Coach (requires ≥ 2 historical reports) -->
+  ${analyticsData.length >= 2 ? `
+    <div class="card p-6" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),var(--glass-bg));border-color:rgba(16,185,129,0.3);">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+          style="background:rgba(16,185,129,0.15);">
+          <i class="fa-solid fa-trophy" style="color:var(--success);font-size:16px;"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg mb-0.5">Coach de Rendimiento</h3>
+          <p class="text-sm" style="color:var(--text-secondary);">Analiza tus ${analyticsData.length} reportes guardados para identificar patrones, tendencias y recomendaciones acumuladas.</p>
+        </div>
+      </div>
+      <button id="btn-performance-coach" class="btn-primary px-6 py-2.5 text-sm font-semibold">
+        <i class="fa-solid fa-brain mr-2"></i>Analizar historial completo
+      </button>
+      <div id="coach-output-wrap" class="hidden mt-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Insights acumulados</span>
+          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('coach-output')">
+            <i class="fa-regular fa-copy mr-1"></i>Copiar
+          </button>
+        </div>
+        <div id="coach-output" class="content-output" style="max-height:450px;"></div>
+      </div>
+    </div>
+  ` : analyticsData.length === 1 ? `
+    <div class="card p-4 flex items-center gap-3" style="border-color:rgba(16,185,129,0.2);">
+      <i class="fa-solid fa-trophy text-xl flex-shrink-0" style="color:rgba(16,185,129,0.4);"></i>
+      <p class="text-sm" style="color:var(--text-secondary);">Guarda <strong>al menos 2 reportes</strong> para desbloquear el Coach de Rendimiento con análisis de patrones acumulados.</p>
     </div>
   ` : ''}
 </div>
@@ -2459,6 +2867,7 @@ Puedes pegar datos de múltiples posts..."></textarea>
         document.getElementById('save-analytics')?.addEventListener('click', () => {
           Storage.saveAnalyticsEntry({ summary: 'Reporte ' + new Date().toLocaleDateString('es-CR'), content: fullText });
           showToast('Reporte guardado', 'success');
+          render();
         });
       } catch (err) {
         outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
@@ -2466,6 +2875,38 @@ Puedes pegar datos de múltiples posts..."></textarea>
       } finally {
         btn.textContent = 'Analizar con IA';
         btn.disabled = false;
+      }
+    });
+
+    // ── Performance Coach ──────────────────────────────────────
+    document.getElementById('btn-performance-coach')?.addEventListener('click', async () => {
+      const entries = Storage.getAnalyticsData();
+      if (entries.length < 2) { showToast('Necesitas al menos 2 reportes guardados', 'warning'); return; }
+      const btn = document.getElementById('btn-performance-coach');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Analizando historial...';
+
+      const wrapEl = document.getElementById('coach-output-wrap');
+      const outputEl = document.getElementById('coach-output');
+      wrapEl.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.textContent = '';
+      let fullText = '';
+
+      try {
+        await Agents.performanceCoach(entries, (chunk, full) => {
+          fullText = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(fullText);
+      } catch (err) {
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = origHTML;
       }
     });
   },
@@ -2739,6 +3180,78 @@ Puedes pegar datos de múltiples posts..."></textarea>
       </div>
     </div>
 
+    <!-- TOOL 5: Taller de Testimonios -->
+    <div class="card p-0 overflow-hidden md:col-span-2">
+      <div class="p-5">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+            style="background:rgba(236,72,153,0.12);">
+            <i class="fa-solid fa-star" style="color:#ec4899;font-size:16px;"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-semibold" style="font-size:15px;">Taller de Testimonios</h3>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(236,72,153,0.10);color:#ec4899;">Convierte casos en contenido</span>
+            </div>
+            <p class="text-sm mt-1" style="color:var(--text-secondary);">
+              Transforma el éxito de un paciente en 4 piezas de contenido listas — carrusel, reel, post de Facebook y guía de entrevista — con framing médico seguro.
+            </p>
+          </div>
+        </div>
+        <div class="rounded-lg p-3 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
+          <p class="text-xs font-semibold mb-1.5" style="color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;">Qué obtendrás</p>
+          <ul class="space-y-1">
+            ${['Carrusel de 6 slides con historia del paciente','Script de Reel 30–60s listo para grabar','Post de Facebook narrativo + guía de entrevista'].map(i =>
+              `<li class="flex items-start gap-2 text-xs" style="color:var(--text-secondary);">
+                <i class="fa-solid fa-circle-check mt-0.5 flex-shrink-0" style="color:var(--success);font-size:10px;"></i>${i}
+              </li>`
+            ).join('')}
+          </ul>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="label">Deporte</label>
+              <input id="test-sport" class="input" type="text" placeholder="Fútbol, Running..." />
+            </div>
+            <div>
+              <label class="label">Lesión</label>
+              <input id="test-injury" class="input" type="text" placeholder="LCA, esguince..." />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="label">Duración del tto.</label>
+              <input id="test-duration" class="input" type="text" placeholder="8 semanas, 3 meses..." />
+            </div>
+            <div>
+              <label class="label">Resultado clave</label>
+              <input id="test-outcome" class="input" type="text" placeholder="Regresó a competir..." />
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="label">Contexto adicional <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+            <input id="test-context" class="input" type="text"
+              placeholder="Edad aproximada, nivel deportivo, particularidades del caso..." />
+          </div>
+        </div>
+        <div class="mt-4">
+          <button id="run-testimonial" class="btn-primary w-full py-2.5 text-sm font-semibold" style="background:linear-gradient(135deg,#ec4899,#8b5cf6);">
+            <i class="fa-solid fa-star mr-2"></i>Generar paquete de testimonio
+          </button>
+        </div>
+      </div>
+      <div id="testimonial-output-wrap" class="hidden">
+        <div class="px-5 pb-2 pt-3 flex items-center justify-between" style="border-top:1px solid var(--glass-border);">
+          <span class="text-xs font-semibold" style="color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Resultado</span>
+          <button class="btn-ghost px-3 py-1 text-xs" onclick="copyOutputContent('testimonial-output')">
+            <i class="fa-regular fa-copy mr-1"></i>Copiar
+          </button>
+        </div>
+        <div id="testimonial-output" class="content-output mx-5 mb-5" style="max-height:450px;"></div>
+      </div>
+    </div>
+
   </div>
 </div>
     `;
@@ -2794,6 +3307,46 @@ Puedes pegar datos de múltiples posts..."></textarea>
         phase: document.getElementById('rtp-phase')?.value || '',
         format: document.getElementById('rtp-format')?.value || 'carrusel educativo',
       }, cb));
+
+    // ── Testimonial Workshop ────────────────────────────────────
+    document.getElementById('run-testimonial')?.addEventListener('click', async () => {
+      const sport   = document.getElementById('test-sport')?.value?.trim();
+      const injury  = document.getElementById('test-injury')?.value?.trim();
+      const duration = document.getElementById('test-duration')?.value?.trim();
+      const outcome = document.getElementById('test-outcome')?.value?.trim();
+      if (!sport || !injury || !duration || !outcome) {
+        showToast('Por favor completa deporte, lesión, duración y resultado', 'warning');
+        return;
+      }
+      const patientContext = document.getElementById('test-context')?.value?.trim() || '';
+      const btn = document.getElementById('run-testimonial');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando paquete...';
+
+      const wrapEl = document.getElementById('testimonial-output-wrap');
+      const outputEl = document.getElementById('testimonial-output');
+      wrapEl.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.innerHTML = '<span class="loading-dots">Creando paquete de testimonio</span>';
+      let fullText = '';
+
+      try {
+        await Agents.testimonialWorkshop({ sport, injury, duration, outcome, patientContext }, (chunk, full) => {
+          fullText = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(fullText);
+      } catch (err) {
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = origHTML;
+      }
+    });
   },
 
 
@@ -3155,6 +3708,297 @@ Puedes pegar datos de múltiples posts..."></textarea>
         `).join('');
         resultDiv.scrollIntoView({ behavior: 'smooth' });
       });
+    });
+  },
+
+
+  // ══════════════════════════════════════════════════════════
+  // REPURPOSE VIEW
+  // ══════════════════════════════════════════════════════════
+  renderRepurpose() {
+    const drafts = Storage.getDrafts().filter(d => d.content).slice(0, 20);
+    const targetPlatforms = [
+      { id: 'Instagram', label: 'Instagram', icon: 'fa-brands fa-instagram' },
+      { id: 'TikTok',    label: 'TikTok',    icon: 'fa-brands fa-tiktok'    },
+      { id: 'Facebook',  label: 'Facebook',  icon: 'fa-brands fa-facebook'  },
+      { id: 'Blog',      label: 'Blog/SEO',  icon: 'fa-solid fa-rss'        },
+      { id: 'WhatsApp',  label: 'WhatsApp',  icon: 'fa-brands fa-whatsapp'  },
+      { id: 'Ads',       label: 'Ads',       icon: 'fa-solid fa-rectangle-ad'},
+    ];
+    return `
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(14,165,233,0.08),var(--glass-bg));">
+    <h2 class="text-xl font-bold mb-1">Repropositor de Contenido</h2>
+    <p class="text-sm" style="color:var(--text-secondary);">Toma contenido existente y adáptalo para otra plataforma en segundos — manteniendo el mensaje, cambiando el formato.</p>
+  </div>
+
+  <!-- Source content -->
+  <div class="card p-6">
+    <h3 class="font-semibold mb-4">1. Contenido de origen</h3>
+    ${drafts.length > 0 ? `
+    <div class="mb-3">
+      <label class="label">Importar desde Biblioteca</label>
+      <select id="repurpose-draft-select" class="select">
+        <option value="">— Selecciona un borrador —</option>
+        ${drafts.map(d => `<option value="${d.id}">${d.title || d.topic || 'Sin título'} (${d.platform || '?'})</option>`).join('')}
+      </select>
+    </div>
+    <div class="text-center text-xs py-1" style="color:var(--text-tertiary);">— o escribe directamente —</div>
+    ` : ''}
+    <div class="mt-3">
+      <label class="label">Contenido original</label>
+      <textarea id="repurpose-source" class="textarea" rows="7"
+        placeholder="Pega aquí el texto original que quieres adaptar — caption, artículo, guión..."></textarea>
+    </div>
+  </div>
+
+  <!-- Target platform -->
+  <div class="card p-6">
+    <h3 class="font-semibold mb-4">2. Plataforma de destino</h3>
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="repurpose-platform-grid">
+      ${targetPlatforms.map(p => `
+        <button data-platform="${p.id}" class="repurpose-platform-btn card p-3 text-center transition-all hover:scale-105">
+          <i class="${p.icon}" style="font-size:1.3rem;color:var(--accent);"></i>
+          <div class="text-xs mt-1.5 font-medium">${p.label}</div>
+        </button>
+      `).join('')}
+    </div>
+    <div id="repurpose-format-row" class="hidden mt-4">
+      <label class="label">Formato específico <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+      <input id="repurpose-target-format" class="input" type="text"
+        placeholder="Ej: Reel 30s, Carrusel 6 slides, Post corto..." />
+    </div>
+  </div>
+
+  <!-- Generate -->
+  <div class="flex justify-end">
+    <button id="btn-repurpose" class="btn-orange px-8 py-3 font-semibold text-base" disabled>
+      <i class="fa-solid fa-arrows-rotate mr-2"></i>Repropositar contenido
+    </button>
+  </div>
+
+  <!-- Output -->
+  <div id="repurpose-output-section" class="hidden">
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold">Contenido adaptado</h3>
+        <div class="flex gap-2">
+          <button id="repurpose-copy" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+          <button id="repurpose-save" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar borrador</button>
+        </div>
+      </div>
+      <div id="repurpose-output" class="content-output" style="min-height:200px;"></div>
+    </div>
+  </div>
+</div>
+    `;
+  },
+
+  bindRepurpose() {
+    const drafts = Storage.getDrafts().filter(d => d.content);
+    let selectedPlatform = '';
+
+    // Import from library
+    document.getElementById('repurpose-draft-select')?.addEventListener('change', (e) => {
+      const draft = drafts.find(d => d.id === e.target.value);
+      if (draft) document.getElementById('repurpose-source').value = draft.content || '';
+    });
+
+    // Platform selection
+    document.querySelectorAll('.repurpose-platform-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedPlatform = btn.dataset.platform;
+        document.querySelectorAll('.repurpose-platform-btn').forEach(b => {
+          b.style.borderColor = '';
+          b.classList.remove('card-selected');
+        });
+        btn.style.borderColor = '#f97316';
+        btn.classList.add('card-selected');
+        document.getElementById('repurpose-format-row').classList.remove('hidden');
+        document.getElementById('btn-repurpose').disabled = false;
+      });
+    });
+
+    // Generate
+    document.getElementById('btn-repurpose')?.addEventListener('click', async () => {
+      const content = document.getElementById('repurpose-source')?.value?.trim();
+      if (!content) { showToast('Por favor ingresa contenido de origen', 'warning'); return; }
+      if (!selectedPlatform) { showToast('Selecciona una plataforma de destino', 'warning'); return; }
+
+      const targetFormat = document.getElementById('repurpose-target-format')?.value?.trim() || '';
+      const btn = document.getElementById('btn-repurpose');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Adaptando...';
+
+      const section = document.getElementById('repurpose-output-section');
+      const outputEl = document.getElementById('repurpose-output');
+      section.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.textContent = '';
+      let fullText = '';
+
+      try {
+        await Agents.repurpose({ content, targetPlatform: selectedPlatform, targetFormat }, (chunk, full) => {
+          fullText = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(fullText);
+
+        document.getElementById('repurpose-copy')?.addEventListener('click', () => copyToClipboard(fullText, 'Contenido adaptado'));
+        document.getElementById('repurpose-save')?.addEventListener('click', () => {
+          Storage.saveDraft({ title: `Repropuesto para ${selectedPlatform}`, platform: selectedPlatform, content: fullText, status: 'draft', category: 'educativo' });
+          showToast('Borrador guardado', 'success');
+        });
+      } catch (err) {
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+      }
+    });
+  },
+
+
+  // ══════════════════════════════════════════════════════════
+  // PATIENT JOURNEY VIEW
+  // ══════════════════════════════════════════════════════════
+  renderPaciente() {
+    const stages = [
+      { id: 'descubrimiento',   label: 'Descubrimiento',   icon: 'fa-magnifying-glass', color: '#0ea5e9', desc: 'El paciente busca información. No sabe si necesita fisioterapia.' },
+      { id: 'primera_consulta', label: 'Primera Consulta', icon: 'fa-door-open',          color: '#8b5cf6', desc: 'Ha decidido consultar. Siente ansiedad y dudas antes de venir.' },
+      { id: 'tratamiento',      label: 'En Tratamiento',   icon: 'fa-person-walking',     color: '#f97316', desc: 'Paciente activo. Necesita motivación y comprensión del proceso.' },
+      { id: 'alta',             label: 'Alta',             icon: 'fa-medal',              color: '#10b981', desc: 'Ha terminado el tratamiento. Listo para celebrar y prevenir.' },
+      { id: 'retencion',        label: 'Retención',        icon: 'fa-heart',              color: '#ec4899', desc: 'Paciente dado de alta. Objetivo: fidelizar y generar referidos.' },
+    ];
+    const activeStage = App._journeyStage || 'descubrimiento';
+    const active = stages.find(s => s.id === activeStage);
+    return `
+<div class="space-y-6">
+
+  <div class="card p-6" style="background:linear-gradient(135deg,rgba(139,92,246,0.10),var(--glass-bg));">
+    <h2 class="text-xl font-bold mb-1">Journey del Paciente</h2>
+    <p class="text-sm" style="color:var(--text-secondary);">Crea contenido adaptado a cada etapa del recorrido del paciente — desde que te descubre hasta que te recomienda.</p>
+  </div>
+
+  <!-- Stage selector -->
+  <div class="card p-5">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      ${stages.map(s => `
+        <button class="journey-stage-btn flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all"
+          data-stage="${s.id}"
+          style="border:2px solid ${s.id === activeStage ? s.color : 'var(--glass-border)'};
+                 background:${s.id === activeStage ? `${s.color}18` : 'var(--glass-bg)'};
+                 cursor:pointer;">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+            style="background:${s.id === activeStage ? s.color : 'var(--glass-border)'}18;">
+            <i class="fa-solid ${s.icon}" style="color:${s.color};font-size:15px;"></i>
+          </div>
+          <span class="text-xs font-semibold" style="color:${s.id === activeStage ? s.color : 'var(--text-secondary)'};">${s.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+
+  <!-- Stage details + generator -->
+  <div class="card p-6">
+    <div class="flex items-start gap-4 mb-5">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+        style="background:${active.color}18;">
+        <i class="fa-solid ${active.icon}" style="color:${active.color};font-size:18px;"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg">${active.label}</h3>
+        <p class="text-sm mt-1" style="color:var(--text-secondary);">${active.desc}</p>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="label">Tema específico <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+        <input id="journey-topic" class="input" type="text"
+          placeholder="Ej: lesión de rodilla, dolor de espalda, post-operatorio..." />
+      </div>
+      <div>
+        <label class="label">Contexto adicional <span style="color:var(--text-tertiary);font-weight:400;">(opcional)</span></label>
+        <textarea id="journey-brief" class="textarea" rows="2"
+          placeholder="Deporte, edad del paciente típico, particularidades..."></textarea>
+      </div>
+      <button id="btn-journey-generate" class="btn-primary w-full py-3 font-semibold">
+        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Generar contenido para etapa "${active.label}"
+      </button>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div id="journey-output-section" class="hidden">
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-semibold">Contenido generado</h3>
+          <span class="pill text-xs mt-1" style="background:${active.color}18;color:${active.color};">Etapa: ${active.label}</span>
+        </div>
+        <div class="flex gap-2">
+          <button id="journey-copy" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+          <button id="journey-save" class="btn-ghost px-4 py-2 text-sm"><i class="fa-regular fa-floppy-disk mr-1"></i>Guardar</button>
+        </div>
+      </div>
+      <div id="journey-output" class="content-output" style="min-height:250px;"></div>
+    </div>
+  </div>
+</div>
+    `;
+  },
+
+  bindPaciente() {
+    document.querySelectorAll('.journey-stage-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        App._journeyStage = btn.dataset.stage;
+        render();
+      });
+    });
+
+    document.getElementById('btn-journey-generate')?.addEventListener('click', async () => {
+      const stage = App._journeyStage || 'descubrimiento';
+      const topic = document.getElementById('journey-topic')?.value?.trim() || '';
+      const brief = document.getElementById('journey-brief')?.value?.trim() || '';
+
+      const btn = document.getElementById('btn-journey-generate');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando...';
+
+      const section = document.getElementById('journey-output-section');
+      const outputEl = document.getElementById('journey-output');
+      section.classList.remove('hidden');
+      outputEl.classList.add('streaming');
+      outputEl.textContent = '';
+      let fullText = '';
+
+      try {
+        await Agents.journeyContent({ stage, topic, brief }, (chunk, full) => {
+          fullText = full;
+          outputEl.textContent = full;
+          outputEl.scrollTop = outputEl.scrollHeight;
+        });
+        outputEl.classList.remove('streaming');
+        outputEl.innerHTML = renderMarkdown(fullText);
+
+        document.getElementById('journey-copy')?.addEventListener('click', () => copyToClipboard(fullText, 'Contenido de journey'));
+        document.getElementById('journey-save')?.addEventListener('click', () => {
+          Storage.saveDraft({ title: `Journey ${stage} — ${topic || 'general'}`, platform: 'Instagram', content: fullText, status: 'draft', category: 'educativo' });
+          showToast('Borrador guardado', 'success');
+        });
+      } catch (err) {
+        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        showToast(err.message, 'error');
+      } finally {
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+      }
     });
   },
 
