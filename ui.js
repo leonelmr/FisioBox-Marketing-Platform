@@ -3885,19 +3885,20 @@ Puedes pegar datos de múltiples posts..."></textarea>
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando...';
 
-      const section = document.getElementById('journey-output-section');
-      const outputEl = document.getElementById('journey-output');
-      section.classList.remove('hidden');
-      outputEl.classList.add('streaming');
-      outputEl.textContent = '';
       let fullText = '';
-
       try {
+        const section = document.getElementById('journey-output-section');
+        const outputEl = document.getElementById('journey-output');
+        section.classList.remove('hidden');
+        outputEl.classList.add('streaming');
+        outputEl.textContent = '';
+
         await Agents.journeyContent({ stage, topic, brief }, (chunk, full) => {
           fullText = full;
           outputEl.textContent = full;
           outputEl.scrollTop = outputEl.scrollHeight;
         });
+
         outputEl.classList.remove('streaming');
         outputEl.innerHTML = renderMarkdown(fullText);
 
@@ -3907,7 +3908,11 @@ Puedes pegar datos de múltiples posts..."></textarea>
           showToast('Borrador guardado', 'success');
         });
       } catch (err) {
-        outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        const outputEl = document.getElementById('journey-output');
+        if (outputEl) {
+          outputEl.classList.remove('streaming');
+          outputEl.innerHTML = `<span style="color:var(--error);">Error: ${err.message}</span>`;
+        }
         showToast(err.message, 'error');
       } finally {
         btn.innerHTML = origHTML;
