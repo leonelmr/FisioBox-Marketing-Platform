@@ -122,6 +122,19 @@ const UI = {
           title="Cambiar tema" style="font-size:12px;">
           <i class="fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}"></i>
         </button>
+        ${App._userEmail ? `
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--text-secondary);max-width:160px;overflow:hidden;
+                text-overflow:ellipsis;white-space:nowrap;padding:5px 10px;
+                background:var(--glass-bg);border:1px solid var(--glass-border);
+                border-radius:var(--radius-pill);" title="${App._userEmail}">
+            <i class="fa-solid fa-circle-user" style="margin-right:5px;"></i>${App._userEmail}
+          </span>
+          <button onclick="handleLogout()" class="btn-ghost px-3 py-2"
+            title="Cerrar sesión" style="font-size:12px;color:var(--text-secondary);">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>` : ''}
         <button onclick="navigate('generator')" class="btn-orange px-4 py-2 font-semibold">
           Generar
         </button>

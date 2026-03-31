@@ -466,6 +466,92 @@
 </head>
 <body>
 
+<!-- ── AUTH SCREEN ─────────────────────────────────────────────────────── -->
+<!-- Shown before #app when the user is not authenticated                   -->
+<div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:var(--bg-base);display:flex;align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:420px;padding:0 20px;">
+    <!-- Logo / brand -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:48px;height:48px;background:var(--accent);border-radius:14px;
+             display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-dumbbell" style="color:#fff;font-size:1.3rem;"></i>
+        </div>
+        <span style="font-size:1.6rem;font-weight:700;color:var(--text-primary);">FisioBox</span>
+      </div>
+      <p style="color:var(--text-secondary);font-size:0.95rem;">AI Marketing Suite — accede a tu cuenta</p>
+    </div>
+
+    <!-- Card -->
+    <div style="background:var(--glass-bg);border:1px solid var(--glass-border);
+         border-radius:var(--radius-xl);padding:32px;box-shadow:var(--glass-shadow);">
+
+      <!-- Toggle sign-in / sign-up -->
+      <div style="display:flex;border:1px solid var(--glass-border);border-radius:var(--radius-pill);
+           padding:4px;margin-bottom:28px;gap:4px;" id="auth-mode-bar">
+        <button id="auth-tab-signin" onclick="authSetMode('signin')"
+          style="flex:1;padding:8px;border-radius:var(--radius-pill);border:none;cursor:pointer;
+                 font-size:0.88rem;font-weight:600;transition:all .2s;
+                 background:var(--accent);color:#fff;">
+          Iniciar sesión
+        </button>
+        <button id="auth-tab-signup" onclick="authSetMode('signup')"
+          style="flex:1;padding:8px;border-radius:var(--radius-pill);border:none;cursor:pointer;
+                 font-size:0.88rem;font-weight:600;transition:all .2s;
+                 background:transparent;color:var(--text-secondary);">
+          Crear cuenta
+        </button>
+      </div>
+
+      <div id="auth-error" style="display:none;margin-bottom:16px;padding:10px 14px;
+           background:rgba(255,69,58,.12);border:1px solid rgba(255,69,58,.3);
+           border-radius:var(--radius-md);color:#ff453a;font-size:0.87rem;"></div>
+
+      <div id="auth-info" style="display:none;margin-bottom:16px;padding:10px 14px;
+           background:rgba(48,209,88,.10);border:1px solid rgba(48,209,88,.3);
+           border-radius:var(--radius-md);color:#30d158;font-size:0.87rem;"></div>
+
+      <label style="display:block;font-size:0.85rem;color:var(--text-secondary);margin-bottom:6px;">
+        Correo electrónico
+      </label>
+      <input id="auth-email" type="email" placeholder="tu@email.com"
+        style="width:100%;box-sizing:border-box;padding:11px 14px;
+               background:var(--glass-bg-deep);border:1px solid var(--glass-border-strong);
+               border-radius:var(--radius-md);color:var(--text-primary);font-size:0.95rem;
+               outline:none;margin-bottom:16px;"/>
+
+      <div id="auth-password-wrap">
+        <label style="display:block;font-size:0.85rem;color:var(--text-secondary);margin-bottom:6px;">
+          Contraseña
+        </label>
+        <input id="auth-password" type="password" placeholder="••••••••"
+          style="width:100%;box-sizing:border-box;padding:11px 14px;
+                 background:var(--glass-bg-deep);border:1px solid var(--glass-border-strong);
+                 border-radius:var(--radius-md);color:var(--text-primary);font-size:0.95rem;
+                 outline:none;margin-bottom:8px;"/>
+        <p id="auth-forgot-link" style="text-align:right;margin-bottom:16px;">
+          <a href="#" onclick="authSendMagicLink();return false;"
+             style="font-size:0.82rem;color:var(--accent);text-decoration:none;">
+            ¿Olvidaste tu contraseña? Enviar link mágico
+          </a>
+        </p>
+      </div>
+
+      <button id="auth-submit-btn" onclick="authSubmit()"
+        style="width:100%;padding:13px;background:var(--accent);color:#fff;
+               border:none;border-radius:var(--radius-md);font-size:0.97rem;
+               font-weight:600;cursor:pointer;transition:background .2s;">
+        Iniciar sesión
+      </button>
+    </div>
+
+    <p style="text-align:center;margin-top:20px;font-size:0.8rem;color:var(--text-tertiary);">
+      FisioBox AI Marketing Suite &copy; 2025
+    </p>
+  </div>
+</div>
+
 <div id="app"></div>
 
 <!-- Markdown renderer -->
@@ -479,9 +565,13 @@
   }
 </script>
 
+<!-- Supabase JS v2 (must load before supabase.js) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <!-- Load dependencies in order -->
 <script src="prompts.js"></script>
 <script src="storage.js"></script>
+<script src="supabase.js"></script>
 <script src="agents.js"></script>
 <script src="ui.js"></script>
 
@@ -577,6 +667,91 @@ function render() {
   UI.bindShell();
 }
 
+// ── AUTH UI HELPERS ───────────────────────────────────────────
+let _authMode = 'signin';
+
+function authSetMode(mode) {
+  _authMode = mode;
+  const isSignin = mode === 'signin';
+  document.getElementById('auth-tab-signin').style.background = isSignin ? 'var(--accent)' : 'transparent';
+  document.getElementById('auth-tab-signin').style.color = isSignin ? '#fff' : 'var(--text-secondary)';
+  document.getElementById('auth-tab-signup').style.background = !isSignin ? 'var(--accent)' : 'transparent';
+  document.getElementById('auth-tab-signup').style.color = !isSignin ? '#fff' : 'var(--text-secondary)';
+  document.getElementById('auth-submit-btn').textContent = isSignin ? 'Iniciar sesión' : 'Crear cuenta';
+  document.getElementById('auth-password-wrap').style.display = 'block';
+  authClearMessages();
+}
+
+function authClearMessages() {
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-info').style.display  = 'none';
+}
+
+function authShowError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function authShowInfo(msg) {
+  const el = document.getElementById('auth-info');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+async function authSubmit() {
+  authClearMessages();
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const btn      = document.getElementById('auth-submit-btn');
+  if (!email) { authShowError('Ingresa tu correo electrónico.'); return; }
+  if (!password) { authShowError('Ingresa tu contraseña.'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Cargando...';
+  try {
+    const fn = _authMode === 'signup' ? DB.signUp : DB.signIn;
+    const { user, error } = await fn(email, password);
+    if (error) { authShowError(error.message); return; }
+    if (_authMode === 'signup' && user && !user.confirmed_at) {
+      authShowInfo('Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.');
+    }
+    // SIGNED_IN event handled by onAuthChange → bootApp()
+  } finally {
+    btn.disabled = false;
+    btn.textContent = _authMode === 'signup' ? 'Crear cuenta' : 'Iniciar sesión';
+  }
+}
+
+async function authSendMagicLink() {
+  authClearMessages();
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { authShowError('Ingresa tu correo para enviar el link mágico.'); return; }
+  const { error } = await DB.signIn(email); // no password → magic link
+  if (error) authShowError(error.message);
+  else authShowInfo('Link mágico enviado a ' + email + '. Revisa tu bandeja de entrada.');
+}
+
+// Show/hide auth screen
+function showAuthScreen()  {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+function hideAuthScreen()  {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = '';
+}
+
+// Called once the user is signed in
+async function bootApp() {
+  await DB.loadAll();  // pull all user data from Supabase → localStorage
+  const user = await DB.getUser();
+  App._userEmail = user?.email || '';
+  hideAuthScreen();
+  render();
+}
+
+async function handleLogout() {
+  await DB.signOut();  // triggers SIGNED_OUT → clears local and shows auth screen
+}
+
 // ── BOOT ──────────────────────────────────────────────────────
 // Apply saved/system theme before first render to avoid flash
 (function() {
@@ -584,7 +759,30 @@ function render() {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
 })();
-render();
+
+// Hide app while we check auth
+document.getElementById('app').style.display = 'none';
+document.getElementById('auth-screen').style.display = 'none';
+
+// Listen for auth state changes (sign-in / sign-out)
+DB.onAuthChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    await bootApp();
+  } else if (event === 'SIGNED_OUT') {
+    DB.clearLocal();
+    App.currentView = 'dashboard';
+    showAuthScreen();
+  }
+});
+
+// Check initial session
+DB.getSession().then(session => {
+  if (session) {
+    bootApp();
+  } else {
+    showAuthScreen();
+  }
+});
 </script>
 
 <!-- ── AI CHAT ASSISTANT ──────────────────────────────────── -->
